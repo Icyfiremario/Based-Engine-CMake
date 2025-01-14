@@ -4,14 +4,10 @@
 Based Engine is an open source game engine written in C++. It uses glfw for window management to allow support for several rendering APIs.
 
 ## Support
-### Rendering APIs
+### Windows
 - Vulkan
 - OpenGL
-- DirectX
-
-### Operating Systems
-- Windows
-- Linux
+- DirectX [^1]
 
 ## To Do
 ### Vulkan
@@ -25,5 +21,4 @@ Based Engine is an open source game engine written in C++. It uses glfw for wind
 ### OpenGL
 - [ ] General implementation
 
-### DirectX
-- [ ] General implementation
+[^1]: This requires using windows.h and doing window management that way. I am unfamillar and it would require weird cmake stuff. I do plan to add this but it will be way down the line.

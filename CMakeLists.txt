@@ -13,12 +13,11 @@ file(GLOB HDR "*.h" "*.hpp")
 
 # Include sub-projects.
 add_subdirectory(BasedGL)
-# add_subdirectory(BasedVK)
-# add_subdirectory(BasedDX)
+add_subdirectory(BasedVK)
 
 # Add source to this project's executable.
 add_executable(BasedEngine ${SRC} ${HDR})
-target_link_libraries(BasedEngine PRIVATE BasedGL)
+target_link_libraries(BasedEngine PRIVATE BasedGL BasedVK)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET BasedEngine PROPERTY CXX_STANDARD 20)
