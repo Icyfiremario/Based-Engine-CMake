@@ -13,7 +13,7 @@ file(GLOB HDR "*.h" "*.hpp")
 
 # Include sub-projects.
 add_subdirectory(BasedGL)
-add_subdirectory(BasedVK)
+# add_subdirectory(BasedVK)
 # add_subdirectory(BasedDX)
 
 # Add source to this project's executable.
