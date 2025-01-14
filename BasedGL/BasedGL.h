@@ -3,24 +3,20 @@
 // STD
 #include <stdexcept>
 
-// OpenGL
-#include <gl/GL.h>
+// GLEW
+#include <GL/glew.h>
 
-#ifndef GL_MAJOR
-#define GL_MAJOR 3
-#endif // !GL_MAJOR
+// GLM
+#include <glm/glm.hpp>
 
-#ifndef GL_MINOR
-#define GL_MINOR 2
-#endif // !GL_MINOR
-
+// GLFW
+#include <GLFW/glfw3.h>
 
 class BasedGL
 {
 public:
-	BasedGL();
+	BasedGL(GLFWwindow* window);
 	~BasedGL();
 
 	void init();
-
 };
