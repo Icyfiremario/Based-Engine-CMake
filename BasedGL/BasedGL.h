@@ -3,20 +3,17 @@
 // STD
 #include <stdexcept>
 
-// GLEW
-#include <GL/glew.h>
+// Local
+#include "../renderer.h"
 
-// GLM
-#include <glm/glm.hpp>
 
-// GLFW
-#include <GLFW/glfw3.h>
-
-class BasedGL
+class BasedGL : public Renderer
 {
-public:
-	BasedGL(GLFWwindow* window);
-	~BasedGL();
+	public:
 
-	void init();
+		void init(GLFWwindow* window);
+		void render();
+		void cleanup();
+
+		virtual ~BasedGL() = default;
 };

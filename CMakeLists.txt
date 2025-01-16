@@ -15,10 +15,22 @@ file(GLOB HDR "*.h" "*.hpp")
 add_subdirectory(BasedGL)
 add_subdirectory(BasedVK)
 
+# find libraries
+find_package(glfw3 3.3 REQUIRED)
+find_package(glm REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(Doxygen)
+
 # Add source to this project's executable.
 add_executable(BasedEngine ${SRC} ${HDR})
-target_link_libraries(BasedEngine PRIVATE BasedGL BasedVK)
+target_link_libraries(BasedEngine PRIVATE BasedGL BasedVK OpenGL::GL ${GLEW_LIBRARIES} glfw)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET BasedEngine PROPERTY CXX_STANDARD 20)
+endif()
+
+if(DOXYGEN_FOUND)
+  set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md")
+  doxygen_add_docs(doc ${CMAKE_SOURCE_DIR} COMMENT "Generate documentation")
 endif()

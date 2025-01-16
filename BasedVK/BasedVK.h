@@ -3,6 +3,9 @@
 // STD
 #include <stdexcept>
 
-class BasedVK
+// Local
+#include "../renderer.h"
+
+class BasedVK : public Renderer
 {
 };
