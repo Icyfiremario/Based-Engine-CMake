@@ -3,6 +3,8 @@
 	#define UNIX
 #elif defined(_WIN32) || defined(WIN32)
 	#define WINDOWS
+#elif defined(__APPLE__) || defined(__MACH__)
+	#error "Mac OS X is not supported!"
 #endif
 
 // STD
