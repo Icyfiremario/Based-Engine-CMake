@@ -15,7 +15,10 @@ file(GLOB HDR "*.h" "*.hpp")
 add_subdirectory(BasedCore)
 add_subdirectory(BasedGL)
 add_subdirectory(BasedVK)
-add_subdirectory(BasedDX)
+if (WIN32)
+  message("Windows detected")
+  add_subdirectory(BasedDX)
+endif()
 
 
 # find libraries
