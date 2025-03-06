@@ -15,6 +15,8 @@ file(GLOB HDR "*.h" "*.hpp")
 add_subdirectory(BasedCore)
 add_subdirectory(BasedGL)
 add_subdirectory(BasedVK)
+add_subdirectory(BasedDX)
+
 
 # find libraries
 find_package(glfw3 3.3 REQUIRED)

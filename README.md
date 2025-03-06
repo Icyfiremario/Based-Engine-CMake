@@ -13,6 +13,9 @@ Based Engine is an open source game engine written in C++. It uses glfw for wind
 - Vulkan
 - OpenGL
 
+### Apple
+Apple support is not planned and likely not going to happen.
+
 ## To Do
 ### Core
 - [ ] Refactor the core window class to be a parent class
