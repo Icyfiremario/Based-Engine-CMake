@@ -9,6 +9,10 @@ Based Engine is an open source game engine written in C++. It uses glfw for wind
 - OpenGL
 - DirectX [^1]
 
+### Linux
+- Vulkan
+- OpenGL
+
 ## To Do
 ### Core
 - [ ] Refactor the core window class to be a parent class
