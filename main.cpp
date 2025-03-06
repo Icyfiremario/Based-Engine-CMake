@@ -1,4 +1,11 @@
-﻿// STD
+﻿// Check OS
+#ifdef __unix__
+	#define UNIX
+#elif defined(_WIN32) || defined(WIN32)
+	#define WINDOWS
+#endif
+
+// STD
 #include <iostream>
 #include <memory>
 
