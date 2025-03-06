@@ -2,18 +2,18 @@
 
 // STD
 #include <stdexcept>
+#include <iostream>
 
-// Local
-#include "../renderer.h"
+// GLEW
+#include <GL/glew.h>
+#include <GL/glut.h>
 
 
-class BasedGL : public Renderer
+/// @brief OpenGL implementation
+class BasedGL
 {
 	public:
 
-		void init(GLFWwindow* window);
-		void render();
-		void cleanup();
-
-		virtual ~BasedGL() = default;
+                BasedGL();
+                ~BasedGL();
 };

@@ -1,6 +1,9 @@
 #include "BasedGL.h"
 
-void BasedGL::init(GLFWwindow *window)
+BasedGL::BasedGL()
 {
-    
+}
+
+BasedGL::~BasedGL()
+{
 }

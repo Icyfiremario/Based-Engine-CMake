@@ -12,6 +12,7 @@ file(GLOB SRC "*.c" "*.cpp")
 file(GLOB HDR "*.h" "*.hpp")
 
 # Include sub-projects.
+add_subdirectory(BasedCore)
 add_subdirectory(BasedGL)
 add_subdirectory(BasedVK)
 
@@ -19,12 +20,13 @@ add_subdirectory(BasedVK)
 find_package(glfw3 3.3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(Vulkan REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(Doxygen)
 
 # Add source to this project's executable.
 add_executable(BasedEngine ${SRC} ${HDR})
-target_link_libraries(BasedEngine PRIVATE BasedGL BasedVK OpenGL::GL ${GLEW_LIBRARIES} glfw)
+target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm ${GLEW_LIBRARIES})
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET BasedEngine PROPERTY CXX_STANDARD 20)
