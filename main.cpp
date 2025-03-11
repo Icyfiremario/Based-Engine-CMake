@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 {
 	int exitCode = EXIT_SUCCESS;
 
-	BEapp app {800, 600, 10, "BasedEngine", BEapp::VULKAN};
+	BEapp app {800, 600, 10, "BasedEngine", BasedCore::OPENGL};
 
 	try
 	{

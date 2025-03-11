@@ -1,8 +1,20 @@
 #include "BEapp.h"
 
-
-BEapp::BEapp(int width, int height, int maxFrameTime, std::string name, int api) : width(width), height(height), maxFrameTime(maxFrameTime), name(name), renderAPI(api)
+BEapp::BEapp(int width, int height, int maxFrameTime, const std::string name, int api) : width(width), height(height), maxFrameTime(maxFrameTime), name(name), renderAPI(api)
 {
+    switch (renderAPI)
+    {
+        case BasedCore::VULKAN:
+            std::make_unique<BVKDevice>(window);
+            std::make_unique<BVKRenderer>(window, *VKDevice.get());
+            break;
+
+        case BasedCore::OPENGL:
+            break;
+    
+        default:
+            throw std::runtime_error("Invalid render API");
+    }
 }
 
 BEapp::~BEapp()
@@ -13,22 +25,26 @@ void BEapp::run()
 {
     switch (renderAPI)
     {
-        case VULKAN:
+        case BasedCore::VULKAN:
         {
-            while (!appWindow.shouldClose())
+            while (!window.shouldClose())
             {
                 glfwPollEvents();
-                glfwSwapBuffers(appWindow.getWindow());
             }
-
             break;
         }
 
-        case OPENGL:
-            throw std::runtime_error("OpenGL is not supported yet");
+        case BasedCore::OPENGL:
+        {
+            while (!window.shouldClose())
+            {
+                glfwPollEvents();
+            }
+            break;
+        }
     
-    default:
-        throw std::runtime_error("Invalid render API");
+        default:
+            throw std::runtime_error("Invalid render API");
     }
     
 }
