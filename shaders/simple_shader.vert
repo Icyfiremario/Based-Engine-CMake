@@ -22,9 +22,9 @@ const float AMBIENT = 0.02;
 void main() {
     gl_Position = ubo.projectionViewMatrix * push.modelMatrix * vec4(position, 1.0);
 
-    vec normalWorldSpace = normalize(mat3(push.normalMatrix * normal));
+    vec3 normalWorldSpace = normalize(mat3(push.normalMatrix) * normal);
 
-    float lightIntensity = max(dot(normalWorldSpace, ubo.directionToLight), 0.0);
+    float lightIntensity = AMBIENT + max(dot(normalWorldSpace, ubo.directionToLight), 0.0);
 
     fragColor = lightIntensity * color;
 }

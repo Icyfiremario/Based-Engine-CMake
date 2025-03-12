@@ -1,9 +1,22 @@
-file(GLOB FRAG "*.frag")
-file(GLOB VERT "*.vert")
+file(GLOB SHADERS "*.vert" "*.frag" "*.comp" "*.geom" "*.tesc" "*.tese")
 
-set(SHADER_SRC ${FRAG} ${VERT})
-set(SHADER_OUT "${FRAG}.spv" "${VERT}.spv")
+set(COMPILED_SHADERS)
+set(GLSLC_EXECUTABLE "/usr/bin/glslc")
 
-message(${SHADER_OUT})
+foreach(SHADER ${SHADERS})
+    get_filename_component(FILE_NAME ${SHADER} NAME)
+    get_filename_component(DIR ${SHADER} DIRECTORY)
+    set(OUTPUT_SHADER "${CMAKE_BINARY_DIR}/shaders/${FILE_NAME}.spv")
 
-add_custom_target(shaders SOURCES ${SHADER_SRC} COMMENT "Compile shaders" COMMAND "glslc" ${SHADER_SRC} -o -c ${SHADER_OUT})
+    add_custom_command(
+        OUTPUT ${OUTPUT_SHADER}
+        COMMAND ${GLSLC_EXECUTABLE} ${SHADER} -o ${OUTPUT_SHADER}
+        DEPENDS ${SHADER}
+        COMMENT "Compiling shader ${FILE_NAME}"
+        VERBATIM
+    )
+    
+    list(APPEND COMPILED_SHADERS ${OUTPUT_SHADER})
+endforeach(SHADER ${SHADERS})
+
+add_custom_target(shaders DEPENDS ${COMPILED_SHADERS})
