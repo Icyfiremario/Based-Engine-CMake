@@ -8,7 +8,7 @@ set(GLSLC_EXECUTABLE "/usr/bin/glslc")
 foreach(SHADER ${VK_SHADERS})
     get_filename_component(FILE_NAME ${SHADER} NAME)
     get_filename_component(DIR ${SHADER} DIRECTORY)
-    set(OUTPUT_SHADER "${CMAKE_BINARY_DIR}/VK_shaders/${FILE_NAME}.spv")
+    set(OUTPUT_SHADER "${CMAKE_BINARY_DIR}/shaders/${FILE_NAME}.spv")
 
     add_custom_command(
         OUTPUT ${OUTPUT_SHADER}

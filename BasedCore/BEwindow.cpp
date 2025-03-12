@@ -15,6 +15,7 @@ void BEwindow::switchRenderAPI(int api)
 {
     renderAPI = api;
     glfwDestroyWindow(window);
+    initWindow();
 }
 
 void BEwindow::initWindow()
