@@ -13,6 +13,9 @@
 #include "../BasedVK/BVKDevice.h"
 #include "../BasedVK/BVKRenderer.h"
 
+// BasedGL
+#include "../BasedGL/BGLShader.h"
+
 /// @brief Core app class
 class BEapp
 {

@@ -6,15 +6,15 @@
 #include <memory>
 #include <string>
 
+// GLAD
+#include <GL/glew.h>
+
 // GLFW
-#define GLFW_INCLUDE_NONE
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 // Vulkan
 #include <vulkan/vulkan.h>
-
-// GLAD
-#include <GL/glew.h>
 
 // BasedCore
 #include "BEenums.h"
@@ -50,6 +50,6 @@ class BEwindow
 
         void initWindow();
 
-        static void frameBufferResizeCallback(GLFWwindow* window, int width, int height);
+        static void frameBufferResizeCallback(GLFWwindow* window, int width, int height, int renderAPI);
         
 };
