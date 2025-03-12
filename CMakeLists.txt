@@ -19,6 +19,7 @@ if (WIN32)
   message("Windows detected")
   add_subdirectory(BasedDX)
 endif()
+add_subdirectory(shaders)
 
 
 # find libraries
