@@ -1,5 +1,5 @@
-file(GLOB VK_SHADERS "*.vert" "*.frag" "*.comp" "*.geom" "*.tesc" "*.tese")
-file(GLOB GL_SHADERS "*.vs" "*.fs")
+file(GLOB VK_SHADERS "*.vert" "*.frag" "*.comp" "*.geom" "*.tesc" "*.tese") 
+file(GLOB GL_SHADERS "*.vs" "*.fs") # Current code doesn't load pre-compiled shaders for OpenGL
 file(COPY ${GL_SHADERS} DESTINATION "${CMAKE_BINARY_DIR}/gl_shaders")
 
 set(COMPILED_VK_SHADERS)

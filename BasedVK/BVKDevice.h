@@ -33,6 +33,8 @@ class BVKDevice
         const bool enableValidationLayers = false;
 #endif //!NDEBUG
 
+        VkPhysicalDeviceProperties properties;
+
         BVKDevice(BEwindow &window);
         ~BVKDevice();
 
