@@ -6,7 +6,6 @@
 
 // GLEW
 #include <GL/glew.h>
-#include <GL/glut.h>
 
 
 /// @brief OpenGL implementation
