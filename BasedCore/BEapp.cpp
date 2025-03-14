@@ -5,8 +5,6 @@ BEapp::BEapp(int width, int height, int maxFrameTime, const std::string name, in
     switch (renderAPI)
     {
         case BasedCore::VULKAN:
-            std::make_unique<BVKDevice>(window);
-            std::make_unique<BVKRenderer>(window, *VKDevice.get());
             break;
 
         case BasedCore::OPENGL:
@@ -35,12 +33,12 @@ void BEapp::run()
     {
         case BasedCore::VULKAN:
         {
-            while (!window.shouldClose())
+            while (!appWindow.shouldClose())
             {
-                if(glfwGetKey(window.getWindow(), GLFW_KEY_F1) == GLFW_PRESS)
+                if(glfwGetKey(appWindow.getWindow(), GLFW_KEY_F1) == GLFW_PRESS)
                 {
                     std::cout << "Switching to OpenGL." << std::endl;
-                    window.switchRenderAPI(BasedCore::OPENGL);
+                    appWindow.switchRenderAPI(BasedCore::OPENGL);
                     renderAPI = BasedCore::OPENGL;
                     run();
                 }
@@ -70,17 +68,17 @@ void BEapp::run()
             glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
             glEnableVertexAttribArray(1);
 
-            while (!window.shouldClose())
+            while (!appWindow.shouldClose())
             {
-                if(glfwGetKey(window.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+                if(glfwGetKey(appWindow.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
                 {
-                    glfwSetWindowShouldClose(window.getWindow(), GLFW_TRUE);
+                    glfwSetWindowShouldClose(appWindow.getWindow(), GLFW_TRUE);
                 }
 
-                if(glfwGetKey(window.getWindow(), GLFW_KEY_F1) == GLFW_PRESS)
+                if(glfwGetKey(appWindow.getWindow(), GLFW_KEY_F1) == GLFW_PRESS)
                 {
                     std::cout << "Switching to Vulkan." << std::endl;
-                    window.switchRenderAPI(BasedCore::VULKAN);
+                    appWindow.switchRenderAPI(BasedCore::VULKAN);
                     renderAPI = BasedCore::VULKAN;
                     run();
                 }
@@ -93,7 +91,7 @@ void BEapp::run()
                 glDrawArrays(GL_TRIANGLES, 0, 3);
 
                 glfwPollEvents();
-                glfwSwapBuffers(window.getWindow());
+                glfwSwapBuffers(appWindow.getWindow());
             }
 
             break;

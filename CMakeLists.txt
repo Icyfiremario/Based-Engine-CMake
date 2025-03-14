@@ -1,4 +1,4 @@
-﻿cmake_minimum_required (VERSION 3.11)
+﻿cmake_minimum_required (VERSION 3.20)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -10,6 +10,9 @@ project(BasedEngine VERSION 1.0)
 
 file(GLOB SRC "*.c" "*.cpp")
 file(GLOB HDR "*.h" "*.hpp")
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Include sub-projects.
 add_subdirectory(BasedCore)
@@ -33,10 +36,6 @@ find_package(Doxygen)
 # Add source to this project's executable.
 add_executable(BasedEngine ${SRC} ${HDR})
 target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm ${GLEW_LIBRARIES})
-
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET BasedEngine PROPERTY CXX_STANDARD 20)
-endif()
 
 if(DOXYGEN_FOUND)
   set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md")
