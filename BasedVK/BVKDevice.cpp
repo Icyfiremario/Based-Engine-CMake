@@ -65,16 +65,67 @@ BVKDevice::~BVKDevice()
 
 uint32_t BVKDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
-    return 0;
+    VkPhysicalDeviceMemoryProperties memProperties;
+    vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+
+    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
+    {
+        if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
+        {
+            return i;
+        }
+    }
+
+    throw std::runtime_error("Failed to find suitable memory type!");
 }
 
 VkFormat BVKDevice::findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
 {
-    return VkFormat();
+    for (VkFormat format : candidates)
+    {
+        VkFormatProperties props;
+        vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
+
+        if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
+        {
+            return format;
+        }
+        else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
+        {
+            return format;
+        }
+    }
+
+    throw std::runtime_error("Failed to find supported format!");
 }
 
 void BVKDevice::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory)
 {
+    VkBufferCreateInfo bufferInfo{};
+    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferInfo.size = size;
+    bufferInfo.usage = usage;
+    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+    if (vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create buffer!");
+    }
+
+    VkMemoryRequirements memRequirements;
+    vkGetBufferMemoryRequirements(device_, buffer, &memRequirements);
+
+    VkMemoryAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize = memRequirements.size;
+    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+
+    if (vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to allocate buffer memory!");
+    }
+
+    vkBindBufferMemory(device_, buffer, bufferMemory, 0);
 }
 
 VkCommandBuffer BVKDevice::beginSingleTimeCommands()
@@ -157,13 +208,7 @@ void BVKDevice::setupDebugMessenger()
     }
 }
 
-void BVKDevice::createSurface()
-{
-    if (glfwCreateWindowSurface(instance, window.getWindow(), nullptr, &surface_) != VK_SUCCESS)
-    {
-        throw std::runtime_error("Failed to create window surface!");
-    }
-}
+void BVKDevice::createSurface() { window.createVkWindowSurface(instance, &surface_); }
 
 void BVKDevice::pickPhysicalDevice()
 {
@@ -337,7 +382,41 @@ bool BVKDevice::checkValidationLayerSupport()
 
 QueueFamilyIndicies BVKDevice::findQueueFamilies(VkPhysicalDevice device)
 {
-    return QueueFamilyIndicies();
+    QueueFamilyIndicies indicies;
+
+    uint32_t queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
+    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+
+    int i = 0;
+    for (const auto& queueFamily : queueFamilies)
+    {
+        if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+        {
+            indicies.graphicsFamily = i;
+            indicies.graphicsFamilyHasValue = true;
+        }
+
+        VkBool32 presentSupport = false;
+        vkGetPhysicalDeviceSurfaceSupportKHR(device, i , surface_, &presentSupport);
+
+        if (queueFamily.queueCount > 0 && presentSupport)
+        {
+            indicies.presentFamily = i;
+            indicies.presentFamilyHasValue = true;
+        }
+
+        if (indicies.isComplete())
+        {
+            break;
+        }
+
+        i++;
+    }
+
+    return indicies;
 }
 
 void BVKDevice::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo)
@@ -352,14 +431,88 @@ void BVKDevice::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfo
 
 void BVKDevice::hasGflwRequiredInstanceExtensions()
 {
+    uint32_t extensionCount = 0;
+
+    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+
+    std::vector<VkExtensionProperties> extensions(extensionCount);
+    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
+
+    if (logDevice)
+    {
+        std::cout << "Available extenstions: " << std::endl;
+    }
+
+    std::unordered_set<std::string> available;
+    for (const auto& extension : extensions)
+    {
+        if (logDevice)
+        {
+            std::cout << "\t" << extension.extensionName << std::endl;
+        }
+        available.insert(extension.extensionName);
+    }
+
+    if (logDevice)
+    {
+        std::cout << "Required extensions:" << std::endl;
+    }
+
+    auto requiredExtensions = getRequiredExtensions();
+    for (const auto& required : requiredExtensions)
+    {
+        if (logDevice)
+        {
+            std::cout << "\t" << required << std::endl;
+        }
+
+        if (available.find(required) == available.end())
+        {
+            throw std::runtime_error("Missing required GLFW extenstion!");
+        }
+    }
 }
 
 bool BVKDevice::checkDeviceExtensionSupport(VkPhysicalDevice device)
 {
-    return false;
+    uint32_t extensionCount = 0;
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+    
+    std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+
+    for (const auto& extension : availableExtensions)
+    {
+        requiredExtensions.erase(extension.extensionName);
+    }
+
+    return requiredExtensions.empty();
 }
 
 SwapChainSupportDetails BVKDevice::querySwapChainSupport(VkPhysicalDevice device)
 {
-    return SwapChainSupportDetails();
+    SwapChainSupportDetails details;
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_, &details.capabilities);
+
+    uint32_t formatCount = 0;
+    vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, nullptr);
+
+    if (formatCount != 0)
+    {
+        details.formats.resize(formatCount);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, details.formats.data());
+    }
+
+    uint32_t presentModeCount;
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &formatCount, nullptr);
+
+    if (presentModeCount != 0)
+    {
+        details.presentModes.resize(presentModeCount);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, details.presentModes.data());
+    }
+
+    return details;
 }

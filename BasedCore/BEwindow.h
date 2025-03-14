@@ -35,6 +35,8 @@ class BEwindow
 
         GLFWwindow* getWindow() { return window; }
 
+        void createVkWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
+
         void resetWindowResizedFlag() { frameBufferResized = false; }
 
         void switchRenderAPI(int api);
@@ -50,6 +52,6 @@ class BEwindow
 
         void initWindow();
 
-        static void frameBufferResizeCallback(GLFWwindow* window, int width, int height, int renderAPI);
+        static void vkFrameBufferResizeCallback(GLFWwindow* window, int width, int height);
         
 };

@@ -11,6 +11,14 @@ BEwindow::~BEwindow()
     glfwTerminate();
 }
 
+void BEwindow::createVkWindowSurface(VkInstance instance, VkSurfaceKHR *surface)
+{
+    if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create window surface!");
+    }
+}
+
 void BEwindow::switchRenderAPI(int api)
 {
     renderAPI = api;
@@ -29,7 +37,8 @@ void BEwindow::initWindow()
         {
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
             window = glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
-
+            glfwSetWindowUserPointer(window, this);
+            glfwSetFramebufferSizeCallback(window, vkFrameBufferResizeCallback);
             break;
         }
 
@@ -56,27 +65,12 @@ void BEwindow::initWindow()
     }
 }
 
-void BEwindow::frameBufferResizeCallback(GLFWwindow *window, int width, int height, int renderAPI)
+void BEwindow::vkFrameBufferResizeCallback(GLFWwindow *window, int width, int height)
 {
-    switch (renderAPI)
-    {
-        case BasedCore::VULKAN:
-        {
-            auto appWindow = reinterpret_cast<BEwindow*>(glfwGetWindowUserPointer(window));
-
-            appWindow->frameBufferResized = true;
-            appWindow->width = width;
-            appWindow->height = height;
-            break;
-        }
-
-        case BasedCore::OPENGL:
-        {
-            glViewport(0, 0, width, height);
-            break;
-        }
     
-        default:
-            break;
-    }
+    auto appWindow = reinterpret_cast<BEwindow*>(glfwGetWindowUserPointer(window));
+
+    appWindow->frameBufferResized = true;
+    appWindow->width = width;
+    appWindow->height = height;
 }
