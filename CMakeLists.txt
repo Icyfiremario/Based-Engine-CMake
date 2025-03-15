@@ -1,5 +1,9 @@
 ﻿cmake_minimum_required (VERSION 3.20)
 
+if (WIN32)
+  message("Windows detected.")
+endif()
+
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
   cmake_policy(SET CMP0141 NEW)
@@ -19,8 +23,7 @@ add_subdirectory(BasedCore)
 add_subdirectory(BasedGL)
 add_subdirectory(BasedVK)
 if (WIN32)
-  message("Windows detected")
-  add_subdirectory(BasedDX)
+  #add_subdirectory(BasedDX)
 endif()
 add_subdirectory(shaders)
 
@@ -36,6 +39,10 @@ find_package(Doxygen)
 # Add source to this project's executable.
 add_executable(BasedEngine ${SRC} ${HDR})
 target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm ${GLEW_LIBRARIES})
+
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+  target_compile_definitions(BasedEngine PRIVATE DEBUG=1)
+endif()
 
 if(DOXYGEN_FOUND)
   set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md")

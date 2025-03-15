@@ -27,11 +27,11 @@ class BVKDevice
 {
     public:
 
-#ifndef NDEBUG
+#ifdef DEBUG
         const bool enableValidationLayers = true;
 #else
         const bool enableValidationLayers = false;
-#endif //!NDEBUG
+#endif //DEBUG
 
         VkPhysicalDeviceProperties properties;
 
@@ -64,11 +64,11 @@ class BVKDevice
 
     private:
 
-#ifndef NDEBUG
-        const bool logDevice = false;
-#else
+#ifdef DEBUG
         const bool logDevice = true;
-#endif //!NDEBUG
+#else
+        const bool logDevice = false;
+#endif //DEBUG
 
         VkInstance instance;
         VkDebugUtilsMessengerEXT debugMessenger;
