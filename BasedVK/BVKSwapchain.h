@@ -42,9 +42,16 @@ class BVKSwapchain
 
         float extentAspectRatio() const { return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height); };
 
+        VkFormat findDepthFormat();
+
+        VkResult acquireNextImage(uint32_t* imageIndex);
+        VkResult submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
+
+        bool compareSwapFormats(const BVKSwapchain& swapChain) const { return swapChain.swapChainDepthFormat == swapChainDepthFormat && swapChain.swapChainImageFormat == swapChainImageFormat; }
+
     private:
     
-#ifdef NDEBUG
+#ifndef DEBUG
         const bool logSwapChain = false;
 #else
         const bool logSwapChain = true;
@@ -53,7 +60,7 @@ class BVKSwapchain
         BVKDevice &device;
 
         VkFormat swapChainImageFormat;
-        VkFormat depthImageFormat;
+        VkFormat swapChainDepthFormat;
         VkExtent2D swapChainExtent;
         VkExtent2D windowExtent;
 
@@ -61,7 +68,7 @@ class BVKSwapchain
         VkRenderPass renderPass;
 
         std::vector<VkImage> depthImages;
-        std::vector<VkDeviceMemory> depthImageMemory;
+        std::vector<VkDeviceMemory> depthImageMemorys;
         std::vector<VkImageView> depthImageViews;
         std::vector<VkImage> swapChainImages;
         std::vector<VkImageView> swapChainImageViews;
