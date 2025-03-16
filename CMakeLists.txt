@@ -41,6 +41,7 @@ add_executable(BasedEngine ${SRC} ${HDR})
 target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm ${GLEW_LIBRARIES})
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+  target_compile_options(BasedEngine PRIVATE -Wall -Wextra)
   target_compile_definitions(BasedEngine PRIVATE DEBUG=1)
 endif()
 

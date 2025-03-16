@@ -15,7 +15,7 @@
 #include "BasedCore/BEapp.h"
 
 
-int main(int argc, char** argv)
+int main(void)
 {
 	int exitCode = EXIT_SUCCESS;
 
