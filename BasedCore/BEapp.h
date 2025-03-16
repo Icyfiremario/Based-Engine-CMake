@@ -38,8 +38,11 @@ class BEapp
         int width, height, maxFrameTime, renderAPI;
         std::string name;
 
-        BEwindow appWindow {800, 600, "BasedEngine", renderAPI};
-        BVKDevice appDevice {appWindow};
+        std::unique_ptr<BEwindow> appWindow;
+        std::unique_ptr<BVKDevice> appDevice;
+        
+        //BEwindow appWindow {800, 600, "BasedEngine", renderAPI};
+        //BVKDevice appDevice {appWindow};
         //BVKRenderer appRenderer {appWindow, appDevice};
 
 };

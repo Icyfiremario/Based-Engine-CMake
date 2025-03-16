@@ -5,22 +5,25 @@ BEapp::BEapp(int width, int height, int maxFrameTime, const std::string name, in
     switch (renderAPI)
     {
         case BasedCore::VULKAN:
-            break;
-
         case BasedCore::OPENGL:
             break;
     
         default:
             throw std::runtime_error("Invalid render API");
     }
+
+    appWindow = std::make_unique<BEwindow>(800, 600, "BasedEngine", renderAPI);
 }
 
 BEapp::~BEapp()
 {
+    appDevice.reset();
+    appWindow.reset();
 }
 
 void BEapp::run()
 {
+    appDevice.reset();
 
     float vertices[] = {
         // positions         // colors
@@ -33,12 +36,14 @@ void BEapp::run()
     {
         case BasedCore::VULKAN:
         {
-            while (!appWindow.shouldClose())
+            appDevice = std::make_unique<BVKDevice>(*appWindow.get());
+
+            while (!appWindow.get()->shouldClose())
             {
-                if(glfwGetKey(appWindow.getWindow(), GLFW_KEY_F1) == GLFW_PRESS)
+                if(glfwGetKey(appWindow.get()->getWindow(), GLFW_KEY_F1) == GLFW_PRESS)
                 {
                     std::cout << "Switching to OpenGL." << std::endl;
-                    appWindow.switchRenderAPI(BasedCore::OPENGL);
+                    appWindow.get()->switchRenderAPI(BasedCore::OPENGL);
                     renderAPI = BasedCore::OPENGL;
                     run();
                 }
@@ -68,17 +73,17 @@ void BEapp::run()
             glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
             glEnableVertexAttribArray(1);
 
-            while (!appWindow.shouldClose())
+            while (!appWindow.get()->shouldClose())
             {
-                if(glfwGetKey(appWindow.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+                if(glfwGetKey(appWindow.get()->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
                 {
-                    glfwSetWindowShouldClose(appWindow.getWindow(), GLFW_TRUE);
+                    glfwSetWindowShouldClose(appWindow.get()->getWindow(), GLFW_TRUE);
                 }
 
-                if(glfwGetKey(appWindow.getWindow(), GLFW_KEY_F1) == GLFW_PRESS)
+                if(glfwGetKey(appWindow.get()->getWindow(), GLFW_KEY_F1) == GLFW_PRESS)
                 {
                     std::cout << "Switching to Vulkan." << std::endl;
-                    appWindow.switchRenderAPI(BasedCore::VULKAN);
+                    appWindow.get()->switchRenderAPI(BasedCore::VULKAN);
                     renderAPI = BasedCore::VULKAN;
                     run();
                 }
@@ -91,7 +96,7 @@ void BEapp::run()
                 glDrawArrays(GL_TRIANGLES, 0, 3);
 
                 glfwPollEvents();
-                glfwSwapBuffers(appWindow.getWindow());
+                glfwSwapBuffers(appWindow.get()->getWindow());
             }
 
             break;
