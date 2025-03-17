@@ -9,7 +9,6 @@
 
 // STD
 #include <iostream>
-#include <memory>
 
 // BasedCore
 #include "BasedCore/BEapp.h"

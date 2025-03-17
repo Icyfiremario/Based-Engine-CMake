@@ -29,6 +29,7 @@ class BVKDevice
 
 #ifdef DEBUG
         const bool enableValidationLayers = true;
+#pragma message "Debug enabled"
 #else
         const bool enableValidationLayers = false;
 #endif //DEBUG

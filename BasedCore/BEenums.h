@@ -8,7 +8,7 @@ namespace BasedCore
         OPENGL,
         VULKAN,
 #ifdef WINDOWS
-            DIRECTX
+            DIRECTX,
 #endif
     };
 }

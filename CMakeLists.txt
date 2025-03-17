@@ -46,6 +46,10 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   target_compile_definitions(BasedEngine PRIVATE DEBUG=1)
 endif()
 
+if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+  target_compile_options(BasedEngine PRIVATE -g)
+endif()
+
 if(DOXYGEN_FOUND)
   set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md")
   doxygen_add_docs(doc ${CMAKE_SOURCE_DIR} COMMENT "Generate documentation")
