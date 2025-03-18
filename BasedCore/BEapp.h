@@ -35,7 +35,7 @@ class BEapp
 
     private:
 
-        int width, height, maxFrameTime, renderAPI;
+        int appWidth, appHeight, maxFrameTime, renderAPI;
         std::string name;
 
         std::unique_ptr<BEwindow> appWindow;

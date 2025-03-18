@@ -1,6 +1,6 @@
 #include "BEapp.h"
 
-BEapp::BEapp(int width, int height, int maxFrameTime, const std::string name, int api) : width(width), height(height), maxFrameTime(maxFrameTime), renderAPI(api), name(name)
+BEapp::BEapp(int width, int height, int maxFrameTime, const std::string name, int api) : appWidth(width), appHeight(height), maxFrameTime(maxFrameTime), renderAPI(api), name(name)
 {
     switch (renderAPI)
     {
@@ -12,7 +12,7 @@ BEapp::BEapp(int width, int height, int maxFrameTime, const std::string name, in
             throw std::runtime_error("Invalid render API");
     }
 
-    appWindow = std::make_unique<BEwindow>(800, 600, "BasedEngine", renderAPI);
+    appWindow = std::make_unique<BEwindow>(appWidth, appHeight, "BasedEngine", renderAPI);
 }
 
 BEapp::~BEapp()

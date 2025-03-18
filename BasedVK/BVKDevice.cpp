@@ -582,7 +582,7 @@ SwapChainSupportDetails BVKDevice::querySwapChainSupport(VkPhysicalDevice device
     }
 
     uint32_t presentModeCount;
-    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &formatCount, nullptr);
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, nullptr);
 
     if (presentModeCount != 0)
     {
