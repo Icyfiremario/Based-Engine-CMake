@@ -16,3 +16,6 @@
 
 // BasedVK
 #include "BVKDevice.h"
+
+class BVKModel
+{};

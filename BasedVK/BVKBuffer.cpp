@@ -1,6 +1,6 @@
 #include "BVKBuffer.h"
 
-BVKBuffer::BVKBuffer(BVKDevice &device, VkDeviceSize instanceSize, uint32_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment) : bufferDevice{ device }, instanceSize { instanceSize }, instanceCount{ instanceCount }, usageFlags{ usageFlags }, memoryPropertyFlags{ memoryPropertyFlags }
+BVKBuffer::BVKBuffer(BVKDevice &device, VkDeviceSize instanceSize, uint32_t instanceCount, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize minOffsetAlignment) : bufferDevice(device), instanceSize(instanceSize), instanceCount(instanceCount), usageFlags(usageFlags), memoryPropertyFlags(memoryPropertyFlags)
 {
     alignmentSize = getAlignment(instanceSize, minOffsetAlignment);
     bufferSize = alignmentSize * instanceCount;
@@ -56,4 +56,9 @@ VkDescriptorBufferInfo BVKBuffer::descriptorInfoForIndex(int index)
 VkResult BVKBuffer::invalidateIndex(int index)
 {
     return VkResult();
+}
+
+VkDeviceSize BVKBuffer::getAlignment(VkDeviceSize instanceSize, VkDeviceSize minOffsetAlignment)
+{
+    return VkDeviceSize();
 }
