@@ -24,6 +24,7 @@ BEapp::~BEapp()
 void BEapp::run()
 {
     appDevice.reset();
+    appRenderer.reset();
 
     float vertices[] = {
         // positions         // colors
@@ -39,6 +40,7 @@ void BEapp::run()
         case BasedCore::VULKAN:
         {
             appDevice = std::make_unique<BVKDevice>(*appWindow.get());
+            appRenderer = std::make_unique<BVKRenderer>(*appWindow.get(), *appDevice.get());
 
             while (!appWindow.get()->shouldClose())
             {

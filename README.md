@@ -18,24 +18,21 @@ Apple support is not planned and likely not going to happen.
 
 ## To Do
 ### Core
-- [ ] Refactor the core window class to be a parent class
 - [ ] Window resizing
-- [ ] Rendering API binding
+- [x] Rendering API binding
 
 ### Vulkan
-- [ ] Vulkan specific window class
-- [ ] Swapchain
+- [x] Swapchain
 - [ ] Pipeline
 - [ ] Shaders
 - [ ] Models
-- [ ] Device info
+- [x] Device info
 - [ ] Descriptors
 
 ### OpenGL
 - [ ] General implementation
 
 ## Required packages
-
 - GLM
 - GLEW
 - Vulkan

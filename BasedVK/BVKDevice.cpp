@@ -386,7 +386,7 @@ void BVKDevice::createCommandsPool()
 
     if (vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool) != VK_SUCCESS)
     {
-        throw std::runtime_error("Failed to create comand pool!");
+        throw std::runtime_error("Failed to create command pool!");
     }
 }
 

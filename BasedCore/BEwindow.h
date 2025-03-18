@@ -33,6 +33,7 @@ class BEwindow
         bool shouldClose() { return glfwWindowShouldClose(window); }
         bool wasWindowResized() { return frameBufferResized; }
 
+        VkExtent2D getExtent() { return { static_cast<uint32_t>(width), static_cast<uint32_t>(height) }; }
         GLFWwindow* getWindow() { return window; }
 
         void createVkWindowSurface(VkInstance instance, VkSurfaceKHR* surface);

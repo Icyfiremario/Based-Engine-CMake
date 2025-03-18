@@ -43,7 +43,7 @@ class BVKDevice
         BVKDevice(BVKDevice &&) = delete;
         BVKDevice &operator=(BVKDevice &&) = delete;
 
-        VkCommandPool getCommandsPool() { return commandPool; }
+        VkCommandPool getCommandPool() { return commandPool; }
         VkDevice getDevice() { return device_; }
         VkSurfaceKHR getSurface() { return surface_; }
         VkQueue getGraphicsQueue() { return graphicsQueue_; }

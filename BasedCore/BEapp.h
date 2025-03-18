@@ -40,6 +40,7 @@ class BEapp
 
         std::unique_ptr<BEwindow> appWindow;
         std::unique_ptr<BVKDevice> appDevice;
+        std::unique_ptr<BVKRenderer> appRenderer;
         
         //BEwindow appWindow {800, 600, "BasedEngine", renderAPI};
         //BVKDevice appDevice {appWindow};

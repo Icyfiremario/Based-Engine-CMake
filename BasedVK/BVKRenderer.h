@@ -4,6 +4,7 @@
 #include <vector>
 #include <cassert>
 #include <memory>
+#include <iostream>
 
 // BasedCore
 #include "../BasedCore/BEwindow.h"
