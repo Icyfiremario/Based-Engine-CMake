@@ -1,7 +1,8 @@
 #include "BVKRenderer.h"
 
-BVKRenderer::BVKRenderer(BEwindow &window, BVKDevice &device) : renderDevice(device), window(window)
+BVKRenderer::BVKRenderer(BEwindow &window, BVKDevice &device) : window(window), renderDevice(device)
 {
+    createCommandBuffers();
 }
 
 BVKRenderer::~BVKRenderer()

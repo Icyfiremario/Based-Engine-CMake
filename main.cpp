@@ -14,11 +14,11 @@
 #include "BasedCore/BEapp.h"
 
 
-int main(void)
+int main()
 {
 	int exitCode = EXIT_SUCCESS;
 
-	BEapp app {800, 600, 10, "BasedEngine", BasedCore::OPENGL};
+	BEapp app {800, 600, 10, "BasedEngine", BasedCore::VULKAN};
 
 	try
 	{

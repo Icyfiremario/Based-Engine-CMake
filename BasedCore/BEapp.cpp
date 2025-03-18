@@ -1,6 +1,6 @@
 #include "BEapp.h"
 
-BEapp::BEapp(int width, int height, int maxFrameTime, const std::string name, int api) : width(width), height(height), maxFrameTime(maxFrameTime), name(name), renderAPI(api)
+BEapp::BEapp(int width, int height, int maxFrameTime, const std::string name, int api) : width(width), height(height), maxFrameTime(maxFrameTime), renderAPI(api), name(name)
 {
     switch (renderAPI)
     {
@@ -42,6 +42,11 @@ void BEapp::run()
 
             while (!appWindow.get()->shouldClose())
             {
+                if(glfwGetKey(appWindow.get()->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+                {
+                    glfwSetWindowShouldClose(appWindow.get()->getWindow(), GLFW_TRUE);
+                }
+
                 if(glfwGetKey(appWindow.get()->getWindow(), GLFW_KEY_F1) == GLFW_PRESS)
                 {
                     std::cout << "Switching to OpenGL." << std::endl;

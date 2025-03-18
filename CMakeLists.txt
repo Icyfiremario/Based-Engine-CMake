@@ -18,6 +18,9 @@ file(GLOB HDR "*.h" "*.hpp")
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra")
+set(CMAKE_CXX_FLAGS_RELEASE "-Wall -Wextra")
+
 # Include sub-projects.
 add_subdirectory(BasedCore)
 add_subdirectory(BasedGL)
@@ -44,10 +47,8 @@ add_dependencies(BasedEngine Shaders)
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   target_compile_options(BasedEngine PRIVATE -Wall -Wextra -g)
   target_compile_definitions(BasedEngine PRIVATE DEBUG=1)
-endif()
-
-if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-  target_compile_options(BasedEngine PRIVATE -g)
+elseif(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+  target_compile_options(BasedEngine PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
 if(DOXYGEN_FOUND)

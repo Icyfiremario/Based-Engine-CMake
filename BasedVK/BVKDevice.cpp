@@ -8,7 +8,7 @@
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 {
-#ifndef NDEBUG
+#ifdef DEBUG
 	std::cerr << "Validation layer: " << pCallbackData->pMessage << std::endl;
 #endif // !NDEBUG
 
@@ -363,6 +363,7 @@ void BVKDevice::createLogicalDevice()
     else
     {
         createInfo.enabledLayerCount = 0;
+        createInfo.ppEnabledLayerNames = nullptr;
     }
 
     if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device_) != VK_SUCCESS)

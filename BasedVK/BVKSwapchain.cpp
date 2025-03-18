@@ -25,7 +25,7 @@ BVKSwapchain::~BVKSwapchain()
         swapChain = nullptr;
     }
 
-    for (int i = 0; i < depthImages.size(); i++)
+    for (size_t i = 0; i < depthImages.size(); i++)
     {
         vkDestroyImageView(device.getDevice(), depthImageViews[i], nullptr);
         vkDestroyImage(device.getDevice(), depthImages[i], nullptr);
@@ -211,7 +211,7 @@ void BVKSwapchain::createDepthResources()
     depthImageMemorys.resize(imageCount());
     depthImageViews.resize(imageCount());
 
-    for (int i = 0; i < depthImages.size(); i++)
+    for (size_t i = 0; i < depthImages.size(); i++)
     {
         VkImageCreateInfo imageInfo{};
         imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -270,14 +270,96 @@ void BVKSwapchain::createRenderPass()
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+    VkAttachmentReference colorAttachmentRef = {};
+    colorAttachmentRef.attachment = 0;
+    colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+    VkSubpassDescription subpass = {};
+    subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+    subpass.colorAttachmentCount = 1;
+    subpass.pColorAttachments = &colorAttachmentRef;
+    subpass.pDepthStencilAttachment = &depthAttachmentRef;
+
+    VkSubpassDependency dependency = {};
+    dependency.dstSubpass = 0;
+    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    dependency.srcAccessMask = 0;
+    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+
+    std::array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
+
+    VkRenderPassCreateInfo renderPassInfo = {};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+    renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+    renderPassInfo.pAttachments = attachments.data();
+    renderPassInfo.subpassCount = 1;
+    renderPassInfo.pSubpasses = &subpass;
+    renderPassInfo.dependencyCount = 1;
+    renderPassInfo.pDependencies = &dependency;
+
+    if (vkCreateRenderPass(device.getDevice(), &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create render pass!");
+    }
 }
 
 void BVKSwapchain::createFramebuffers()
 {
+    swapChainFramebuffers.resize(imageCount());
+
+    for (size_t i = 0; i < imageCount(); i++)
+    {
+        std::array<VkImageView, 2> attachments = {
+            swapChainImageViews[i],
+            depthImageViews[i]
+        };
+
+        VkExtent2D swapChainExtent = getSwapChainExtent();
+
+        VkFramebufferCreateInfo framebufferInfo = {};
+        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferInfo.renderPass = renderPass;
+        framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+        framebufferInfo.pAttachments = attachments.data();
+        framebufferInfo.width = swapChainExtent.width;
+        framebufferInfo.height = swapChainExtent.height;
+        framebufferInfo.layers = 1;
+
+        if (vkCreateFramebuffer(device.getDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to create framebuffer!");
+        }
+    }
 }
 
 void BVKSwapchain::createSyncObjects()
 {
+    imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+    renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+    inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+    imagesInFlight.resize(imageCount(), VK_NULL_HANDLE);
+
+    VkSemaphoreCreateInfo semaphoreInfo = {};
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+    VkFenceCreateInfo fenceInfo = {};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+    {
+        if (vkCreateSemaphore(device.getDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) != VK_SUCCESS || vkCreateSemaphore(device.getDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) != VK_SUCCESS || vkCreateFence(device.getDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to create synchronization objects for a frame!");
+        }
+    }
 }
 
 void BVKSwapchain::init()
@@ -292,15 +374,54 @@ void BVKSwapchain::init()
 
 VkSurfaceFormatKHR BVKSwapchain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats)
 {
-    return VkSurfaceFormatKHR();
+    for (const auto& availableFormat : availableFormats)
+    {
+        if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+        {
+            return availableFormat;
+        }
+    }
+
+    return availableFormats[0];
 }
 
 VkPresentModeKHR BVKSwapchain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes)
 {
-    return VkPresentModeKHR();
+    for (const auto& availablePresentMode : availablePresentModes)
+    {
+        if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
+        {
+
+            if (logSwapChain)
+            {
+                std::cout << "Present mode: Mailbox" << std::endl;
+            }
+
+            return availablePresentMode;
+        }
+    }
+
+    if (logSwapChain)
+    {
+        std::cout << "Present mode: V-Sync" << std::endl;
+    }
+
+    return VK_PRESENT_MODE_FIFO_KHR;
 }
 
 VkExtent2D BVKSwapchain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities)
 {
-    return VkExtent2D();
+    if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
+    {
+        return capabilities.currentExtent;
+    }
+    else
+    {
+        VkExtent2D actualExtent = windowExtent;
+
+        actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
+        actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
+
+        return actualExtent;
+    }
 }
