@@ -55,6 +55,7 @@ void BEapp::run()
 #ifdef DEBUG
                     std::cout << "Switching to OpenGL." << std::endl;
 #endif
+                    vkDeviceWaitIdle(appDevice.get()->getDevice());
                     appWindow.get()->switchRenderAPI(BasedCore::OPENGL);
                     renderAPI = BasedCore::OPENGL;
                     run();

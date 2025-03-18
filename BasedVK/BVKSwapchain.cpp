@@ -75,8 +75,6 @@ VkResult BVKSwapchain::submitCommandBuffers(const VkCommandBuffer *buffers, uint
     VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
     VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 
-    std::cout << (sizeof(waitSemaphores) * sizeof(VkSemaphore)) << std::endl;
-
     submitInfo.waitSemaphoreCount = 1;
     submitInfo.pWaitSemaphores = waitSemaphores;
     submitInfo.pWaitDstStageMask = waitStages;
