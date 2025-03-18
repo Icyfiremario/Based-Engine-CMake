@@ -18,10 +18,10 @@ int main()
 {
 	int exitCode = EXIT_SUCCESS;
 
-	BEapp app {800, 600, 10, "BasedEngine", BasedCore::OPENGL};
-
 	try
 	{
+		BEapp app {800, 600, 10, "BasedEngine", BasedCore::VULKAN};
+
 		app.run();
 	}
 	catch(const std::exception& e)

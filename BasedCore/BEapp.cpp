@@ -35,8 +35,6 @@ void BEapp::run()
         -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // bottom left
          0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // top 
     };
-
-    //vertices[12] -= 0.5f;
     
     switch (renderAPI)
     {
@@ -63,7 +61,18 @@ void BEapp::run()
                 }
 
                 glfwPollEvents();
+
+                if (auto commandBuffer = appRenderer.get()->beginFrame())
+                {
+                    //int frameIndex = appRenderer.get()->getFrameIndex();
+
+                    appRenderer.get()->beginSwapchainRenderPass(commandBuffer);
+                    appRenderer.get()->endSwapchainRenderPass(commandBuffer);
+                    appRenderer.get()->endFrame();
+                }
             }
+
+            vkDeviceWaitIdle(appDevice.get()->getDevice());
             break;
         }
 

@@ -10,7 +10,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
 {
 #ifdef DEBUG
 	std::cerr << "Validation layer: " << pCallbackData->pMessage << std::endl;
-#endif // !NDEBUG
+#endif // DEBUG
 
 	return VK_FALSE;
 }

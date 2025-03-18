@@ -1,6 +1,6 @@
 #include "BEwindow.h"
 
-BEwindow::BEwindow(int w, int h, std::string title, int api) : width(w), height(h), windowName(title), renderAPI(api)
+BEwindow::BEwindow(int w, int h, std::string title, int api) : width(w), height(h), renderAPI(api), windowName(title)
 {
     initWindow();
 }
