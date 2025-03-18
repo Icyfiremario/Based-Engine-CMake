@@ -17,14 +17,17 @@ BEapp::BEapp(int width, int height, int maxFrameTime, const std::string name, in
 
 BEapp::~BEapp()
 {
+    
+    appRenderer.reset();
     appDevice.reset();
     appWindow.reset();
 }
 
 void BEapp::run()
 {
-    appDevice.reset();
+    
     appRenderer.reset();
+    appDevice.reset();
 
     float vertices[] = {
         // positions         // colors
@@ -51,7 +54,9 @@ void BEapp::run()
 
                 if(glfwGetKey(appWindow.get()->getWindow(), GLFW_KEY_F1) == GLFW_PRESS)
                 {
+#ifdef DEBUG
                     std::cout << "Switching to OpenGL." << std::endl;
+#endif
                     appWindow.get()->switchRenderAPI(BasedCore::OPENGL);
                     renderAPI = BasedCore::OPENGL;
                     run();
@@ -91,7 +96,9 @@ void BEapp::run()
 
                 if(glfwGetKey(appWindow.get()->getWindow(), GLFW_KEY_F1) == GLFW_PRESS)
                 {
+#ifdef DEBUG
                     std::cout << "Switching to Vulkan." << std::endl;
+#endif
                     appWindow.get()->switchRenderAPI(BasedCore::VULKAN);
                     renderAPI = BasedCore::VULKAN;
                     run();
@@ -107,10 +114,8 @@ void BEapp::run()
                 glfwPollEvents();
                 glfwSwapBuffers(appWindow.get()->getWindow());
 
-                if (vertices[12] > -.5f)
-                {
-                    vertices[12] -= .001f;
-                }
+                float offset = sin(glfwGetTime()) * 0.0021f;
+                vertices[12] += offset;
 
                 shader.setFloat("u_time", glfwGetTime());
 
