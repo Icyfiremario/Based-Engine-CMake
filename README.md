@@ -18,7 +18,7 @@ Apple support is not planned and likely not going to happen.
 
 ## To Do
 ### Core
-- [ ] Window resizing
+- [x] Window resizing
 - [x] Rendering API binding
 
 ### Vulkan
