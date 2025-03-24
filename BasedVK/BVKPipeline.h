@@ -3,6 +3,10 @@
 // STD
 #include <string>
 #include <vector>
+#include <fstream>
+#include <iostream>
+#include <stdexcept>
+#include <cassert>
 
 // BasedVK
 #include "BVKDevice.h"
