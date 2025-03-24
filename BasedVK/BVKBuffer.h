@@ -44,7 +44,7 @@ class BVKBuffer
 
         void* mapped = nullptr;
         VkBuffer buffer = VK_NULL_HANDLE;
-        VkDeviceMemory bufferMemory = VK_NULL_HANDLE;
+        VkDeviceMemory memory = VK_NULL_HANDLE;
 
         VkDeviceSize bufferSize;
         uint32_t instanceCount;
@@ -54,4 +54,4 @@ class BVKBuffer
         VkMemoryPropertyFlags memoryPropertyFlags;
 
         static VkDeviceSize getAlignment(VkDeviceSize instanceSize, VkDeviceSize minOffsetAlignment);
-}
+};

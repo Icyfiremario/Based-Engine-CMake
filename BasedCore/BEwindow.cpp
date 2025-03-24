@@ -57,6 +57,7 @@ void BEwindow::initWindow()
                 throw std::runtime_error("Failed to initialize GLEW");
             }
             glViewport(0, 0, width, height);
+            glfwSetFramebufferSizeCallback(window, glFrameBufferResizeCallback);
             break;
         }
     
@@ -73,4 +74,9 @@ void BEwindow::vkFrameBufferResizeCallback(GLFWwindow *window, int width, int he
     appWindow->frameBufferResized = true;
     appWindow->width = width;
     appWindow->height = height;
+}
+
+void BEwindow::glFrameBufferResizeCallback(GLFWwindow *window, int width, int height)
+{
+    glViewport(0, 0, width, height);
 }

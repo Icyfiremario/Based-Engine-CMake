@@ -16,6 +16,8 @@
 
 // BasedVK
 #include "BVKDevice.h"
+#include "BVKUtils.h"
+#include "BVKBuffer.h"
 
 class BVKModel
 {};

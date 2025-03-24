@@ -54,5 +54,6 @@ class BEwindow
         void initWindow();
 
         static void vkFrameBufferResizeCallback(GLFWwindow* window, int width, int height);
+        static void glFrameBufferResizeCallback(GLFWwindow* window, int width, int height);
         
 };

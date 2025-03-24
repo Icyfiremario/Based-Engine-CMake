@@ -124,8 +124,8 @@ void BEapp::run()
                 glfwPollEvents();
                 glfwSwapBuffers(appWindow.get()->getWindow());
 
-                float offset = sin(glfwGetTime()) * 0.0021f;
-                vertices[12] += offset;
+                float offset = sin(glfwGetTime()) / 2.0f;
+                vertices[12] = offset; // Sets x position of top vertex
 
                 shader.setFloat("u_time", glfwGetTime());
 
