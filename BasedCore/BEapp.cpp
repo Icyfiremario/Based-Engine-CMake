@@ -12,7 +12,26 @@ BEapp::BEapp(int width, int height, int maxFrameTime, const std::string name, in
             throw std::runtime_error("Invalid render API");
     }
 
-    appWindow = std::make_unique<BEwindow>(appWidth, appHeight, "BasedEngine", renderAPI);
+    appWindow = std::make_unique<BEwindow>(appWidth, appHeight, name, renderAPI);
+}
+
+BEapp::BEapp(BasedCore::Config config, const std::string name, int maxFrameTime) : maxFrameTime(maxFrameTime), name(name)
+{
+    appWidth = config.width;
+    appHeight = config.height;
+    renderAPI = config.renderAPI;
+
+    switch (renderAPI)
+    {
+        case BasedCore::VULKAN:
+        case BasedCore::OPENGL:
+            break;
+    
+        default:
+            throw std::runtime_error("Invalid render API");
+    }
+
+    appWindow = std::make_unique<BEwindow>(appWidth, appHeight, name, renderAPI);
 }
 
 BEapp::~BEapp()

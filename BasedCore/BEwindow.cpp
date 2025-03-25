@@ -76,7 +76,7 @@ void BEwindow::vkFrameBufferResizeCallback(GLFWwindow *window, int width, int he
     appWindow->height = height;
 }
 
-void BEwindow::glFrameBufferResizeCallback(GLFWwindow *window, int width, int height)
+void BEwindow::glFrameBufferResizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }

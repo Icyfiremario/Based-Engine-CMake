@@ -8,6 +8,7 @@
 // BasedCore
 #include "BEwindow.h"
 #include "BEenums.h"
+#include "BasedConfig.h"
 
 // BasedVK
 #include "../BasedVK/BVKDevice.h"
@@ -28,6 +29,14 @@ class BEapp
         /// @param name Window title
         /// @param api Rendering API
         BEapp(int width, int height, int maxFrameTime, const std::string name, int api);
+
+        /// @brief Initializes app from config
+        /// @param config Information loaded from config file
+        /// @param name Window title
+        /// @param maxFrameTime max frame time in ms
+        BEapp(BasedCore::Config config, const std::string name, int maxFrameTime);
+
+        /// @brief Destructor
         ~BEapp();
 
         /// @brief Begins app execution
