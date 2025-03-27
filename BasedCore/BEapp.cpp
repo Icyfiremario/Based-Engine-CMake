@@ -62,6 +62,8 @@ void BEapp::run()
             appDevice = std::make_unique<BVKDevice>(*appWindow.get());
             appRenderer = std::make_unique<BVKRenderer>(*appWindow.get(), *appDevice.get());
 
+            BVKRenderSystem renderSystem{ *appDevice.get(), appRenderer->getRenderPass(), nullptr };
+
             while (!appWindow.get()->shouldClose())
             {
                 if(glfwGetKey(appWindow.get()->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)

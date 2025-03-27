@@ -30,15 +30,15 @@ class BVKRenderSystem
         BVKRenderSystem(const BVKRenderSystem&) = delete;
         BVKRenderSystem& operator=(const BVKRenderSystem&) = delete;
 
-        void renderGameObjects(FrameInfo& frameInfo, std::vector<void>& gameObjects, BECamera& camera);
+        void renderGameObjects(FrameInfo& frameInfo, std::vector<BVKObject>& gameObjects, BECamera& camera);
 
     private:
 
-    BVKDevice& rSysDevice;
-
-    std::unique_ptr<BVKPipeline> rSysPipeline;
-    VkPipelineLayout rSysPipelineLayout;
-
-    void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
-    void createPipeline(VkRenderPass renderPass);
+        BVKDevice& rSysDevice;
+    
+        std::unique_ptr<BVKPipeline> rSysPipeline;
+        VkPipelineLayout rSysPipelineLayout;
+    
+        void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
+        void createPipeline(VkRenderPass renderPass);
 };

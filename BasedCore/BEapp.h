@@ -13,6 +13,7 @@
 // BasedVK
 #include "../BasedVK/BVKDevice.h"
 #include "../BasedVK/BVKRenderer.h"
+#include "../BasedVK/BVKRenderSystem.h"
 
 // BasedGL
 #include "../BasedGL/BGLShader.h"

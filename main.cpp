@@ -83,8 +83,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	return RegisterClassExW(&wcex);
 }
 #else
-// Unix main
-
 int main()
 {
 	int exitCode = EXIT_SUCCESS;
