@@ -9,7 +9,8 @@
 // OpenGL
 #include <GL/glew.h>
 
-/// @brief BasedGL shader class
+/// @brief OpenGL shader class
+/// @todo Rewrite to load pre-compiled spv rather than shader source
 class BGLShader
 {
     public:

@@ -20,12 +20,13 @@ Apple support is not planned and likely not going to happen.
 ### Core
 - [x] Window resizing
 - [x] Rendering API binding
+- [ ] Add Plog for logging
 
 ### Vulkan
 - [x] Swapchain
-- [ ] Pipeline
-- [ ] Shaders
-- [ ] Models
+- [x] Pipeline
+- [x] Shaders [^2]
+- [x] Models
 - [x] Device info
 - [ ] Descriptors
 
@@ -43,7 +44,7 @@ Apple support is not planned and likely not going to happen.
 - CMake
 - GLSLC
 - GLFW3
-- Tiny object loader [^2]
+- Tiny object loader [^3]
 
 ## Supported compilers
 ### Windows
@@ -56,4 +57,6 @@ Apple support is not planned and likely not going to happen.
 
 [^1]: This requires using windows.h and doing window management that way. I am unfamillar and it would require weird cmake stuff. I do plan to add this but it will be way down the line. I may end up just using DirectX translation layers if I cannot figure out how to bind OpenGL and Vulkan to windows.h windows.
 
-[^2]: This package supports loading wavefront object models. I will replace this in the future with a in-house model loader in order to support more model formats. If using you are using MSVC models may need to be renamed to .wobj in order to prevent MSVC from trying to link them into the program. IDK for sure though because I haven't got compiling with MSVC to work yet.
+[^2]: Shaders are loaded into the pipeline and used but there is currently no way to add custom shaders and add them to the rendering pipeline.
+
+[^3]: This package supports loading wavefront object models. I will replace this in the future with a in-house model loader in order to support more model formats. If using you are using MSVC models may need to be renamed to .wobj in order to prevent MSVC from trying to link them into the program. IDK for sure though because I haven't got compiling with MSVC to work yet.
