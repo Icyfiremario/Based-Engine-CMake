@@ -47,7 +47,64 @@ class BVKDescriptorSetLayout
 };
 
 class BVKDescriptorPool
-{};
+{
+    public:
+
+        class Builder
+        {
+            public:
+
+                Builder(BVKDevice& device) : builderDevice{device} {}
+
+                Builder& addPoolSize(VkDescriptorType descriptorType, uint32_t count);
+                Builder& setPoolFlags(VkDescriptorPoolCreateFlags flags);
+                Builder& setMaxSets(uint32_t count);
+
+                std::unique_ptr<BVKDescriptorPool> build() const;
+
+            private:
+
+                BVKDevice& builderDevice;
+                std::vector<VkDescriptorPoolSize> poolSizes{};
+                uint32_t maxSets = 1000;
+                VkDescriptorPoolCreateFlags poolFlags = 0;
+        };
+
+        BVKDescriptorPool(BVKDevice& device, uint32_t maxSets, VkDescriptorPoolCreateFlags poolFlags, const std::vector<VkDescriptorPoolSize>& poolSizes);
+        ~BVKDescriptorPool();
+
+        BVKDescriptorPool(const BVKDescriptorPool&) = delete;
+        BVKDescriptorPool& operator=(const BVKDescriptorPool&) = delete;
+
+        bool allocateDescriptor(const VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet& descriptor) const;
+
+        void freeDescriptors(std::vector<VkDescriptorSet>& descriptors) const;
+
+        void resetPool() const;
+
+    private:
+
+        BVKDevice& desPoolDevice;
+        VkDescriptorPool descriptorPool;
+
+        friend class BVKDescriptorWriter;
+};
 
 class BVKDescriptorWriter
-{};
+{
+    public:
+
+        BVKDescriptorWriter(BVKDescriptorSetLayout& setLayout, BVKDescriptorPool& pool);
+
+        BVKDescriptorWriter& writeBuffer(uint32_t binding, VkDescriptorBufferInfo* bufferInfo);
+        BVKDescriptorWriter& writeImage(uint32_t binding, VkDescriptorImageInfo* imageInfo);
+
+        bool build(VkDescriptorSet& set);
+        void overwrite(VkDescriptorSet& set);
+    
+    private:
+
+        BVKDescriptorSetLayout& setLayout;
+        BVKDescriptorPool& pool;
+        std::vector<VkWriteDescriptorSet> writes;
+};

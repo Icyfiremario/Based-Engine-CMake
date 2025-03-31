@@ -1,5 +1,12 @@
 #include "BEapp.h"
 
+/// @brief Temp light direction def
+struct GlobalUbo
+{
+    glm::mat4 projectionView{ 1.f };
+    glm::vec3 lightDirection = glm::normalize(glm::vec3(1.f, -3.f, -1.f));
+};
+
 BEapp::BEapp(int width, int height, int maxFrameTime, const std::string name, int api) : appWidth(width), appHeight(height), maxFrameTime(maxFrameTime), renderAPI(api), name(name)
 {
     switch (renderAPI)
@@ -62,8 +69,10 @@ void BEapp::run()
             appDevice = std::make_unique<BVKDevice>(*appWindow.get());
             appRenderer = std::make_unique<BVKRenderer>(*appWindow.get(), *appDevice.get());
 
-            BVKRenderSystem renderSystem{ *appDevice.get(), appRenderer->getRenderPass(), nullptr };
+            //BVKRenderSystem renderSystem{ *appDevice.get(), appRenderer->getRenderPass(), nullptr };
 
+            auto currentTime = std::chrono::high_resolution_clock::now();
+            
             while (!appWindow.get()->shouldClose())
             {
                 if(glfwGetKey(appWindow.get()->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -83,6 +92,12 @@ void BEapp::run()
                 }
 
                 glfwPollEvents();
+
+                auto newTime = std::chrono::high_resolution_clock::now();
+                float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+                currentTime = newTime;
+
+                frameTime = fmin(frameTime, maxFrameTime);
 
                 if (auto commandBuffer = appRenderer.get()->beginFrame())
                 {
@@ -109,7 +124,7 @@ void BEapp::run()
             glBindVertexArray(VAO);
 
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
 
             // position attribute
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);

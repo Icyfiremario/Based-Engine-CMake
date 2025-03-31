@@ -6,9 +6,13 @@
 
 namespace std
 {
+    /// @brief Hashing function for BVKModel vertexes
     template<>
     struct hash<BVKModel::Vertex>
     {
+        /// @brief Creates hash of vertex
+        /// @param vertex 
+        /// @return vertex seed
         size_t operator()(const BVKModel::Vertex& vertex) const
         {
             size_t seed = 0;
