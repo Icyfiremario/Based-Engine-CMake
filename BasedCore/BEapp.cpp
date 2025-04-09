@@ -69,7 +69,24 @@ void BEapp::run()
             appDevice = std::make_unique<BVKDevice>(*appWindow.get());
             appRenderer = std::make_unique<BVKRenderer>(*appWindow.get(), *appDevice.get());
 
-            //BVKRenderSystem renderSystem{ *appDevice.get(), appRenderer->getRenderPass(), nullptr };
+            std::vector<std::unique_ptr<BVKBuffer>> uboBuffers(BVKSwapchain::MAX_FRAMES_IN_FLIGHT);
+
+            for (int i = 0; i < uboBuffers.size(); i++)
+            {
+                uboBuffers[i] = std::make_unique<BVKBuffer>(*appDevice.get(), sizeof(GlobalUbo), 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+                uboBuffers[i]->map();
+            }
+
+            auto globalSetLayout = BVKDescriptorSetLayout::Builder(*appDevice.get()).addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL).build();
+
+            std::vector<VkDescriptorSet> globalDescriptorSets(BVKSwapchain::MAX_FRAMES_IN_FLIGHT);
+            for (int i = 0; globalDescriptorSets.size(); i++)
+            {
+                auto bufferInfo = uboBuffers[i]->descriptorInfo();
+                BVKDescriptorWriter(*globalSetLayout, *globalPool).writeBuffer(0, &bufferInfo).build(globalDescriptorSets[i]);
+            }
+
+            BVKRenderSystem renderSystem{ *appDevice.get(), appRenderer->getRenderPass(), globalSetLayout->getDescriptorSetLayout() };
 
             auto currentTime = std::chrono::high_resolution_clock::now();
             
@@ -101,7 +118,13 @@ void BEapp::run()
 
                 if (auto commandBuffer = appRenderer.get()->beginFrame())
                 {
-                    //int frameIndex = appRenderer.get()->getFrameIndex();
+                    int frameIndex = appRenderer.get()->getFrameIndex();
+                    //FrameInfo frameInfo{ frameIndex, frameTime, commandBuffer, , globalDescriptorSets[frameIndex]};
+
+                    GlobalUbo ubo{};
+                    ubo.projectionView = 0;
+                    uboBuffers[frameIndex]->writeToBuffer(&ubo);
+                    uboBuffers[frameIndex]->flush();
 
                     appRenderer.get()->beginSwapchainRenderPass(commandBuffer);
                     appRenderer.get()->endSwapchainRenderPass(commandBuffer);

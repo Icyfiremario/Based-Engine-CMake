@@ -14,6 +14,7 @@
 #include "../BasedVK/BVKDevice.h"
 #include "../BasedVK/BVKRenderer.h"
 #include "../BasedVK/BVKRenderSystem.h"
+#include "../BasedVK/BVKDescriptors.h"
 
 // BasedGL
 #include "../BasedGL/BGLShader.h"
@@ -52,8 +53,5 @@ class BEapp
         std::unique_ptr<BVKDevice> appDevice;
         std::unique_ptr<BVKRenderer> appRenderer;
         
-        //BEwindow appWindow {800, 600, "BasedEngine", renderAPI};
-        //BVKDevice appDevice {appWindow};
-        //BVKRenderer appRenderer {appWindow, appDevice};
-
+        std::unique_ptr<BVKDescriptorPool> globalPool;
 };

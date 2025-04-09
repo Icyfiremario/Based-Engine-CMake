@@ -112,4 +112,68 @@ void BVKDescriptorPool::freeDescriptors(std::vector<VkDescriptorSet> &descriptor
 
 void BVKDescriptorPool::resetPool() const
 {
+    vkResetDescriptorPool(desPoolDevice.getDevice(), descriptorPool, 0);
+}
+
+BVKDescriptorWriter::BVKDescriptorWriter(BVKDescriptorSetLayout &setLayout, BVKDescriptorPool &pool) : setLayout{setLayout}, pool{pool}
+{
+}
+
+BVKDescriptorWriter &BVKDescriptorWriter::writeBuffer(uint32_t binding, VkDescriptorBufferInfo *bufferInfo)
+{
+    assert(setLayout.bindings.count(binding) == 1 && "Layout does not contain specified binding!");
+
+    auto& bindingDescription = setLayout.bindings[binding];
+
+    assert(bindingDescription.descriptorCount == 1 && "Binding single descriptor info when binding expect multiple!");
+
+    VkWriteDescriptorSet write{};
+    write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    write.descriptorType = bindingDescription.descriptorType;
+    write.dstBinding = binding;
+    write.pBufferInfo = bufferInfo;
+    write.descriptorCount = 1;
+
+    writes.push_back(write);
+    return *this;
+}
+
+BVKDescriptorWriter &BVKDescriptorWriter::writeImage(uint32_t binding, VkDescriptorImageInfo *imageInfo)
+{
+    assert(setLayout.bindings.count(binding) == 1 && "Layout does not contain specified binding!");
+
+    auto& bindingDescription = setLayout.bindings[binding];
+
+    assert(bindingDescription.descriptorCount == 1 && "Binding single descriptor info when binding expect multiple!");
+
+    VkWriteDescriptorSet write{};
+    write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    write.descriptorType = bindingDescription.descriptorType;
+    write.dstBinding = binding;
+    write.pImageInfo = imageInfo;
+    write.descriptorCount = 1;
+
+    writes.push_back(write);
+    return *this;
+}
+
+bool BVKDescriptorWriter::build(VkDescriptorSet &set)
+{
+    bool success = pool.allocateDescriptor(setLayout.getDescriptorSetLayout(), set);
+    if (!success)
+    {
+        return false;
+    }
+    overwrite(set);
+    return true;
+}
+
+void BVKDescriptorWriter::overwrite(VkDescriptorSet &set)
+{
+    for (auto& write : writes)
+    {
+        write.dstSet = set;
+    }
+
+    vkUpdateDescriptorSets(pool.desPoolDevice.getDevice(), writes.size(), writes.data(), 0, nullptr);
 }

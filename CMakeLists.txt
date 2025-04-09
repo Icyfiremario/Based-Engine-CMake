@@ -18,7 +18,7 @@ file(GLOB HDR "*.h" "*.hpp")
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -DDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -Wpedantic -DDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "-Wall -Wextra")
 
 # Include sub-projects.
