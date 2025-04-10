@@ -106,6 +106,7 @@ void BEapp::run()
 #endif
                     uboBuffers.clear();
                     globalSetLayout.reset();
+                    renderSystem.~BVKRenderSystem();
                     vkDeviceWaitIdle(appDevice.get()->getDevice());
                     appWindow.get()->switchRenderAPI(BasedCore::OPENGL);
                     renderAPI = BasedCore::OPENGL;
