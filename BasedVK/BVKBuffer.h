@@ -2,6 +2,7 @@
 
 // STD
 #include <cassert>
+#include <cstring>
 
 // BasedVK
 #include "BVKDevice.h"

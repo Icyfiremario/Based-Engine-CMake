@@ -117,6 +117,7 @@ void BVKDescriptorPool::resetPool() const
 
 BVKDescriptorWriter::BVKDescriptorWriter(BVKDescriptorSetLayout &setLayout, BVKDescriptorPool &pool) : setLayout{setLayout}, pool{pool}
 {
+
 }
 
 BVKDescriptorWriter &BVKDescriptorWriter::writeBuffer(uint32_t binding, VkDescriptorBufferInfo *bufferInfo)

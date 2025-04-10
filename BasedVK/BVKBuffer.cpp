@@ -58,7 +58,11 @@ VkResult BVKBuffer::flush(VkDeviceSize size, VkDeviceSize offset)
 
 VkDescriptorBufferInfo BVKBuffer::descriptorInfo(VkDeviceSize size, VkDeviceSize offset)
 {
-    return VkDescriptorBufferInfo{buffer, offset, size};
+    VkDescriptorBufferInfo bufferInfo{};
+    bufferInfo.buffer = buffer;
+    bufferInfo.offset = offset;
+    bufferInfo.range = size;
+    return bufferInfo;
 }
 
 VkResult BVKBuffer::invalidate(VkDeviceSize size, VkDeviceSize offset)

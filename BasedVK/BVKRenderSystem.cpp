@@ -14,6 +14,7 @@ BVKRenderSystem::BVKRenderSystem(BVKDevice &device, VkRenderPass renderPass, VkD
 
 BVKRenderSystem::~BVKRenderSystem()
 {
+    vkDestroyPipelineLayout(rSysDevice.getDevice(), rSysPipelineLayout, nullptr);
 }
 
 void BVKRenderSystem::renderGameObjects(FrameInfo &frameInfo, std::vector<BVKObject> &gameObjects)

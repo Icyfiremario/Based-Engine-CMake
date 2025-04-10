@@ -43,7 +43,7 @@ BEapp::BEapp(BasedCore::Config config, const std::string name, int maxFrameTime)
 
 BEapp::~BEapp()
 {
-    
+    globalPool.reset();
     appRenderer.reset();
     appDevice.reset();
     appWindow.reset();
@@ -51,7 +51,7 @@ BEapp::~BEapp()
 
 void BEapp::run()
 {
-    
+    globalPool.reset();
     appRenderer.reset();
     appDevice.reset();
 
@@ -69,6 +69,8 @@ void BEapp::run()
             appDevice = std::make_unique<BVKDevice>(*appWindow.get());
             appRenderer = std::make_unique<BVKRenderer>(*appWindow.get(), *appDevice.get());
 
+            globalPool = BVKDescriptorPool::Builder(*appDevice.get()).setMaxSets(BVKSwapchain::MAX_FRAMES_IN_FLIGHT).addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, BVKSwapchain::MAX_FRAMES_IN_FLIGHT).build();
+
             std::vector<std::unique_ptr<BVKBuffer>> uboBuffers(BVKSwapchain::MAX_FRAMES_IN_FLIGHT);
 
             for (size_t i = 0; i < uboBuffers.size(); i++)
@@ -80,7 +82,7 @@ void BEapp::run()
             auto globalSetLayout = BVKDescriptorSetLayout::Builder(*appDevice.get()).addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL).build();
 
             std::vector<VkDescriptorSet> globalDescriptorSets(BVKSwapchain::MAX_FRAMES_IN_FLIGHT);
-            for (int i = 0; globalDescriptorSets.size(); i++)
+            for (size_t i = 0; i < globalDescriptorSets.size(); i++)
             {
                 auto bufferInfo = uboBuffers[i]->descriptorInfo();
                 BVKDescriptorWriter(*globalSetLayout, *globalPool).writeBuffer(0, &bufferInfo).build(globalDescriptorSets[i]);
@@ -102,6 +104,8 @@ void BEapp::run()
 #ifdef DEBUG
                     std::cout << "Switching to OpenGL." << std::endl;
 #endif
+                    uboBuffers.clear();
+                    globalSetLayout.reset();
                     vkDeviceWaitIdle(appDevice.get()->getDevice());
                     appWindow.get()->switchRenderAPI(BasedCore::OPENGL);
                     renderAPI = BasedCore::OPENGL;
@@ -122,7 +126,7 @@ void BEapp::run()
                     //FrameInfo frameInfo{ frameIndex, frameTime, commandBuffer, , globalDescriptorSets[frameIndex]};
 
                     GlobalUbo ubo{};
-                    ubo.projectionView = 0;
+                    ubo.projectionView = glm::mat4(0.f);
                     uboBuffers[frameIndex]->writeToBuffer(&ubo);
                     uboBuffers[frameIndex]->flush();
 
