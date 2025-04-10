@@ -16,7 +16,7 @@ BVKRenderSystem::~BVKRenderSystem()
 {
 }
 
-void BVKRenderSystem::renderGameObjects(FrameInfo &frameInfo, std::vector<BVKObject> &gameObjects, BECamera &camera)
+void BVKRenderSystem::renderGameObjects(FrameInfo &frameInfo, std::vector<BVKObject> &gameObjects)
 {
     rSysPipeline->bind(frameInfo.commandBuffer);
 
