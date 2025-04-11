@@ -108,13 +108,14 @@ void BEapp::run()
 #ifdef DEBUG
                     std::cout << "Switching to OpenGL." << std::endl;
 #endif
+                    vkDeviceWaitIdle(appDevice.get()->getDevice());
+
                     // Delete all data off the GPU. 
                     uboBuffers.clear();
                     globalSetLayout.reset();
                     viewerObject.~BVKObject();
                     renderSystem.~BVKRenderSystem();
 
-                    vkDeviceWaitIdle(appDevice.get()->getDevice());
                     destroyVulkanObjects();
                     appWindow.get()->switchRenderAPI(BasedCore::OPENGL);
                     renderAPI = BasedCore::OPENGL;
