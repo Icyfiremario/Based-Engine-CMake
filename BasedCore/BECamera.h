@@ -9,6 +9,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
+/// @brief Camera class to handle projection and view matrices.
 class BECamera
 {
     public:

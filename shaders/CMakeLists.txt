@@ -20,7 +20,7 @@ foreach(SHADER ${VK_SHADERS})
     list(APPEND COMPILED_VK_SHADERS ${OUTPUT_SHADER})
 endforeach(SHADER ${VK_SHADERS})
 
-set(COPYIED_GL_SHADERS)
+set(COPIED_GL_SHADERS)
 set(GL_SHADER_LOCATION "${CMAKE_BINARY_DIR}/gl_shaders")
 
 foreach(SHADER ${GL_SHADERS})
@@ -35,8 +35,8 @@ foreach(SHADER ${GL_SHADERS})
         VERBATIM
     )
 
-    list(APPEND COPYIED_GL_SHADERS ${COPY_OUTPUT})
+    list(APPEND COPIED_GL_SHADERS ${COPY_OUTPUT})
 endforeach(SHADER ${GL_SHADERS})
 
-add_custom_target(CopyGLShaders DEPENDS ${COPYIED_GL_SHADERS})
+add_custom_target(CopyGLShaders DEPENDS ${COPIED_GL_SHADERS})
 add_custom_target(Shaders DEPENDS ${COMPILED_VK_SHADERS} CopyGLShaders)

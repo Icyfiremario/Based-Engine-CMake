@@ -29,6 +29,7 @@ if (WIN32)
   #add_subdirectory(BasedDX)
 endif()
 add_subdirectory(shaders)
+add_subdirectory(models)
 
 
 # find libraries
@@ -42,7 +43,7 @@ find_package(Doxygen)
 # Add source to this project's executable.
 add_executable(BasedEngine ${SRC} ${HDR})
 target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm ${GLEW_LIBRARIES})
-add_dependencies(BasedEngine Shaders)
+#add_dependencies(BasedEngine Shaders CopyModels)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   target_compile_options(BasedEngine PRIVATE -Wall -Wextra -g)

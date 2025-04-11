@@ -9,6 +9,7 @@
 // BasedVK
 #include "BVKDevice.h"
 
+/// @brief Descriptor layout
 class BVKDescriptorSetLayout
 {
     public:
@@ -46,6 +47,7 @@ class BVKDescriptorSetLayout
         friend class BVKDescriptorWriter;
 };
 
+/// @brief Descriptor pool
 class BVKDescriptorPool
 {
     public:
@@ -90,6 +92,7 @@ class BVKDescriptorPool
         friend class BVKDescriptorWriter;
 };
 
+/// @brief Descriptor writer
 class BVKDescriptorWriter
 {
     public:

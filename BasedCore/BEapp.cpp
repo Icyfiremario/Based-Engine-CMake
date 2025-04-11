@@ -3,7 +3,9 @@
 /// @brief Temp light direction def
 struct GlobalUbo
 {
+    /// @brief projection view
     glm::mat4 projectionView{ 1.f };
+    /// @brief Light direction
     glm::vec3 lightDirection = glm::normalize(glm::vec3(1.f, -3.f, -1.f));
 };
 
@@ -104,9 +106,11 @@ void BEapp::run()
 #ifdef DEBUG
                     std::cout << "Switching to OpenGL." << std::endl;
 #endif
+                    // Delete all data off the GPU. 
                     uboBuffers.clear();
                     globalSetLayout.reset();
                     renderSystem.~BVKRenderSystem();
+
                     vkDeviceWaitIdle(appDevice.get()->getDevice());
                     appWindow.get()->switchRenderAPI(BasedCore::OPENGL);
                     renderAPI = BasedCore::OPENGL;
