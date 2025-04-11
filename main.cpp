@@ -11,7 +11,7 @@
 #include <iostream>
 
 // Plog
-#include <plog/Log.h>
+//#include <plog/Log.h>
 
 // BasedCore
 #include "BasedCore/BEapp.h"

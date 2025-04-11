@@ -10,6 +10,7 @@
 #include "BEwindow.h"
 #include "BEenums.h"
 #include "BasedConfig.h"
+#include "BECamera.h"
 
 // BasedVK
 #include "../BasedVK/BVKDevice.h"
@@ -55,4 +56,14 @@ class BEapp
         std::unique_ptr<BVKRenderer> appRenderer;
         
         std::unique_ptr<BVKDescriptorPool> globalPool;
+
+        std::vector<BVKObject> appVulkanObjects;
+
+        void initVulkanObjects();
+        void destroyVulkanObjects();
+
+        void initOpenGLObjects();
+        void destroyOpenGLObjects();
+
+        void loadVulkanAppObjects();
 };

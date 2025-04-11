@@ -68,10 +68,7 @@ void BEapp::run()
     {
         case BasedCore::VULKAN:
         {
-            appDevice = std::make_unique<BVKDevice>(*appWindow.get());
-            appRenderer = std::make_unique<BVKRenderer>(*appWindow.get(), *appDevice.get());
-
-            globalPool = BVKDescriptorPool::Builder(*appDevice.get()).setMaxSets(BVKSwapchain::MAX_FRAMES_IN_FLIGHT).addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, BVKSwapchain::MAX_FRAMES_IN_FLIGHT).build();
+            initVulkanObjects();
 
             std::vector<std::unique_ptr<BVKBuffer>> uboBuffers(BVKSwapchain::MAX_FRAMES_IN_FLIGHT);
 
@@ -92,6 +89,11 @@ void BEapp::run()
 
             BVKRenderSystem renderSystem{ *appDevice.get(), appRenderer->getRenderPass(), globalSetLayout->getDescriptorSetLayout() };
 
+            BECamera camera{};
+            camera.setViewTarget(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
+
+            auto viewerObject = BVKObject::createGameObject();
+
             auto currentTime = std::chrono::high_resolution_clock::now();
             
             while (!appWindow.get()->shouldClose())
@@ -109,9 +111,11 @@ void BEapp::run()
                     // Delete all data off the GPU. 
                     uboBuffers.clear();
                     globalSetLayout.reset();
+                    viewerObject.~BVKObject();
                     renderSystem.~BVKRenderSystem();
 
                     vkDeviceWaitIdle(appDevice.get()->getDevice());
+                    destroyVulkanObjects();
                     appWindow.get()->switchRenderAPI(BasedCore::OPENGL);
                     renderAPI = BasedCore::OPENGL;
                     run();
@@ -125,17 +129,23 @@ void BEapp::run()
 
                 frameTime = fmin(frameTime, maxFrameTime);
 
+                camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
+
+                float aspect = appRenderer.get()->getAspectRatio();
+                camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
+
                 if (auto commandBuffer = appRenderer.get()->beginFrame())
                 {
                     int frameIndex = appRenderer.get()->getFrameIndex();
-                    //FrameInfo frameInfo{ frameIndex, frameTime, commandBuffer, , globalDescriptorSets[frameIndex]};
+                    FrameInfo frameInfo{ frameIndex, frameTime, commandBuffer, camera, globalDescriptorSets[frameIndex]};
 
                     GlobalUbo ubo{};
-                    ubo.projectionView = glm::mat4(0.f);
+                    ubo.projectionView = camera.getProjection() * camera.getView();
                     uboBuffers[frameIndex]->writeToBuffer(&ubo);
                     uboBuffers[frameIndex]->flush();
 
                     appRenderer.get()->beginSwapchainRenderPass(commandBuffer);
+                    renderSystem.renderGameObjects(frameInfo, appVulkanObjects);
                     appRenderer.get()->endSwapchainRenderPass(commandBuffer);
                     appRenderer.get()->endFrame();
                 }
@@ -207,4 +217,34 @@ void BEapp::run()
             throw std::runtime_error("Invalid render API");
     }
     
+}
+
+void BEapp::initVulkanObjects()
+{
+    appDevice = std::make_unique<BVKDevice>(*appWindow.get());
+    appRenderer = std::make_unique<BVKRenderer>(*appWindow.get(), *appDevice.get());
+    globalPool = BVKDescriptorPool::Builder(*appDevice.get()).setMaxSets(BVKSwapchain::MAX_FRAMES_IN_FLIGHT).addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, BVKSwapchain::MAX_FRAMES_IN_FLIGHT).build();
+
+    loadVulkanAppObjects();
+}
+
+void BEapp::destroyVulkanObjects()
+{
+    vkDeviceWaitIdle(appDevice.get()->getDevice()); // Wait for the device to finish all operations before destroying objects
+    appVulkanObjects.clear();
+    globalPool.reset();
+    appRenderer.reset();
+    appDevice.reset();
+}
+
+void BEapp::loadVulkanAppObjects()
+{
+    std::shared_ptr<BVKModel> cubeModel = BVKModel::createModelFromFile(*appDevice.get(), "3D_Models/cube.wobj");
+
+    auto cube = BVKObject::createGameObject();
+    cube.model = cubeModel;
+    cube.transform.translation = { 0.f, 0.f, 2.5f };
+    cube.transform.scale = { .5f, .5f, .5f };
+
+    appVulkanObjects.push_back(std::move(cube));
 }
