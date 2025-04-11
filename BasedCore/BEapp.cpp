@@ -93,6 +93,7 @@ void BEapp::run()
             camera.setViewTarget(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
 
             auto viewerObject = BVKObject::createGameObject();
+            BEKeyboardController cameraController{};
 
             auto currentTime = std::chrono::high_resolution_clock::now();
             
@@ -130,6 +131,7 @@ void BEapp::run()
 
                 frameTime = fmin(frameTime, maxFrameTime);
 
+                cameraController.moveInPlaneXZ(appWindow.get()->getWindow(), frameTime, viewerObject);
                 camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
 
                 float aspect = appRenderer.get()->getAspectRatio();

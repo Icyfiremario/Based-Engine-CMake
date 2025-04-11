@@ -11,6 +11,7 @@
 #include "BEenums.h"
 #include "BasedConfig.h"
 #include "BECamera.h"
+#include "BEKeyboardController.h"
 
 // BasedVK
 #include "../BasedVK/BVKDevice.h"
