@@ -251,7 +251,7 @@ void BEapp::destroyVulkanObjects()
 
 void BEapp::loadVulkanAppObjects()
 {
-    std::shared_ptr<BVKModel> cubeModel = BVKModel::createModelFromFile(*appDevice.get(), "3D_Models/cube.wobj");
+    std::shared_ptr<BVKModel> cubeModel = BVKModel::createModelFromFile(*appDevice.get(), "3D_Models/cube.obj");
 
     auto cube = BVKObject::createGameObject();
     cube.model = cubeModel;
