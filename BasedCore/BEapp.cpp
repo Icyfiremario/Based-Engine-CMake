@@ -111,7 +111,13 @@ void BEapp::run()
 #endif
                     vkDeviceWaitIdle(appDevice.get()->getDevice());
 
-                    // Delete all data off the GPU. 
+                    // Delete all data off the GPU.
+                    
+                    for (auto& buffer : uboBuffers)
+                    {
+                        buffer->flush();
+                    }
+
                     uboBuffers.clear();
                     globalSetLayout.reset();
                     viewerObject.~BVKObject();
@@ -133,6 +139,8 @@ void BEapp::run()
 
                 cameraController.moveInPlaneXZ(appWindow.get()->getWindow(), frameTime, viewerObject);
                 camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
+
+                appVulkanObjects[0].transform.rotation[1] += frameTime * glm::radians(90.f);
 
                 float aspect = appRenderer.get()->getAspectRatio();
                 camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
@@ -220,6 +228,7 @@ void BEapp::run()
             throw std::runtime_error("Invalid render API");
     }
     
+    return;
 }
 
 void BEapp::initVulkanObjects()
@@ -233,7 +242,7 @@ void BEapp::initVulkanObjects()
 
 void BEapp::destroyVulkanObjects()
 {
-    vkDeviceWaitIdle(appDevice.get()->getDevice()); // Wait for the device to finish all operations before destroying objects
+    vkDeviceWaitIdle(appDevice.get()->getDevice()); // Wait for the device to finish all operations before destroying objects.
     appVulkanObjects.clear();
     globalPool.reset();
     appRenderer.reset();
