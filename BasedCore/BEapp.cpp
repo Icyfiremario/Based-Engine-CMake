@@ -45,6 +45,7 @@ BEapp::BEapp(BasedCore::Config config, const std::string name, int maxFrameTime)
 
 BEapp::~BEapp()
 {
+    appVulkanObjects.clear();
     globalPool.reset();
     appRenderer.reset();
     appDevice.reset();
@@ -249,9 +250,17 @@ void BEapp::destroyVulkanObjects()
     appDevice.reset();
 }
 
+void BEapp::initOpenGLObjects()
+{
+}
+
+void BEapp::destroyOpenGLObjects()
+{
+}
+
 void BEapp::loadVulkanAppObjects()
 {
-    std::shared_ptr<BVKModel> cubeModel = BVKModel::createModelFromFile(*appDevice.get(), "3D_Models/cube.obj");
+    std::shared_ptr<BVKModel> cubeModel = BVKModel::createModelFromFile(*appDevice.get(), "3D_Models/cube.wobj");
 
     auto cube = BVKObject::createGameObject();
     cube.model = cubeModel;
