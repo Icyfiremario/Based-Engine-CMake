@@ -117,6 +117,7 @@ void BEapp::run()
                     uboBuffers.clear();
                     globalSetLayout.reset();
                     viewerObject.~BVKObject();
+                    pointLightSystem.~BVKPointLightRenderSystem();
                     renderSystem.~BVKRenderSystem();
 
                     destroyVulkanObjects();
@@ -149,6 +150,7 @@ void BEapp::run()
                     GlobalUbo ubo{};
                     ubo.projection = camera.getProjection();
                     ubo.view = camera.getView();
+                    pointLightSystem.update(frameInfo, ubo);
                     uboBuffers[frameIndex]->writeToBuffer(&ubo);
                     uboBuffers[frameIndex]->flush();
 
@@ -270,4 +272,23 @@ void BEapp::loadVulkanAppObjects()
     floorObject.transform.translation = { 0.f, .5f, 0.f };
     floorObject.transform.scale = { 3.f, 1.f, 3.f };
     appVulkanObjects.emplace(floorObject.getId(), std::move(floorObject));
+
+
+    std::vector<glm::vec3> lightColors = {
+        { 1.f, 0.f, 0.f },
+        { 0.f, 1.f, 0.f },
+        { 0.f, 0.f, 1.f },
+        { 1.f, 1.f, 0.f },
+        { 1.f, 0.f, 1.f },
+        { 0.f, 1.f, 1.f }
+    };
+
+    for (int i = 0; i < lightColors.size(); i++)
+    {
+        auto pointLight = BVKObject::makePointLight(0.5f);
+        pointLight.color = lightColors[i];
+        auto rotateLight = glm::rotate(glm::mat4(1.f), (i * glm::two_pi<float>()) / lightColors.size(), {0.f, -1.f, 0.f});
+        pointLight.transform.translation = glm::vec3(rotateLight * glm::vec4(-1.f, -1.f, -1.f, 1.f));
+        appVulkanObjects.emplace(pointLight.getId(), std::move(pointLight));
+    }
 }
