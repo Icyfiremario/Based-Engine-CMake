@@ -38,7 +38,7 @@ class BVKRenderSystem
         /// @brief Renders game objects according to frame info and camera position
         /// @param frameInfo Frame info
         /// @param gameObjects List of game objects to render
-        void renderGameObjects(FrameInfo& frameInfo, std::vector<BVKObject>& gameObjects);
+        void renderGameObjects(FrameInfo& frameInfo);
 
     private:
 

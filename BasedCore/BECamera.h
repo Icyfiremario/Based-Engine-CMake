@@ -15,6 +15,11 @@ class BECamera
     public:
 
         void setOrthoGraphicProjection(float left, float right, float top, float bottom, float near, float far);
+        /// @brief 
+        /// @param fovy 
+        /// @param aspect 
+        /// @param near
+        /// @param far Far clipping distance.
         void setPerspectiveProjection(float fovy, float aspect, float near, float far);
 
         void setViewDirection(glm::vec3 position, glm::vec3 direction, glm::vec3 up = glm::vec3{0.f, -1.f, 0.f});

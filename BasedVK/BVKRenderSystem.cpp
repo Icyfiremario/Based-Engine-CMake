@@ -17,14 +17,16 @@ BVKRenderSystem::~BVKRenderSystem()
     vkDestroyPipelineLayout(rSysDevice.getDevice(), rSysPipelineLayout, nullptr);
 }
 
-void BVKRenderSystem::renderGameObjects(FrameInfo &frameInfo, std::vector<BVKObject> &gameObjects)
+void BVKRenderSystem::renderGameObjects(FrameInfo &frameInfo)
 {
     rSysPipeline->bind(frameInfo.commandBuffer);
 
     vkCmdBindDescriptorSets(frameInfo.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rSysPipelineLayout, 0, 1, &frameInfo.globalDescriptorSet, 0, nullptr);
 
-    for (auto& obj : gameObjects)
+    for (auto& kv : frameInfo.appObjects)
     {
+        auto& obj = kv.second;
+        if (obj.model == nullptr) continue;
         SimplePushConstantData push{};
         push.modelMatrix = obj.transform.mat4();
         push.normalMatrix = obj.transform.normalMatrix();

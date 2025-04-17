@@ -5,8 +5,9 @@ struct GlobalUbo
 {
     /// @brief projection view
     glm::mat4 projectionView{ 1.f };
-    /// @brief Light direction
-    glm::vec3 lightDirection = glm::normalize(glm::vec3(1.f, -3.f, -1.f));
+    glm::vec4 ambientLightColor{ 1.f, 1.f, 1.f, .02f }; // w is intensity
+    glm::vec3 lightPosition{-1.f};
+    alignas(16) glm::vec4 lightColor{1.f}; // w is intensity
 };
 
 BEapp::BEapp(int width, int height, int maxFrameTime, const std::string name, int api) : appWidth(width), appHeight(height), maxFrameTime(maxFrameTime), renderAPI(api), name(name)
@@ -79,7 +80,7 @@ void BEapp::run()
                 uboBuffers[i]->map();
             }
 
-            auto globalSetLayout = BVKDescriptorSetLayout::Builder(*appDevice.get()).addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL).build();
+            auto globalSetLayout = BVKDescriptorSetLayout::Builder(*appDevice.get()).addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS).build();
 
             std::vector<VkDescriptorSet> globalDescriptorSets(BVKSwapchain::MAX_FRAMES_IN_FLIGHT);
             for (size_t i = 0; i < globalDescriptorSets.size(); i++)
@@ -94,6 +95,7 @@ void BEapp::run()
             camera.setViewTarget(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
 
             auto viewerObject = BVKObject::createGameObject();
+            viewerObject.transform.translation.z = -2.5f;
             BEKeyboardController cameraController{};
 
             auto currentTime = std::chrono::high_resolution_clock::now();
@@ -141,15 +143,15 @@ void BEapp::run()
                 cameraController.moveInPlaneXZ(appWindow.get()->getWindow(), frameTime, viewerObject);
                 camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
 
-                appVulkanObjects[0].transform.rotation[1] += frameTime * glm::radians(90.f);
+                //appVulkanObjects[0].transform.rotation[1] += frameTime * glm::radians(90.f);
 
                 float aspect = appRenderer.get()->getAspectRatio();
-                camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
+                camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
 
                 if (auto commandBuffer = appRenderer.get()->beginFrame())
                 {
                     int frameIndex = appRenderer.get()->getFrameIndex();
-                    FrameInfo frameInfo{ frameIndex, frameTime, commandBuffer, camera, globalDescriptorSets[frameIndex]};
+                    FrameInfo frameInfo{ frameIndex, frameTime, commandBuffer, camera, globalDescriptorSets[frameIndex], appVulkanObjects};
 
                     GlobalUbo ubo{};
                     ubo.projectionView = camera.getProjection() * camera.getView();
@@ -157,7 +159,7 @@ void BEapp::run()
                     uboBuffers[frameIndex]->flush();
 
                     appRenderer.get()->beginSwapchainRenderPass(commandBuffer);
-                    renderSystem.renderGameObjects(frameInfo, appVulkanObjects);
+                    renderSystem.renderGameObjects(frameInfo);
                     appRenderer.get()->endSwapchainRenderPass(commandBuffer);
                     appRenderer.get()->endFrame();
                 }
@@ -260,12 +262,17 @@ void BEapp::destroyOpenGLObjects()
 
 void BEapp::loadVulkanAppObjects()
 {
-    std::shared_ptr<BVKModel> cubeModel = BVKModel::createModelFromFile(*appDevice.get(), "3D_Models/cube.wobj");
-
+    std::shared_ptr<BVKModel> cubeModel = BVKModel::createModelFromFile(*appDevice.get(), "3D_Models/rev_cone.wobj");
     auto cube = BVKObject::createGameObject();
     cube.model = cubeModel;
-    cube.transform.translation = { 0.f, 0.f, 2.5f };
+    cube.transform.translation = { 0.f, -0.1f, 0.f };
     cube.transform.scale = { .5f, .5f, .5f };
+    appVulkanObjects.emplace(cube.getId(), std::move(cube));
 
-    appVulkanObjects.push_back(std::move(cube));
+    std::shared_ptr<BVKModel> quad = BVKModel::createModelFromFile(*appDevice.get(), "3D_Models/quad.wobj");
+    auto floorObject = BVKObject::createGameObject();
+    floorObject.model = quad;
+    floorObject.transform.translation = { 0.f, .5f, 0.f };
+    floorObject.transform.scale = { 3.f, 1.f, 3.f };
+    appVulkanObjects.emplace(floorObject.getId(), std::move(floorObject));
 }

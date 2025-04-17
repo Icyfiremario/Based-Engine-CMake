@@ -2,6 +2,7 @@
 
 // STD
 #include <memory>
+#include <unordered_map>
 
 // GLM
 #include <glm/gtc/matrix_transform.hpp>
@@ -24,6 +25,7 @@ class BVKObject
     public:
 
         using id_t = unsigned int;
+        using Map = std::unordered_map<id_t, BVKObject>;
 
         std::shared_ptr<BVKModel> model;
         glm::vec3 color{};

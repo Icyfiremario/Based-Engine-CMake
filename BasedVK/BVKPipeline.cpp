@@ -5,6 +5,11 @@ BVKPipeline::BVKPipeline(BVKDevice &device, const std::string &vertFilepath, con
     createGraphicsPipeline(vertFilepath, fragFilepath, configInfo);
 }
 
+BVKPipeline::BVKPipeline(BVKDevice &device, const std::vector<std::string> shaderFilePaths, const PipelineConfigInfo &configInfo) : pipelineDevice(device)
+{
+	createGraphicsPipeline(shaderFilePaths, configInfo);
+}
+
 BVKPipeline::~BVKPipeline()
 {
     vkDestroyShaderModule(pipelineDevice.getDevice(), vertShaderModule, nullptr);
@@ -165,6 +170,73 @@ void BVKPipeline::createGraphicsPipeline(const std::string &vertFilepath, const 
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
     if (vkCreateGraphicsPipelines(pipelineDevice.getDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create graphics pipelines!");
+    }
+}
+
+void BVKPipeline::createGraphicsPipeline(const std::vector<std::string> shaderFilePaths, const PipelineConfigInfo &configInfo)
+{
+	assert(configInfo.pipelineLayout != VK_NULL_HANDLE && "Cannot create graphics pipeline! No pipelineLayout provided in config.");
+    assert(configInfo.renderPass != VK_NULL_HANDLE && "Cannot create graphics pipeline! No renderPass provided in config.");
+
+	std::vector<std::vector<char>> shaderCodes(shaderFilePaths.size());
+
+	for (size_t i = 0; i < shaderFilePaths.size(); i++)
+	{
+		shaderCodes[i] = readFile(shaderFilePaths[i]);
+	}
+
+	std::vector<VkShaderModule> shaderModules(shaderFilePaths.size());
+	for (size_t i = 0; i < shaderFilePaths.size(); i++)
+	{
+		createShaderModule(shaderCodes[i], &shaderModules[i]);
+	}
+
+	std::vector<VkPipelineShaderStageCreateInfo> shaderStages(shaderFilePaths.size());
+
+	for (size_t i = 0; i < shaderFilePaths.size(); i++)
+	{
+		shaderStages[i].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		shaderStages[i].stage = static_cast<VkShaderStageFlagBits>(VK_SHADER_STAGE_ALL_GRAPHICS & (1 << i));
+		shaderStages[i].module = shaderModules[i];
+		shaderStages[i].pName = "main";
+		shaderStages[i].flags = 0;
+		shaderStages[i].pNext = nullptr;
+		shaderStages[i].pSpecializationInfo = nullptr;
+	}
+
+	auto bindingDescriptions = BVKModel::Vertex::getBindingDescriptions();
+	auto attributeDescriptions = BVKModel::Vertex::getAttributeDescriptions();
+
+	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+    vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+	vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+	vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
+
+	VkGraphicsPipelineCreateInfo pipelineInfo{};
+	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+	pipelineInfo.stageCount = 2;
+	pipelineInfo.pStages = shaderStages.data();
+	pipelineInfo.pVertexInputState = &vertexInputInfo;
+	pipelineInfo.pInputAssemblyState = &configInfo.inputAssemblyInfo;
+	pipelineInfo.pViewportState = &configInfo.viewportInfo;
+	pipelineInfo.pRasterizationState = &configInfo.rasterizationInfo;
+	pipelineInfo.pMultisampleState = &configInfo.multisampleInfo;
+	pipelineInfo.pColorBlendState = &configInfo.colorBlendInfo;
+	pipelineInfo.pDepthStencilState = &configInfo.depthStencilInfo;
+	pipelineInfo.pDynamicState = &configInfo.dynamicStateInfo;
+
+	pipelineInfo.layout = configInfo.pipelineLayout;
+	pipelineInfo.renderPass = configInfo.renderPass;
+	pipelineInfo.subpass = configInfo.subpass;
+
+	pipelineInfo.basePipelineIndex = -1;
+	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+
+	if (vkCreateGraphicsPipelines(pipelineDevice.getDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to create graphics pipelines!");
     }

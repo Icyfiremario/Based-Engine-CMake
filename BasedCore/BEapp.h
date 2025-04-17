@@ -58,7 +58,7 @@ class BEapp
         
         std::unique_ptr<BVKDescriptorPool> globalPool;
 
-        std::vector<BVKObject> appVulkanObjects;
+        BVKObject::Map appVulkanObjects;
 
         void initVulkanObjects();
         void destroyVulkanObjects();
