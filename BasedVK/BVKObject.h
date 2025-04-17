@@ -20,6 +20,11 @@ struct TransformComponent
     glm::mat3 normalMatrix();
 };
 
+struct PointLightComponent
+{
+    float lightIntensity{ 1.f };
+};
+
 class BVKObject
 {
     public:
@@ -30,6 +35,8 @@ class BVKObject
         std::shared_ptr<BVKModel> model;
         glm::vec3 color{};
         TransformComponent transform{};
+
+        std::unique_ptr<PointLightComponent> pointLight = nullptr;
 
         static BVKObject createGameObject()
         {
@@ -42,6 +49,8 @@ class BVKObject
         BVKObject& operator=(const BVKObject&) = delete;
         BVKObject(BVKObject&&) = default;
         BVKObject& operator=(BVKObject&&) = default;
+
+        static BVKObject makePointLight(float intensity = 10.f, float radius = .1f, glm::vec3 color = glm::vec3(1.f));
 
         id_t getId() { return id; }
 

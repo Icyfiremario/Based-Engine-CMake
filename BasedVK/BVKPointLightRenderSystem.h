@@ -29,6 +29,7 @@ class BVKPointLightRenderSystem
         BVKPointLightRenderSystem(const BVKPointLightRenderSystem&) = delete;
         BVKPointLightRenderSystem& operator=(const BVKPointLightRenderSystem&) = delete;
 
+        void update(FrameInfo& frameInfo, GlobalUbo& ubo);
         void render(FrameInfo& frameInfo);
 
     private:

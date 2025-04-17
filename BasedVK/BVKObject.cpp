@@ -25,3 +25,13 @@ glm::mat3 TransformComponent::normalMatrix()
 
     return glm::mat3{ {invScale.x * (c1 * c3 + s1 * s2 * s3), invScale.x * (c2 * s3), invScale.x * (c1 * s2 * s3 - c3 * s1)}, {invScale.y * (c3 * s1 * s2 - c1 * s3), invScale.y * (c2 * c3), invScale.y * (c1 * c3 * s2 + s1 * s3)}, {invScale.z * (c2 * s1), invScale.z * (-s2), invScale.z * (c1 * c2)} };
 }
+
+BVKObject BVKObject::makePointLight(float intensity, float radius, glm::vec3 color)
+{
+    BVKObject object = BVKObject::createGameObject();
+    object.color = color;
+    object.transform.scale.x = radius;
+    object.pointLight = std::make_unique<PointLightComponent>();
+    object.pointLight->lightIntensity = intensity;
+    return object;
+}

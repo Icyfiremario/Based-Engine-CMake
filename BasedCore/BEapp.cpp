@@ -1,15 +1,6 @@
 #include "BEapp.h"
 
 /// @brief Temp light direction def
-struct GlobalUbo
-{
-    /// @brief projection view
-    glm::mat4 projection{ 1.f };
-    glm::mat4 view{ 1.f };
-    glm::vec4 ambientLightColor{ 1.f, 1.f, 1.f, .02f }; // w is intensity
-    glm::vec3 lightPosition{-1.f};
-    alignas(16) glm::vec4 lightColor{1.f}; // w is intensity
-};
 
 BEapp::BEapp(int width, int height, int maxFrameTime, const std::string name, int api) : appWidth(width), appHeight(height), maxFrameTime(maxFrameTime), renderAPI(api), name(name)
 {

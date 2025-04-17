@@ -1,5 +1,11 @@
 #include "BVKPointLightRenderSystem.h"
 
+struct PointLightPushConstants {
+    glm::vec4 position;
+    glm::vec4 color;
+    float radius;
+};
+
 BVKPointLightRenderSystem::BVKPointLightRenderSystem(BVKDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout) : rSysDevice{device}
 {
     createPipelineLayout(globalSetLayout);
@@ -11,21 +17,50 @@ BVKPointLightRenderSystem::~BVKPointLightRenderSystem()
     vkDestroyPipelineLayout(rSysDevice.getDevice(), rSysPipelineLayout, nullptr);
 }
 
+void BVKPointLightRenderSystem::update(FrameInfo &frameInfo, GlobalUbo &ubo)
+{
+    int lightIndex = 0;
+    for (auto& kv : frameInfo.appObjects)
+    {
+        auto& object = kv.second;
+
+        if (object.pointLight == nullptr) continue;
+
+        ubo.pointLights[lightIndex].position = glm::vec4(object.transform.translation, 1.f);
+        ubo.pointLights[lightIndex].color = glm::vec4(object.color, object.pointLight->lightIntensity);
+        lightIndex++;
+    }
+
+    ubo.numLights = lightIndex;
+}
+
 void BVKPointLightRenderSystem::render(FrameInfo &frameInfo)
 {
     rSysPipeline->bind(frameInfo.commandBuffer);
 
     vkCmdBindDescriptorSets(frameInfo.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rSysPipelineLayout, 0, 1, &frameInfo.globalDescriptorSet, 0, nullptr);
 
-    vkCmdDraw(frameInfo.commandBuffer, 6, 1, 0, 0);
+    for(auto& kv : frameInfo.appObjects)
+    {
+        auto& object = kv.second;
+        if (object.pointLight == nullptr) continue;
+
+        PointLightPushConstants push{};
+        push.position = glm::vec4(object.transform.translation, 1.f);
+        push.color = glm::vec4(object.color, object.pointLight->lightIntensity);
+        push.radius = object.transform.scale.x;
+
+        vkCmdPushConstants(frameInfo.commandBuffer, rSysPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PointLightPushConstants), &push);
+        vkCmdDraw(frameInfo.commandBuffer, 6, 1, 0, 0);
+    }
 }
 
 void BVKPointLightRenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout)
 {
-    //VkPushConstantRange pushConstantRange{};
-    //pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-    //pushConstantRange.offset = 0;
-    //pushConstantRange.size = sizeof(SimplePushConstantData);
+    VkPushConstantRange pushConstantRange{};
+    pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+    pushConstantRange.offset = 0;
+    pushConstantRange.size = sizeof(PointLightPushConstants);
 
     std::vector<VkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
 
@@ -33,8 +68,8 @@ void BVKPointLightRenderSystem::createPipelineLayout(VkDescriptorSetLayout globa
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
     pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
-    pipelineLayoutInfo.pushConstantRangeCount = 0;
-    pipelineLayoutInfo.pPushConstantRanges = nullptr;
+    pipelineLayoutInfo.pushConstantRangeCount = 1;
+    pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
     if (vkCreatePipelineLayout(rSysDevice.getDevice(), &pipelineLayoutInfo, nullptr, &rSysPipelineLayout) != VK_SUCCESS)
     {
