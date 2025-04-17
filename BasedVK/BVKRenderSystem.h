@@ -20,7 +20,7 @@
 // BasedCore
 #include "../BasedCore/BECamera.h"
 
-/// @brief Render system
+/// @brief Simple render system
 class BVKRenderSystem
 {
     public:

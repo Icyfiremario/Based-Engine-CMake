@@ -4,7 +4,8 @@
 struct GlobalUbo
 {
     /// @brief projection view
-    glm::mat4 projectionView{ 1.f };
+    glm::mat4 projection{ 1.f };
+    glm::mat4 view{ 1.f };
     glm::vec4 ambientLightColor{ 1.f, 1.f, 1.f, .02f }; // w is intensity
     glm::vec3 lightPosition{-1.f};
     alignas(16) glm::vec4 lightColor{1.f}; // w is intensity
@@ -90,6 +91,7 @@ void BEapp::run()
             }
 
             BVKRenderSystem renderSystem{ *appDevice.get(), appRenderer->getRenderPass(), globalSetLayout->getDescriptorSetLayout() };
+            BVKPointLightRenderSystem pointLightSystem{ *appDevice.get(), appRenderer->getRenderPass(), globalSetLayout->getDescriptorSetLayout() };
 
             BECamera camera{};
             camera.setViewTarget(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
@@ -154,12 +156,14 @@ void BEapp::run()
                     FrameInfo frameInfo{ frameIndex, frameTime, commandBuffer, camera, globalDescriptorSets[frameIndex], appVulkanObjects};
 
                     GlobalUbo ubo{};
-                    ubo.projectionView = camera.getProjection() * camera.getView();
+                    ubo.projection = camera.getProjection();
+                    ubo.view = camera.getView();
                     uboBuffers[frameIndex]->writeToBuffer(&ubo);
                     uboBuffers[frameIndex]->flush();
 
                     appRenderer.get()->beginSwapchainRenderPass(commandBuffer);
                     renderSystem.renderGameObjects(frameInfo);
+                    pointLightSystem.render(frameInfo);
                     appRenderer.get()->endSwapchainRenderPass(commandBuffer);
                     appRenderer.get()->endFrame();
                 }

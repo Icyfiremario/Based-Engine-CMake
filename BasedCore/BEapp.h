@@ -17,6 +17,7 @@
 #include "../BasedVK/BVKDevice.h"
 #include "../BasedVK/BVKRenderer.h"
 #include "../BasedVK/BVKRenderSystem.h"
+#include "../BasedVK/BVKPointLightRenderSystem.h"
 #include "../BasedVK/BVKDescriptors.h"
 
 // BasedGL
