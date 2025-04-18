@@ -156,8 +156,11 @@ void BEapp::run()
                     uboBuffers[frameIndex]->flush();
 
                     appRenderer.get()->beginSwapchainRenderPass(commandBuffer);
+
+                    // Order matters
                     renderSystem.renderGameObjects(frameInfo);
                     pointLightSystem.render(frameInfo);
+                    
                     appRenderer.get()->endSwapchainRenderPass(commandBuffer);
                     appRenderer.get()->endFrame();
                 }

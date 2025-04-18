@@ -68,6 +68,10 @@ class BVKPipeline
         /// @param configInfo pipeline info object.
         static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
 
+        /// @brief 
+        /// @param configInfo 
+        static void enableAlphaBlending(PipelineConfigInfo& configInfo);
+
     private:
 
         BVKDevice& pipelineDevice;

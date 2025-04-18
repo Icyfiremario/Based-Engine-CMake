@@ -3,6 +3,7 @@
 // STD
 #include <memory>
 #include <vector>
+#include <map>
 
 // GLM
 #define GLM_FORCE_RADIANS
