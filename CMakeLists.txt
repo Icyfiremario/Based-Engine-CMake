@@ -18,8 +18,12 @@ file(GLOB HDR "*.h" "*.hpp")
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -Wpedantic -DDEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS_ALL "-Wall -Wextra -Wpedantic")
+
+set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_ALL} -O2")
+set(CMAKE_CXX_FLAGS_MINSIZEREL " -Os ${CMAKE_CXX_FLAGS_ALL}")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO " -O2 -g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
 
 # Include sub-projects.
 add_subdirectory(BasedCore)

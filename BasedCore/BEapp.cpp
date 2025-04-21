@@ -100,6 +100,11 @@ void BEapp::run()
                     glfwSetWindowShouldClose(appWindow.get()->getWindow(), GLFW_TRUE);
                 }
 
+                if (glfwGetKey(appWindow->getWindow(), GLFW_KEY_F2) == GLFW_PRESS)
+                {
+                    appWindow->setFullscreen(!appWindow->getFullscreen(), glfwGetPrimaryMonitor());
+                }
+
                 if(glfwGetKey(appWindow.get()->getWindow(), GLFW_KEY_F1) == GLFW_PRESS)
                 {
 #ifdef DEBUG
@@ -193,6 +198,11 @@ void BEapp::run()
                     glfwSetWindowShouldClose(appWindow.get()->getWindow(), GLFW_TRUE);
                 }
 
+                if (glfwGetKey(appWindow->getWindow(), GLFW_KEY_F2) == GLFW_PRESS)
+                {
+                    appWindow->setFullscreen(!appWindow->getFullscreen(), glfwGetPrimaryMonitor());
+                }
+
                 if(glfwGetKey(appWindow.get()->getWindow(), GLFW_KEY_F1) == GLFW_PRESS)
                 {
 #ifdef DEBUG
@@ -283,7 +293,7 @@ void BEapp::loadVulkanAppObjects()
         { 0.f, 1.f, 1.f }
     };
 
-    for (int i = 0; i < lightColors.size(); i++)
+    for (size_t i = 0; i < lightColors.size(); i++)
     {
         auto pointLight = BVKObject::makePointLight(0.5f);
         pointLight.color = lightColors[i];

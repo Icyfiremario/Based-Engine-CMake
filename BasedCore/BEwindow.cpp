@@ -26,6 +26,24 @@ void BEwindow::switchRenderAPI(int api)
     initWindow();
 }
 
+void BEwindow::setFullscreen(bool fullscreen, GLFWmonitor *monitor)
+{
+    wFullscreen = fullscreen;
+
+    if (fullscreen)
+    {
+        const GLFWvidmode* vMode = glfwGetVideoMode(monitor);
+
+        glfwGetWindowPos(window, &xPos, &yPos);
+        glfwGetWindowSize(window, &width, &height);
+        glfwSetWindowMonitor(window, monitor, xPos, yPos, vMode->width, vMode->height, 0);
+    }
+    else
+    {
+        glfwSetWindowMonitor(window, nullptr, xPos, yPos, width, height, 0);
+    }
+}
+
 void BEwindow::initWindow()
 {
     glfwInit();

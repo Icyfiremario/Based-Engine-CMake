@@ -49,6 +49,10 @@ class BEwindow
         /// @return GLFWwindow pointer
         GLFWwindow* getWindow() { return window; }
 
+        /// @brief Returns the fullscreen state of the window
+        /// @return Fullscreen state of the window
+        bool getFullscreen() { return wFullscreen; }
+
         /// @brief Creates a Vulkan surface.
         /// @param instance Vulkan instance
         /// @param surface surface to bind to
@@ -61,14 +65,18 @@ class BEwindow
         /// @param api Render API to switch to (Vulkan, OpenGL, DirectX)
         void switchRenderAPI(int api);
 
+        void setFullscreen(bool fullscreen, GLFWmonitor* monitor = nullptr);
+
     private:
 
         GLFWwindow* window;
 
         int width, height, renderAPI;
+        int xPos, yPos;
         std::string windowName;
 
         bool frameBufferResized = false;
+        bool wFullscreen = false;
 
         void initWindow();
 
