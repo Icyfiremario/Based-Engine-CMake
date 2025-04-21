@@ -5,7 +5,7 @@ Based Engine is an open source game engine written in C++. It uses glfw for wind
 
 ## Status
 
-Very unstable. Weird bugs with rendering freexing and the camera teleporting for unknown reasons.
+Very unstable. Weird bugs with rendering freezing and the camera teleporting for unknown reasons.
 
 ## Support
 ### Windows
