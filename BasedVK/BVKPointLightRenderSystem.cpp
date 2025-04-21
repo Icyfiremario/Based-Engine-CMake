@@ -19,7 +19,7 @@ BVKPointLightRenderSystem::~BVKPointLightRenderSystem()
 
 void BVKPointLightRenderSystem::update(FrameInfo &frameInfo, GlobalUbo &ubo)
 {
-    auto rotateLight = glm::rotate(glm::mat4(1.f), frameInfo.frameTime, {0.f, -1.f, 0.f});
+    auto rotateLight = glm::rotate(glm::mat4(1.f), 0.f, {0.f, -1.f, 0.f});
 
     int lightIndex = 0;
     for (auto& kv : frameInfo.appObjects)
@@ -42,14 +42,25 @@ void BVKPointLightRenderSystem::update(FrameInfo &frameInfo, GlobalUbo &ubo)
 
 void BVKPointLightRenderSystem::render(FrameInfo &frameInfo)
 {
+    std::map<float, BVKObject::id_t> sorted;
+
+    for (auto& kv : frameInfo.appObjects)
+    {
+        auto& object = kv.second;
+        if (object.pointLight == nullptr) continue;
+
+        auto offset = frameInfo.camera.getPosition() - object.transform.translation;
+        float disSquared = glm::dot(offset, offset);
+        sorted[disSquared] = object.getId();
+    }
+
     rSysPipeline->bind(frameInfo.commandBuffer);
 
     vkCmdBindDescriptorSets(frameInfo.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rSysPipelineLayout, 0, 1, &frameInfo.globalDescriptorSet, 0, nullptr);
 
-    for(auto& kv : frameInfo.appObjects)
+    for(auto it = sorted.rbegin(); it != sorted.rend(); it++)
     {
-        auto& object = kv.second;
-        if (object.pointLight == nullptr) continue;
+        auto& object = frameInfo.appObjects.at(it->second);
 
         PointLightPushConstants push{};
         push.position = glm::vec4(object.transform.translation, 1.f);
@@ -90,6 +101,7 @@ void BVKPointLightRenderSystem::createPipeline(VkRenderPass renderPass)
     PipelineConfigInfo pipelineConfig {};
 
     BVKPipeline::defaultPipelineConfigInfo(pipelineConfig);
+    BVKPipeline::enableAlphaBlending(pipelineConfig);
     pipelineConfig.bindingDescriptions.clear();
     pipelineConfig.attributeDescriptions.clear();
     pipelineConfig.renderPass = renderPass;

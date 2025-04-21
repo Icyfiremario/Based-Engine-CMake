@@ -155,13 +155,17 @@ void BEapp::run()
                     GlobalUbo ubo{};
                     ubo.projection = camera.getProjection();
                     ubo.view = camera.getView();
+                    ubo.inverseView = camera.getInverseView();
                     pointLightSystem.update(frameInfo, ubo);
                     uboBuffers[frameIndex]->writeToBuffer(&ubo);
                     uboBuffers[frameIndex]->flush();
 
                     appRenderer.get()->beginSwapchainRenderPass(commandBuffer);
+
+                    // Order matters
                     renderSystem.renderGameObjects(frameInfo);
                     pointLightSystem.render(frameInfo);
+                    
                     appRenderer.get()->endSwapchainRenderPass(commandBuffer);
                     appRenderer.get()->endFrame();
                 }
@@ -269,7 +273,7 @@ void BEapp::destroyOpenGLObjects()
 
 void BEapp::loadVulkanAppObjects()
 {
-    std::shared_ptr<BVKModel> cubeModel = BVKModel::createModelFromFile(*appDevice.get(), "3D_Models/rev_cone.wobj");
+    std::shared_ptr<BVKModel> cubeModel = BVKModel::createModelFromFile(*appDevice.get(), "3D_Models/smooth_cone.wobj");
     auto cube = BVKObject::createGameObject();
     cube.model = cubeModel;
     cube.transform.translation = { 0.f, -0.1f, 0.f };
