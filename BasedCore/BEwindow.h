@@ -53,6 +53,11 @@ class BEwindow
         /// @return Fullscreen state of the window
         bool getFullscreen() { return wFullscreen; }
 
+        /// @brief Sets the two variables to the current cursor position
+        /// @param xPos 
+        /// @param yPos 
+        void getCursorPos(double &xPos, double &yPos);
+
         /// @brief Creates a Vulkan surface.
         /// @param instance Vulkan instance
         /// @param surface surface to bind to
@@ -66,13 +71,19 @@ class BEwindow
         void switchRenderAPI(int api);
 
         void setFullscreen(bool fullscreen, GLFWmonitor* monitor = nullptr);
+        inline void setCursorMode(int mode) const { glfwSetInputMode(window, GLFW_CURSOR, mode); }
+
+        
 
     private:
 
         GLFWwindow* window;
 
         int width, height, renderAPI;
-        int xPos, yPos;
+        int xPos, yPos; // Window position
+
+        int cXPos, cYPos; // Cursor position
+
         std::string windowName;
 
         bool frameBufferResized = false;
@@ -82,5 +93,6 @@ class BEwindow
 
         static void vkFrameBufferResizeCallback(GLFWwindow* window, int width, int height);
         static void glFrameBufferResizeCallback(GLFWwindow* window, int width, int height);
-        
+
+        static void cursorPosCallback(GLFWwindow* window, double xPos, double yPos);
 };

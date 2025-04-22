@@ -11,6 +11,12 @@ BEwindow::~BEwindow()
     glfwTerminate();
 }
 
+void BEwindow::getCursorPos(double &xPos, double &yPos)
+{
+    xPos = cXPos;
+    yPos = cYPos;
+}
+
 void BEwindow::createVkWindowSurface(VkInstance instance, VkSurfaceKHR *surface)
 {
     if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS)
@@ -82,6 +88,8 @@ void BEwindow::initWindow()
         default:
             throw std::runtime_error("Invalid render API!");
     }
+
+    setCursorMode(GLFW_CURSOR_DISABLED);
 }
 
 void BEwindow::vkFrameBufferResizeCallback(GLFWwindow *window, int width, int height)
@@ -97,4 +105,16 @@ void BEwindow::vkFrameBufferResizeCallback(GLFWwindow *window, int width, int he
 void BEwindow::glFrameBufferResizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
+}
+
+void BEwindow::cursorPosCallback(GLFWwindow *window, double xPos, double yPos)
+{
+    auto appWindow = reinterpret_cast<BEwindow*>(glfwGetWindowUserPointer(window));
+
+    appWindow->cXPos = static_cast<int>(xPos);
+    appWindow->cYPos = static_cast<int>(yPos);
+#ifdef DEBUG
+    std::cout << "Window: " << window;
+    std::cout << "Cursor Position: " << xPos << ", " << yPos << std::endl;
+#endif
 }
