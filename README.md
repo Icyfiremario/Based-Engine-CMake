@@ -68,6 +68,6 @@ Apple support is not planned and likely not going to happen.
 
 [^1]: This requires using windows.h and doing window management that way. I am unfamillar and it would require weird cmake stuff. I do plan to add this but it will be way down the line. I may end up just using DirectX translation layers if I cannot figure out how to bind OpenGL and Vulkan to windows.h windows.
 
-[^2]: Shaders are loaded into the pipeline and used but there is currently no way to add custom shaders and add them to the rendering pipeline.
+[^2]: Custom shaders will be done using render systems. There will be a parent render system class that you override with your own functions and shaders. An example of this is between the Pointlight render system and the BVKRenderSystem. The Pointlight system is almost exactly the same as BVKRenderSystem but with some changes to the render function and the addition of an update function. In the future, the BVKRenderSystem class will be used as a parent class for all render systems and the current implementation will be the BVKBasicRenderSystem.
 
 [^3]: This package supports loading wavefront object models. I will replace this in the future with a in-house model loader in order to support more model formats. If using you are using MSVC models may need to be renamed to .wobj in order to prevent MSVC from trying to link them into the program. IDK for sure though because I haven't got compiling with MSVC to work yet.
