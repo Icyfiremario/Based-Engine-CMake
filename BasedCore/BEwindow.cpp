@@ -115,6 +115,6 @@ void BEwindow::cursorPosCallback(GLFWwindow *window, double xPos, double yPos)
 {
     auto appWindow = reinterpret_cast<BEwindow*>(glfwGetWindowUserPointer(window));
 
-    appWindow->cXPos = static_cast<int>(xPos);
-    appWindow->cYPos = static_cast<int>(yPos);
+    appWindow->cXPos = xPos;
+    appWindow->cYPos = yPos;
 }

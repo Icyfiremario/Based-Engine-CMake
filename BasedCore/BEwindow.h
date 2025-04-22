@@ -89,7 +89,7 @@ class BEwindow
         int width, height, renderAPI;
         int xPos, yPos; // Window position
 
-        int cXPos, cYPos; // Cursor position
+        double cXPos, cYPos; // Cursor position
         int cursorMode = GLFW_CURSOR_DISABLED;
 
         std::string windowName;
