@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <cassert>
 
 // GLAD
 #include <GL/glew.h>
@@ -58,6 +59,8 @@ class BEwindow
         /// @param yPos 
         void getCursorPos(double &xPos, double &yPos);
 
+        int getCursorMode() const { return cursorMode; }
+
         /// @brief Creates a Vulkan surface.
         /// @param instance Vulkan instance
         /// @param surface surface to bind to
@@ -71,7 +74,11 @@ class BEwindow
         void switchRenderAPI(int api);
 
         void setFullscreen(bool fullscreen, GLFWmonitor* monitor = nullptr);
-        inline void setCursorMode(int mode) const { glfwSetInputMode(window, GLFW_CURSOR, mode); }
+        inline void setCursorMode(int mode) 
+        { 
+            cursorMode = mode;
+            glfwSetInputMode(window, GLFW_CURSOR, mode); 
+        }
 
         
 
@@ -83,6 +90,7 @@ class BEwindow
         int xPos, yPos; // Window position
 
         int cXPos, cYPos; // Cursor position
+        int cursorMode = GLFW_CURSOR_DISABLED;
 
         std::string windowName;
 

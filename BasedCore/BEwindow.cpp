@@ -89,7 +89,11 @@ void BEwindow::initWindow()
             throw std::runtime_error("Invalid render API!");
     }
 
-    setCursorMode(GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, cursorPosCallback);
+    setCursorMode(cursorMode);
+
+    assert(glfwRawMouseMotionSupported() == GLFW_TRUE && "Raw mouse motion is not supported!");
+    glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 }
 
 void BEwindow::vkFrameBufferResizeCallback(GLFWwindow *window, int width, int height)
@@ -113,8 +117,4 @@ void BEwindow::cursorPosCallback(GLFWwindow *window, double xPos, double yPos)
 
     appWindow->cXPos = static_cast<int>(xPos);
     appWindow->cYPos = static_cast<int>(yPos);
-#ifdef DEBUG
-    std::cout << "Window: " << window;
-    std::cout << "Cursor Position: " << xPos << ", " << yPos << std::endl;
-#endif
 }

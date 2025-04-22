@@ -92,7 +92,7 @@ int main()
 
 	try
 	{
-		BEapp app {800, 600, 10, "BasedEngine", BasedCore::VULKAN};
+		BEapp app {800, 600, 10, "BasedEngine", BasedCore::OPENGL};
 
 		app.run();
 	}

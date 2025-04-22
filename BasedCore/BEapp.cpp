@@ -105,6 +105,20 @@ void BEapp::run()
                     appWindow->setFullscreen(!appWindow->getFullscreen(), glfwGetPrimaryMonitor());
                 }
 
+                if (glfwGetKey(appWindow->getWindow(), GLFW_KEY_F3) == GLFW_PRESS)
+                {
+                    if (appWindow->getCursorMode() == GLFW_CURSOR_NORMAL)
+                    {
+                        appWindow->setCursorMode(GLFW_CURSOR_DISABLED);
+                        vkDeviceWaitIdle(appDevice->getDevice());
+                    }
+                    else
+                    {
+                        appWindow->setCursorMode(GLFW_CURSOR_NORMAL);
+                        vkDeviceWaitIdle(appDevice->getDevice());
+                    }
+                }
+
                 if(glfwGetKey(appWindow.get()->getWindow(), GLFW_KEY_F1) == GLFW_PRESS)
                 {
 #ifdef DEBUG
@@ -139,7 +153,7 @@ void BEapp::run()
 
                 frameTime = fmin(frameTime, maxFrameTime);
 
-                cameraController.moveInPlaneXZ(appWindow.get()->getWindow(), frameTime, viewerObject);
+                cameraController.moveInPlaneXZ(appWindow.get(), frameTime, viewerObject);
                 camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
 
                 //appVulkanObjects[0].transform.rotation[1] += frameTime * glm::radians(90.f);

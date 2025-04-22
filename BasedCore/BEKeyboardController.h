@@ -29,6 +29,5 @@ class BEKeyboardController
         float moveSpeed{3.f};
         float lookSpeed{1.5f};
 
-        void moveInPlaneXZ(GLFWwindow* window, float dt, BVKObject &appObject);
-
+        void moveInPlaneXZ(BEwindow* window, float dt, BVKObject &appObject);
 };
