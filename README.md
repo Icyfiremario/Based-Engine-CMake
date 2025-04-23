@@ -49,9 +49,8 @@ Apple support is not planned and likely not going to happen.
 
 ## Required packages
 - GLM
-- GLEW
-- Vulkan
-- OpenGL
+- GLEW (OpenGL)
+- Vulkan SDK
 - CMake
 - GLSLC
 - GLFW3
