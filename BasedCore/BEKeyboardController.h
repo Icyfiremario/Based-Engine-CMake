@@ -27,7 +27,7 @@ class BEKeyboardController
 
         KeyMappings keys{};
         float moveSpeed{3.f};
-        float lookSpeed{1.5f};
+        float lookSpeed{1.f};
 
         void moveInPlaneXZ(BEwindow* window, float dt, BVKObject &appObject);
 };

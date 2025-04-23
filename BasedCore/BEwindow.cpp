@@ -63,6 +63,12 @@ void BEwindow::initWindow()
             window = glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
             glfwSetWindowUserPointer(window, this);
             glfwSetFramebufferSizeCallback(window, vkFrameBufferResizeCallback);
+
+            // Setup cursor for camera rotation
+            glfwSetCursorPosCallback(window, cursorPosCallback);
+            setCursorMode(cursorMode);
+            glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+
             break;
         }
 
@@ -88,12 +94,6 @@ void BEwindow::initWindow()
         default:
             throw std::runtime_error("Invalid render API!");
     }
-
-    glfwSetCursorPosCallback(window, cursorPosCallback);
-    setCursorMode(cursorMode);
-
-    assert(glfwRawMouseMotionSupported() == GLFW_TRUE && "Raw mouse motion is not supported!");
-    glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 }
 
 void BEwindow::vkFrameBufferResizeCallback(GLFWwindow *window, int width, int height)

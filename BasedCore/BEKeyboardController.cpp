@@ -28,8 +28,11 @@ void BEKeyboardController::moveInPlaneXZ(BEwindow* window, float dt, BVKObject &
     double dx = xPos - lastX;
     double dy = yPos - lastY;
 
-    rotate.x -= dy;
-    rotate.y += dx;
+    if (glfwGetInputMode(window->getWindow(), GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
+    {
+        rotate.x -= dy;
+        rotate.y += dx;
+    }
 
     if (glm::dot(rotate, rotate) > std::numeric_limits<float>::epsilon())
     {
