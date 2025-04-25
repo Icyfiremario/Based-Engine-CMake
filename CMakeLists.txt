@@ -12,13 +12,10 @@ endif()
 
 project(BasedEngine VERSION 1.0)
 
-file(GLOB SRC "*.c" "*.cpp")
-file(GLOB HDR "*.h" "*.hpp")
-
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   message(STATUS "Using GNU style compiler flags")
   set(CMAKE_CXX_FLAGS_ALL "-Wall -Wextra -Wpedantic")
 
@@ -26,8 +23,10 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQU
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_ALL} -O2")
   set(CMAKE_CXX_FLAGS_MINSIZEREL " -Os ${CMAKE_CXX_FLAGS_ALL}")
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO " -O2 -g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
-elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   message(STATUS "Using MSVC style compiler flags")
+  set(CMAKE_CXX_FLAGS_ALL "/Wall /MP")
+
   set(CMAKE_CXX_FLAGS_DEBUG "/W4 /Zi /Od /DDEBUG")
   set(CMAKE_CXX_FLAGS_RELEASE "/W4 /O2")
   set(CMAKE_CXX_FLAGS_MINSIZEREL "/W4 /Os")
@@ -56,7 +55,7 @@ find_package(GLEW REQUIRED)
 find_package(Doxygen)
 
 # Add source to this project's executable.
-add_executable(BasedEngine ${SRC} ${HDR})
+add_executable(BasedEngine main.cpp)
 target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm ${GLEW_LIBRARIES})
 add_dependencies(BasedEngine Shaders CopyModels)
 

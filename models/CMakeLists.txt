@@ -1,4 +1,4 @@
-file(GLOB MODELS "*.wobj" "*.obj") # *.wobj is just in case CMake thinks that *.obj is a compiled file
+file(GLOB MODELS CONFIGURE_DEPENDS "*.wobj" "*.obj") # *.wobj is just in case CMake thinks that *.obj is a compiled file
 
 set(COPIED_MODELS)
 set(MODELS_LOCATION "${CMAKE_BINARY_DIR}/3D_Models")

@@ -1,5 +1,8 @@
-file(GLOB SRC "*.c" "*.cpp")
-file(GLOB HDR "*.h" "*.hpp")
+file(GLOB SRC CONFIGURE_DEPENDS "*.c" "*.cpp")
+file(GLOB HDR CONFIGURE_DEPENDS "*.h" "*.hpp")
+
+#set(SRC BEapp.cpp BECamera.cpp BEKeyboardController.cpp BEwindow.cpp)
+#set(HDR BasedConfig.h BEapp.h BECamera.h BEenums.h BEKeyboardController.h BEwindow.h)
 
 find_package(glfw3 REQUIRED)
 find_package(Vulkan REQUIRED)
