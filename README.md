@@ -33,7 +33,7 @@ Apple support is not planned and likely not going to happen.
 - [x] Shaders [^2]
 - [x] Models
 - [x] Device info
-- [ ] Descriptors
+- [x] Descriptors
 - [ ] Render systems
 
 ### OpenGL
