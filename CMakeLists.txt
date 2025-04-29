@@ -12,12 +12,19 @@ endif()
 
 project(BasedEngine VERSION 1.0)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   message(STATUS "Using GNU style compiler flags")
-  set(CMAKE_CXX_FLAGS_ALL "-Wall -Wextra -Wpedantic")
+
+  if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    message(STATUS "Using Clang extensions")
+    set(CMAKE_CXX_FLAGS_ALL "-Wall -Wextra -Wpedantic -Wextra-tokens")
+  else()
+    set(CMAKE_CXX_FLAGS_ALL "-Wall -Wextra -Wpedantic")
+  endif()
+  
 
   set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_ALL} -O2")
@@ -31,6 +38,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set(CMAKE_CXX_FLAGS_RELEASE "/W4 /O2")
   set(CMAKE_CXX_FLAGS_MINSIZEREL "/W4 /Os")
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/W4 /Zi /O2 /DDEBUG")
+  message(FATAL_ERROR "MSVC compiler is not supported yet.\nI have not written into the build chain the proper methods for finding the required libraries and linking them.")
 else()
   message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
 endif()
