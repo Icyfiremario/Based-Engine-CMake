@@ -1,101 +1,46 @@
-#pragma once
+#ifndef BVKMODEL_H
+#define BVKMODEL_H
 
-// STD
-#include <vector>
-#include <cassert>
-#include <cstring>
-#include <memory>
-#include <unordered_map>
 
-// GLM
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/glm.hpp>
-#include <glm/gtx/hash.hpp>
+// BasedCore
+#include "../BasedCore/Common/BEModel.h"
 
 // BasedVK
 #include "BVKDevice.h"
-#include "BVKUtils.h"
 #include "BVKBuffer.h"
 
-/// @brief Vulkan specific 3D model implementation
-class BVKModel
+class BVKModel final : BasedEngine::Common::BEModel
 {
-    public:
+public:
 
-        /// @brief Vulkan specific vertex struct
-        struct Vertex
-        {
-            /// @brief Model position.
-            glm::vec3 position{};
-            /// @brief Model color.
-            glm::vec3 color{};
-            /// @brief Model normal matrix.
-            glm::vec3 normal{};
-            /// @brief Model texture map.
-            glm::vec2 uv{};
+    struct VKVertex : BasedEngine::Common::BEModel::Vertex
+    {
+        static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
+        static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
+    };
 
-            /// @brief Creates vector of information about how to bind the vertex
-            /// @return std::vector of binding descriptions
-            static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
-            /// @brief Creates vector of vertex attributes
-            /// @return std::vector of attribute descriptions
-            static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
+    BVKModel(BVKDevice& device, const Builder& builder);
 
-            /// @brief Checks this vertex against other
-            /// @param other Vertex to check against
-            /// @return If the vertexes match
-            bool operator==(const Vertex& other) const { return position == other.position && color == other.color && normal == other.normal && uv == other.uv; }
-        };
+    static std::unique_ptr<BVKModel> createModelFromFile(BVKDevice& device, const std::string& filePath);
 
-        /// @brief Model builder
-        struct Builder
-        {
-            /// @brief Model vertexes
-            std::vector<Vertex> vertices;
-            /// @brief Model vertex indices
-            std::vector<uint32_t> indices;
+    void bind(VkCommandBuffer commandBuffer);
+    void draw(VkCommandBuffer commandBuffer);
 
-            /// @brief Using TinyObjLoader load wavefront model
-            /// @param filePath Model path
-            void loadModels(const std::string& filePath);
-        };
+private:
 
-        /// @brief Create model from builder
-        /// @param device Vulkan device
-        /// @param builder Model builder
-        BVKModel(BVKDevice& device, const BVKModel::Builder& builder);
-        ~BVKModel();
+    BVKDevice& m_device;
 
-        BVKModel(const BVKModel&) = delete;
-        BVKModel& operator=(const BVKModel&) = delete;
+    std::unique_ptr<BVKBuffer> vertexBuffer;
+    uint32_t vertexCount;
 
-        /// @brief Loads model from file
-        /// @param device Vulkan device
-        /// @param filePath Model path
-        /// @return unique pointer to model
-        static std::unique_ptr<BVKModel> createModelFromFile(BVKDevice& device, const std::string& filePath);
+    std::unique_ptr<BVKBuffer> indexBuffer;
+    uint32_t indexCount;
 
-        /// @brief Binds model to command buffer
-        /// @param commandBuffer Command buffer
-        void bind(VkCommandBuffer commandBuffer);
-        /// @brief Adds draw command to command buffer
-        /// @param commandBuffer Command buffer
-        void draw(VkCommandBuffer commandBuffer);
+    bool hasIndexBuffer = false;
 
-    private:
-        
-        BVKDevice& modelDevice;
-
-        std::unique_ptr<BVKBuffer> vertexBuffer;
-        uint32_t vertexCount;
-
-        std::unique_ptr<BVKBuffer> indexBuffer;
-        uint32_t indexCount;
-        bool hasIndexBuffer = false;
-
-        void createVertexBuffers(const std::vector<Vertex>& vertices);
-        void createIndexBuffers(const std::vector<uint32_t>& indices);
-
+    void createVertexBuffer(const std::vector<Vertex>& vertices) override;
+    void createIndexBuffer(const std::vector<uint32_t>& indices) override;
 };
+
+
+#endif // BVKMODEL_H

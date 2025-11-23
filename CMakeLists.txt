@@ -1,35 +1,40 @@
-﻿cmake_minimum_required (VERSION 3.20)
+﻿cmake_minimum_required (VERSION 4.0)
 
 if (WIN32)
   message("Windows detected.")
-endif()
-
-# Enable Hot Reload for MSVC compilers if supported.
-if (POLICY CMP0141)
-  cmake_policy(SET CMP0141 NEW)
-  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+  set(DIRECTX_AVAILABLE True)
 endif()
 
 project(BasedEngine VERSION 1.0)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+add_compile_definitions(CMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}")
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   message(STATUS "Using GNU style compiler flags")
 
   if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     message(STATUS "Using Clang extensions")
-    set(CMAKE_CXX_FLAGS_ALL "-Wall -Wextra -Wpedantic -Wextra-tokens")
+    set(CMAKE_CXX_FLAGS_ALL "-Wall -Wextra -pedantic -Wextra-tokens -fcolor-diagnostics")
+
+    if (DIRECTX_AVAILABLE)
+      set(CMAKE_CXX_FLAGS_ALL "${CMAKE_CXX_FLAGS_ALL} -DDIRECTX_AVAILABLE")
+    endif (DIRECTX_AVAILABLE)
+
+    set(CMAKE_CXX_FLAGS_DEBUG "-g -fsanitize=undefined -fsanitize=address ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_ALL} -O2")
+    set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os ${CMAKE_CXX_FLAGS_ALL}")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
   else()
     set(CMAKE_CXX_FLAGS_ALL "-Wall -Wextra -Wpedantic")
-  endif()
-  
 
-  set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_ALL} -O2")
-  set(CMAKE_CXX_FLAGS_MINSIZEREL " -Os ${CMAKE_CXX_FLAGS_ALL}")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO " -O2 -g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
+    set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_ALL} -O2")
+    set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os ${CMAKE_CXX_FLAGS_ALL}")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
+  endif()
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   message(STATUS "Using MSVC style compiler flags")
   set(CMAKE_CXX_FLAGS_ALL "/Wall /MP")
@@ -47,8 +52,8 @@ endif()
 add_subdirectory(BasedCore)
 add_subdirectory(BasedGL)
 add_subdirectory(BasedVK)
-if (WIN32)
-  #add_subdirectory(BasedDX)
+if (DIRECTX_AVAILABLE)
+  add_subdirectory(BasedDX)
 endif()
 add_subdirectory(shaders)
 add_subdirectory(models)
@@ -64,8 +69,8 @@ find_package(Doxygen)
 
 # Add source to this project's executable.
 add_executable(BasedEngine main.cpp)
-target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm ${GLEW_LIBRARIES})
-add_dependencies(BasedEngine Shaders CopyModels)
+target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm ${GLEW_LIBRARIES} d3d12 dxgi d3dcompiler)
+add_dependencies(BasedEngine CompileShaders CopyModels)
 
 #if(WIN32)
 #  target_compile_definitions(BasedEngine PRIVATE USE_WINDOWS=1)
