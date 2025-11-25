@@ -4,16 +4,22 @@
 // STD
 
 // BasedCore
-#include "../BEWindow.h"
+#include "BEWindow.h"
 
 namespace BasedEngine::Common
 {
-    /// @brief Base class so I don't have to do as many shinanigans
+    /// @brief Base class so I don't have to do as many shenanigans
     class BEDevice
     {
     public:
 
         ~BEDevice() = default;
+
+        BEDevice(const BEDevice&) = delete;
+        BEDevice& operator=(const BEDevice&) = delete;
+        BEDevice(BEDevice&&) = delete;
+        BEDevice& operator=(BEDevice&&) = delete;
+
     };
 }
 

@@ -2,9 +2,12 @@
 #define BDXDEVICE_H
 
 // BasedCore
-#include "../BasedCore/BEWindow.h"
+#include "../BasedCore/Common/BEDevice.h"
 
-class BDXDevice
+// BasedDX
+#include "BDXWindow.h"
+
+class BDXDevice : BasedEngine::Common::BEDevice
 {
 public:
 

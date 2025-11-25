@@ -4,8 +4,8 @@ find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
 add_library(BasedCore
-        BEWindow.cpp
-        BEWindow.h
+        Common/BEWindow.cpp
+        Common/BEWindow.h
         Common/BEModel.cpp
         Common/BEModel.h
         BEUtils.h
