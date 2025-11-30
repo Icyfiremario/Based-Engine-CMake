@@ -16,12 +16,16 @@
 // Plog (Later)
 //#include <plog/Log.h>
 
+// BasedCore
+#include "BasedCore/BEApp.h"
+
 int main()
 {
 	int exitCode = EXIT_SUCCESS;
 
 	try
 	{
+		BEApp app{};
 		std::cout << "What fuck\n";
 	}
 	catch(const std::exception& e)

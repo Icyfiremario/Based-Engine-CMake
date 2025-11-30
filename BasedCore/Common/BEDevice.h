@@ -13,6 +13,7 @@ namespace BasedEngine::Common
     {
     public:
 
+        BEDevice() = default;
         ~BEDevice() = default;
 
         BEDevice(const BEDevice&) = delete;

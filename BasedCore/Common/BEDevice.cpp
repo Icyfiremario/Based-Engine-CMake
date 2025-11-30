@@ -1,8 +1,5 @@
 #include "BEDevice.h"
 
-namespace BasedEngine
+namespace BasedEngine::Common
 {
-    namespace Common
-    {
-    } // Common
-} // BasedEngine
+}

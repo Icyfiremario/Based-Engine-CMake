@@ -14,6 +14,8 @@ public:
 
     BVKWindow(int w, int h, std::string title);
 
+    void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
+
 private:
 
     void frameBufferResizedFunc(int width, int height) override;
