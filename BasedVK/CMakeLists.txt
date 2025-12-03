@@ -9,6 +9,10 @@ add_library(BasedVK
         BVKBuffer.cpp
         BVKBuffer.h
         BVKWindow.cpp
-        BVKWindow.h)
+        BVKWindow.h
+        BVKApp.cpp
+        BVKApp.h
+        BVKDeviceManager.cpp
+        BVKDeviceManager.h)
 
 target_link_libraries(BasedVK PRIVATE glfw Vulkan::Vulkan)

@@ -5,14 +5,16 @@
 #include "../BasedCore/Common/BEDevice.h"
 
 // BasedDX
-#include "BDXWindow.h"
+#include "stdafx.h"
 
 class BDXDevice : BasedEngine::Common::BEDevice
 {
 public:
 
+
 private:
-    Microsoft::WRL::ComPtr<IDXGIAdapter> m_dxgiAdapter;
+
+    Microsoft::WRL::ComPtr<ID3D12Device> device;
 };
 
 

@@ -52,6 +52,7 @@ BVKDevice::~BVKDevice()
     {
         DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
     }
+    vkDestroySurfaceKHR(instance, surface_, nullptr);
 }
 
 uint32_t BVKDevice::findMemoryType(const uint32_t typeFilter, const VkMemoryPropertyFlags properties) const

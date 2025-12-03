@@ -2,7 +2,7 @@
 
 ## About
 
-BasedVK is the vulkan implementation for Based Engine. It is based on the series of vulkan tutorials by Brendan Galea [^1].
+BasedVK is the Vulkan implementation for Based Engine. It is based on the series of vulkan tutorials by Brendan Galea [^1].
 
 ## TODO
 

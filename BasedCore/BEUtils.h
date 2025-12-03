@@ -22,6 +22,8 @@ namespace BasedEngine
         VULKAN,
         DIRECTX,
     };
+
+    static inline int currentAPI = VULKAN;
 }
 
 #endif // BEUTILS_H

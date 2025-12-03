@@ -1,15 +1,11 @@
 #ifndef BDXWINDOW_H
 #define BDXWINDOW_H
 
-// Windows
-#include <windows.h>
-#include <d3d12.h>
-#include <dxgi1_6.h>
-#include <d3dcompiler.h>
-#include <directxmath.h>
-
 // BasedCore
 #include "../BasedCore/Common/BEWindow.h"
+
+// BasedDX
+#include "stdafx.h"
 
 class BDXWindow final : BasedEngine::Common::BEWindow
 {
@@ -20,6 +16,8 @@ public:
 private:
 
     HWND m_hWnd;
+
+    void initWindow() override;
 };
 
 

@@ -81,7 +81,10 @@ find_package(Doxygen)
 # Add source to this project's executable.
 add_executable(BasedEngine main.cpp)
 target_include_directories(BasedEngine PRIVATE Include)
-target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK user32 gdi32 kernel32 OpenGL::GL glfw Vulkan::Vulkan glm::glm ${GLEW_LIBRARIES} d3d12.lib dxgi.lib dxguid.lib d3dcompiler.lib)
+target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm ${GLEW_LIBRARIES} )
+if (DIRECTX_AVAILABLE)
+  target_link_libraries(BasedEngine PRIVATE user32 gdi32 kernel32 d3d12 dxgi dxguid d3dcompiler)
+endif (DIRECTX_AVAILABLE)
 add_dependencies(BasedEngine CompileShaders CopyModels)
 
 #if(WIN32)

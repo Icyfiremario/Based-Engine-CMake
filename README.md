@@ -23,24 +23,24 @@ Apple support is not planned and likely not going to happen.
 ## To Do
 ### Core
 - [x] Window resizing
-- [x] Rendering API binding
+- [ ] Rendering API binding
 - [ ] Add Plog for logging
 - [ ] Create game object component system
 
 ### Vulkan
-- [x] Swapchain
-- [x] Pipeline
-- [x] Shaders [^2]
-- [x] Models
-- [x] Device info
-- [x] Descriptors
+- [ ] SwapChain
+- [ ] Pipeline
+- [ ] Shaders [^2]
+- [ ] Models
+- [ ] Device info
+- [ ] Descriptors
 - [ ] Render systems
 
 ### OpenGL
 - [ ] General implementation
 
 ### DirectX
-- [ ] WinMain entry
+- [ ] HWND binding
 
 ### Editor
 - [ ] 3D editor
@@ -69,4 +69,4 @@ Apple support is not planned and likely not going to happen.
 
 [^2]: Custom shaders will be done using render systems. There will be a parent render system class that you override with your own functions and shaders. An example of this is between the Pointlight render system and the BVKRenderSystem. The Pointlight system is almost exactly the same as BVKRenderSystem but with some changes to the render function and the addition of an update function. In the future, the BVKRenderSystem class will be used as a parent class for all render systems and the current implementation will be the BVKBasicRenderSystem.
 
-[^3]: This package supports loading wavefront object models. I will replace this in the future with an in-house model loader in order to support more model formats. If using you are using MSVC models may need to be renamed to .wobj in order to prevent MSVC from trying to link them into the program. IDK for sure though because I haven't got compiling with MSVC to work yet.
+[^3]: This package supports loading wavefront object models. I will replace this in the future with an in-house model loader in order to support more model formats. If using you are using MSVC, models may need to be renamed to .wobj in order to prevent MSVC from trying to link them into the program. IDK for sure though because I haven't got compiling with MSVC to work yet.
