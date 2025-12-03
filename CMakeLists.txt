@@ -71,11 +71,17 @@ find_package(glm REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Vulkan REQUIRED)
 find_package(GLEW REQUIRED)
+if(DIRECTX_AVAILABLE)
+  find_package(DirectX-Headers REQUIRED)
+endif (DIRECTX_AVAILABLE)
+
+# Extras
 find_package(Doxygen)
 
 # Add source to this project's executable.
 add_executable(BasedEngine main.cpp)
-target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm ${GLEW_LIBRARIES} d3d12 dxgi d3dcompiler)
+target_include_directories(BasedEngine PRIVATE Include)
+target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK user32 gdi32 kernel32 OpenGL::GL glfw Vulkan::Vulkan glm::glm ${GLEW_LIBRARIES} d3d12.lib dxgi.lib dxguid.lib d3dcompiler.lib)
 add_dependencies(BasedEngine CompileShaders CopyModels)
 
 #if(WIN32)

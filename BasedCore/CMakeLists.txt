@@ -13,10 +13,11 @@ add_library(BasedCore
         Common/BEObject.h
         Common/BEDevice.cpp
         Common/BEDevice.h
-        BEApp.cpp
-        BEApp.h
-        Managers/BEDeviceManager.cpp
-        Managers/BEDeviceManager.h
+        Managers/BEAppManager.cpp
+        Managers/BEAppManager.h
+        Common/BEApp.cpp
+        Common/BEApp.h
 )
 
+target_include_directories(BasedCore PRIVATE ../Include)
 target_link_libraries(BasedCore PRIVATE glfw Vulkan::Vulkan OpenGL::GL GLEW::GLEW d3d12 dxgi d3dcompiler)

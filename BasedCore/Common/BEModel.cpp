@@ -2,7 +2,7 @@
 
 // TinyObjLoader
 #define TINYOBJLOADER_IMPLEMENTATION
-#include <TinyObjLoader/tiny_obj_loader.h>
+#include "TinyObjLoader/tiny_obj_loader.h"
 
 template<>
 struct std::hash<BasedEngine::Common::BEModel::Vertex>
