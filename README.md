@@ -18,7 +18,7 @@ Very unstable. Weird bugs with rendering freezing and the camera teleporting for
 - OpenGL
 
 ### Apple
-Apple support is not planned and likely not going to happen.
+Apple support will be tested and planned as soon as I get a suitable Apple device.
 
 ## To Do
 ### Core
