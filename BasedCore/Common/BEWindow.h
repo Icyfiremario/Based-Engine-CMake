@@ -18,6 +18,7 @@ namespace BasedEngine::Common
     {
     public:
 
+        BEWindow();
         BEWindow(int w, int h, std::string title);
         virtual ~BEWindow();
 

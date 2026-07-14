@@ -12,12 +12,13 @@ class BVKWindow final : BasedEngine::Common::BEWindow
 {
 public:
 
+    BVKWindow();
     BVKWindow(int w, int h, std::string title);
 
-    bool shouldClose() const override { return glfwWindowShouldClose(m_window); }
-    bool wasWindowResized() const override { return frameBufferResized; }
+    [[nodiscard]] bool shouldClose() const override { return glfwWindowShouldClose(m_window); }
+    [[nodiscard]] bool wasWindowResized() const override { return frameBufferResized; }
 
-    GLFWwindow* getWindow() const override { return m_window; }
+    [[nodiscard]] GLFWwindow* getWindow() const override { return m_window; }
 
     void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 
@@ -25,13 +26,13 @@ private:
 
     GLFWwindow* m_window = nullptr;
 
-    int width{}, height{};
+    int width = 600, height = 600;
     int xPos = 0, yPos = 0; // Window position
 
     double cXPos = 0, cYPos = 0; // Cursor position
     int cursorMode = GLFW_CURSOR_NORMAL;
 
-    std::string m_title;
+    std::string m_title = "Vulkan App";
 
     bool frameBufferResized = false;
 

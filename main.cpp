@@ -22,9 +22,9 @@ int main()
 
     try
     {
-        //BEAppManager* appManager = BEAppManager::getInstance();
-
-        std::cout << "What fuck\n";
+        BEAppManager* appManager = BEAppManager::getInstance();
+        appManager->createApp(BasedEngine::API::VULKAN);
+        appManager->getApp()->run();
     }
     catch(const std::exception& e)
     {

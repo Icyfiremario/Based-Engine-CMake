@@ -4,10 +4,18 @@
 // BasedCore
 #include "../BasedCore/Common/BEApp.h"
 
-class BVKApp : BEApp
+class BVKApp : public BEApp
 {
 public:
+
+    BVKApp();
+    ~BVKApp() override;
+
+    void run() override;
+
 private:
+
+    std::unique_ptr<BVKWindow> appWindow = nullptr;
 };
 
 

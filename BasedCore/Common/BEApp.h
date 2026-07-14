@@ -2,7 +2,10 @@
 #define BEAPP_H
 
 // STD
+#include <memory>
 #include <string>
+
+#include "../../BasedVK/BVKWindow.h"
 
 class BEApp
 {
@@ -14,9 +17,6 @@ public:
     virtual void run() = 0;
 
 private:
-
-    int m_width = 0, m_height = 0;
-    std::string m_title;
 };
 
 

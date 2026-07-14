@@ -1,5 +1,10 @@
 #include "BVKWindow.h"
 
+BVKWindow::BVKWindow() : BEWindow()
+{
+    initWindow();
+}
+
 BVKWindow::BVKWindow(const int w, const int h, std::string title) : BEWindow(w, h, std::move(title)), width(w), height(h), m_title(std::move(title))
 {
     initWindow();
@@ -13,6 +18,7 @@ void BVKWindow::initWindow()
 {
     glfwInit();
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     m_window = glfwCreateWindow(width, height, m_title.c_str(), nullptr, nullptr);
     glfwSetWindowUserPointer(m_window, this);
