@@ -5,13 +5,14 @@
 #define WINDOWS
 #elif defined(__APPLE__) || defined(__MACH__)
 #warning "Apple support is limited."
+#define APPLE
 #endif
 
 // STD
 #include <iostream>
 
 // Plog (Later)
-#include <plog/Log.h>
+//#include <plog/Log.h>
 
 // BasedCore
 #include "BasedCore/Managers/BEAppManager.h"
@@ -23,7 +24,7 @@ int main()
     try
     {
         BEAppManager* appManager = BEAppManager::getInstance();
-        appManager->createApp(BasedEngine::API::VULKAN);
+        appManager->createApp(600, 400, "Based Vulkan");
         appManager->getApp()->run();
     }
     catch(const std::exception& e)

@@ -12,6 +12,7 @@ class BVKApp : public BEApp
 public:
 
     BVKApp();
+    BVKApp(int width, int height, const char* title);
     ~BVKApp() override;
 
     void run() override;
@@ -19,7 +20,7 @@ public:
 private:
 
     std::unique_ptr<BVKWindow> appWindow = nullptr;
-    std::unique_ptr<BVKDevice> mainWindow = nullptr;
+    std::unique_ptr<BVKDevice> appDevice = nullptr;
 };
 
 

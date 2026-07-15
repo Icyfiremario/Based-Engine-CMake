@@ -20,4 +20,8 @@ add_library(BasedCore
 )
 
 target_include_directories(BasedCore PRIVATE ../Include)
-target_link_libraries(BasedCore PRIVATE glfw Vulkan::Vulkan OpenGL::GL GLEW::GLEW d3d12 dxgi d3dcompiler)
+target_link_libraries(BasedCore PRIVATE glfw Vulkan::Vulkan OpenGL::GL GLEW::GLEW)
+
+if (DIRECTX_AVAILABLE)
+    target_link_libraries(BasedCore PRIVATE d3d12 dxgi d3dcompiler)
+endif ()

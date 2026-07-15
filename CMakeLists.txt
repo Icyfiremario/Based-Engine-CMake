@@ -3,6 +3,8 @@
 if (WIN32)
   message("Windows detected.")
   set(DIRECTX_AVAILABLE True)
+else ()
+  set(DIRECTX_AVAILABLE False)
 endif()
 
 project(BasedEngine VERSION 1.0)
@@ -50,8 +52,14 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set(CMAKE_CXX_FLAGS_MINSIZEREL "/W4 /Os")
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/W4 /Zi /O2 /DDEBUG")
   message(FATAL_ERROR "MSVC compiler is not supported yet.\nI have not written into the build chain the proper methods for finding the required libraries and linking them.")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+  message(STATUS "Using AppleClang")
 else()
   message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
+  message(STATUS "Using Clang extensions")
+  set(CMAKE_CXX_FLAGS_ALL "-Wall -Wextra -pedantic -Wextra-tokens -fcolor-diagnostics")
+
+  set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
 endif()
 
 # Include sub-projects.
@@ -81,7 +89,7 @@ find_package(Doxygen)
 # Add source to this project's executable.
 add_executable(BasedEngine main.cpp)
 target_include_directories(BasedEngine PRIVATE Include)
-target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm glew32)
+target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm GLEW::GLEW)
 if (DIRECTX_AVAILABLE)
   target_link_libraries(BasedEngine PRIVATE user32 gdi32 kernel32 d3d12 dxgi dxguid d3dcompiler)
 endif (DIRECTX_AVAILABLE)

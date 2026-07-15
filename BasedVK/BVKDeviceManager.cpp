@@ -72,6 +72,7 @@ void BVKDeviceManager::createInstance()
     VkInstanceCreateInfo createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
+    createInfo.flags |= REQUIRED_FLAGS;
 
     const auto extensions = getRequiredExtensions();
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());

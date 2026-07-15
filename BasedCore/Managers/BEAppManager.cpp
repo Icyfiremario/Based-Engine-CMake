@@ -37,6 +37,30 @@ BEApp* BEAppManager::createApp(const int API)
     return app.get();
 }
 
+BEApp* BEAppManager::createApp(int w, int h, const std::string& title)
+{
+    app = std::make_unique<BVKApp>(w, h, title.c_str());
+    return app.get();
+}
+
+BEApp* BEAppManager::createApp(int w, int h, std::string title, const int api)
+{
+    switch (api)
+    {
+    case BasedEngine::VULKAN:
+        {
+            app = std::make_unique<BVKApp>(w, h, title.c_str());
+            break;
+        }
+    case BasedEngine::OPENGL:
+    case BasedEngine::DIRECTX:
+    default:
+        throw std::invalid_argument("Invalid API!");
+    }
+
+    return app.get();
+}
+
 //BEApp* BEAppManager::createApp(int w, int h, std::string title, int api)
 //{
 //    return app;

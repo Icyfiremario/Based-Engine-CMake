@@ -2,23 +2,27 @@
 
 BVKApp::BVKApp()
 {
-    appWindow = std::make_unique<BVKWindow>(600, 600, "Vulkan App");
+    appWindow = std::make_unique<BVKWindow>(600, 400, "Based Vulkan");
+}
 
-    BVKDeviceManager* deviceManager = BVKDeviceManager::getInstance();
+BVKApp::BVKApp(int width, int height, const char* title)
+{
+    appWindow = std::make_unique<BVKWindow>(width, height, title);
 }
 
 BVKApp::~BVKApp()
 {
-
+    appDevice.reset();
+    appWindow.reset();
 }
 
 void BVKApp::run()
 {
-    while (!appWindow->shouldClose())
+    while (!appWindow.get()->shouldClose())
     {
-        if (glfwGetKey(appWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        if (glfwGetKey(appWindow.get()->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
-            glfwSetWindowShouldClose(appWindow->getWindow(), true);
+            glfwSetWindowShouldClose(appWindow.get()->getWindow(), true);
         }
 
         glfwPollEvents();

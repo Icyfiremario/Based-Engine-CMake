@@ -5,7 +5,7 @@ BVKWindow::BVKWindow() : BEWindow()
     initWindow();
 }
 
-BVKWindow::BVKWindow(const int w, const int h, std::string title) : BEWindow(w, h, std::move(title)), width(w), height(h), m_title(std::move(title))
+BVKWindow::BVKWindow(const int w, const int h, const char* title) : BEWindow(w, h, title), width(w), height(h), m_title(title)
 {
     initWindow();
 }

@@ -13,7 +13,7 @@ class BVKWindow final : BasedEngine::Common::BEWindow
 public:
 
     BVKWindow();
-    BVKWindow(int w, int h, std::string title);
+    BVKWindow(int w, int h, const char* title);
 
     [[nodiscard]] bool shouldClose() const override { return glfwWindowShouldClose(m_window); }
     [[nodiscard]] bool wasWindowResized() const override { return frameBufferResized; }

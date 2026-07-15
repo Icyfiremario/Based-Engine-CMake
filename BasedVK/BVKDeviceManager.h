@@ -10,6 +10,12 @@
 // BasedVK
 #include "BVKDevice.h"
 
+#ifdef APPLE
+#define REQUIRED_FLAGS VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR
+#else
+#define REQUIRED_FLAGS 0
+#endif
+
 class BVKDeviceManager
 {
 public:

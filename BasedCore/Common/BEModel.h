@@ -5,6 +5,7 @@
 #include <vector>
 #include <cassert>
 #include <cstring>
+#include <unordered_map>
 
 // GLM
 #define GLM_FORCE_RADIANS
