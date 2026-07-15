@@ -15,4 +15,4 @@ add_library(BasedVK
         BVKDeviceManager.cpp
         BVKDeviceManager.h)
 
-target_link_libraries(BasedVK PRIVATE glfw Vulkan::Vulkan)
+target_link_libraries(BasedVK PRIVATE glfw Vulkan::Vulkan BasedCore)

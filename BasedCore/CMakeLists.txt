@@ -19,9 +19,9 @@ add_library(BasedCore
         Common/BEApp.h
 )
 
-target_include_directories(BasedCore PRIVATE ../Include)
+target_include_directories(BasedCore PRIVATE ../include)
 target_link_libraries(BasedCore PRIVATE glfw Vulkan::Vulkan OpenGL::GL GLEW::GLEW)
 
 if (DIRECTX_AVAILABLE)
     target_link_libraries(BasedCore PRIVATE d3d12 dxgi d3dcompiler)
-endif ()
+endif (DIRECTX_AVAILABLE)

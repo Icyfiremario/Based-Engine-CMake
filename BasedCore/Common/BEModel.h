@@ -5,6 +5,7 @@
 #include <vector>
 #include <cassert>
 #include <cstring>
+#include <string>
 #include <unordered_map>
 
 // GLM

@@ -3,8 +3,6 @@
 if (WIN32)
   message("Windows detected.")
   set(DIRECTX_AVAILABLE True)
-else ()
-  set(DIRECTX_AVAILABLE False)
 endif()
 
 project(BasedEngine VERSION 1.0)
