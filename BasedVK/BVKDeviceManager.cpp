@@ -12,23 +12,23 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
     return VK_FALSE;
 }
 
-VkResult CreateDebugUtilsMessengerEXT(const VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo, const VkAllocationCallbacks *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger)
-{
-    if (const auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT")); func != nullptr)
-    {
-        return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
-    }
+//VkResult CreateDebugUtilsMessengerEXT(const VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo, const VkAllocationCallbacks *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger)
+//{
+//    if (const auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT")); func != nullptr)
+//    {
+//        return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
+//    }
+//
+//    return VK_ERROR_EXTENSION_NOT_PRESENT;
+//}
 
-    return VK_ERROR_EXTENSION_NOT_PRESENT;
-}
-
-void DestroyDebugUtilsMessengerEXT(const VkInstance instance, const VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
-{
-    if (const auto func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT")); func != nullptr)
-    {
-        func(instance, debugMessenger, pAllocator);
-    }
-}
+//void DestroyDebugUtilsMessengerEXT(const VkInstance instance, const VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
+//{
+//    if (const auto func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT")); func != nullptr)
+//    {
+//        func(instance, debugMessenger, pAllocator);
+//    }
+//}
 
 BVKDeviceManager* BVKDeviceManager::getInstance()
 {
@@ -98,7 +98,7 @@ void BVKDeviceManager::createInstance()
     }
 }
 
-void BVKDeviceManager::findDevices()
+void BVKDeviceManager::findDevices() const
 {
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(vkInstance, &deviceCount, nullptr);

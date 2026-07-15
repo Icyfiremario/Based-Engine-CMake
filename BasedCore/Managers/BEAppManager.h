@@ -34,7 +34,6 @@ private:
     static BEAppManager* instance;
     static std::mutex mtx;
 
-    //BEApp* app = nullptr;
     std::unique_ptr<BEApp> app;
 
     BEAppManager() = default;

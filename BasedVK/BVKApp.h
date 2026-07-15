@@ -4,6 +4,9 @@
 // BasedCore
 #include "../BasedCore/Common/BEApp.h"
 
+// BasedVK
+#include "BVKDeviceManager.h"
+
 class BVKApp : public BEApp
 {
 public:
@@ -16,6 +19,7 @@ public:
 private:
 
     std::unique_ptr<BVKWindow> appWindow = nullptr;
+    std::unique_ptr<BVKDevice> mainWindow = nullptr;
 };
 
 

@@ -24,7 +24,7 @@ public:
 
     static BVKDeviceManager* getInstance();
 
-    VkInstance getVkInstance() const { return vkInstance; }
+    [[nodiscard]] VkInstance getVkInstance() const { return vkInstance; }
 
 private:
 
@@ -49,11 +49,11 @@ private:
     ~BVKDeviceManager();
 
     void createInstance();
-    void findDevices();
+    void findDevices() const;
     bool isDeviceSuitable(VkPhysicalDevice device);
 
-    std::vector<const char*> getRequiredExtensions() const;
-    bool checkValidationLayerSupport() const;
+    [[nodiscard]] std::vector<const char*> getRequiredExtensions() const;
+    [[nodiscard]] bool checkValidationLayerSupport() const;
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
     static void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 };
