@@ -12,7 +12,7 @@
 #include <iostream>
 
 // Plog (Later)
-//#include <plog/Log.h>
+#include <plog/Log.h>
 
 // BasedCore
 #include "BasedCore/Managers/BEAppManager.h"
