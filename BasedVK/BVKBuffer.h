@@ -6,7 +6,7 @@
 #include <cstring>
 
 // BasedVK
-#include "BVKDevice.h"
+#include "BVKDeviceManager.h"
 
 class BVKBuffer
 {

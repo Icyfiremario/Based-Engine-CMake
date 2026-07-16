@@ -2,10 +2,6 @@ find_package(Vulkan REQUIRED)
 find_package(glfw3 REQUIRED)
 
 add_library(BasedVK
-        BVKModel.cpp
-        BVKModel.h
-        BVKDevice.cpp
-        BVKDevice.h
         BVKBuffer.cpp
         BVKBuffer.h
         BVKWindow.cpp
@@ -13,6 +9,9 @@ add_library(BasedVK
         BVKApp.cpp
         BVKApp.h
         BVKDeviceManager.cpp
-        BVKDeviceManager.h)
+        BVKDeviceManager.h
+        BVKDevice.cpp
+        BVKDevice.h
+)
 
 target_link_libraries(BasedVK PRIVATE glfw Vulkan::Vulkan BasedCore)

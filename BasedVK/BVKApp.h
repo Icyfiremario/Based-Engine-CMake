@@ -20,7 +20,6 @@ public:
 private:
 
     std::unique_ptr<BVKWindow> appWindow = nullptr;
-    std::unique_ptr<BVKDevice> appDevice = nullptr;
 };
 
 

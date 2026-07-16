@@ -2,22 +2,44 @@
 #define BVKDEVICEMANAGER_H
 
 // STD
+#include <memory>
 #include <mutex>
-#include <map>
-#include <vector>
 #include <iostream>
+#include <vector>
+#include <cstring>
+
+// Vulkan
+#include <vulkan/vulkan.h>
+
+// GLFW
+#include <GLFW/glfw3.h>
 
 // BasedVK
 #include "BVKDevice.h"
 
-#ifdef APPLE
-#define REQUIRED_FLAGS VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR
-#else
-#define REQUIRED_FLAGS 0
-#endif
-
+/// @brief Manages a list of all available vulkan ready devices suitable for the application.
 class BVKDeviceManager
 {
+private:
+
+    struct Token {};
+
+    VkInstance instance;
+
+    const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
+
+    std::vector<std::unique_ptr<BVKDevice>> devices;
+    int currentDeviceIndex = 0; /// @brief Index of current device in device list.
+
+    BVKDeviceManager();
+
+    void createInstance();
+
+    [[nodiscard]] std::vector<const char*> getRequiredExtensions() const;
+    [[nodiscard]] bool checkValidationLayerSupport() const;
+
+    static void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+
 public:
 
 #ifdef DEBUG
@@ -26,42 +48,19 @@ public:
     const bool enableValidationLayers = false;
 #endif
 
+    explicit BVKDeviceManager(Token);
+
     BVKDeviceManager(const BVKDeviceManager&) = delete;
+    BVKDeviceManager& operator=(const BVKDeviceManager&) = delete;
+    BVKDeviceManager(BVKDeviceManager&&) = delete;
+    BVKDeviceManager& operator=(BVKDeviceManager&&) = delete;
 
-    static BVKDeviceManager* getInstance();
-
-    [[nodiscard]] VkInstance getVkInstance() const { return vkInstance; }
-
-private:
-
-#ifdef DEBUG
-    const bool logDevice = true;
-#else
-    const bool logDevice = false;
-#endif
-
-    static BVKDeviceManager* instance;
-    static std::mutex mtx;
-
-    VkInstance vkInstance;
-
-    const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
-    const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
-
-    using id_t = unsigned int;
-    std::vector<BVKDevice*> availableDevices;
-
-    BVKDeviceManager();
     ~BVKDeviceManager();
 
-    void createInstance();
-    void findDevices() const;
-    bool isDeviceSuitable(VkPhysicalDevice device);
+    static std::shared_ptr<BVKDeviceManager> getInstance();
 
-    [[nodiscard]] std::vector<const char*> getRequiredExtensions() const;
-    [[nodiscard]] bool checkValidationLayerSupport() const;
-    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-    static void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+    [[nodiscard]] VkInstance getVkInstance() const { return instance; };
+    std::unique_ptr<BVKDevice> getDevicePtr();
 };
 
 
