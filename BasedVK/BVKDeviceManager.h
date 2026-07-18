@@ -32,10 +32,16 @@
 class BVKDeviceManager
 {
 private:
+#ifdef DEBUG
+    const bool logDevice = true;
+#else
+    const bool logDevice = false;
+#endif
 
     struct Token {};
 
     VkInstance instance;
+    VkDebugUtilsMessengerEXT debugMessenger;
 
     const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
 
@@ -45,6 +51,8 @@ private:
     BVKDeviceManager();
 
     void createInstance();
+    void setupDebugMessenger();
+    void findDevices();
 
     [[nodiscard]] std::vector<const char*> getRequiredExtensions() const;
     [[nodiscard]] bool checkValidationLayerSupport() const;

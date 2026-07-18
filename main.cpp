@@ -36,7 +36,9 @@ int main()
     try
     {
         BEAppManager* appManager = BEAppManager::getInstance();
+        PLOGI << "Creating app object.";
         appManager->createApp(600, 400, "Based Vulkan");
+        PLOGI << "Running app.";
         appManager->getApp()->run();
     }
     catch(const std::exception& e)

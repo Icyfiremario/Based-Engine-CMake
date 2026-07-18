@@ -28,12 +28,39 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(const VkDebugUtilsMessageSev
     return VK_FALSE;
 }
 
+VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo, const VkAllocationCallbacks *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger)
+{
+    auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+
+    if (func != nullptr)
+    {
+        return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
+    }
+    else
+    {
+        return VK_ERROR_EXTENSION_NOT_PRESENT;
+    }
+}
+
+void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
+{
+    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+
+    if (func != nullptr)
+    {
+        func(instance, debugMessenger, pAllocator);
+    }
+}
+
 BVKDeviceManager::BVKDeviceManager()
 {
     // Log BVKDeviceManager init
+    PLOGI << "Vulkan device manager initialized.";
 
     // Create vulkan instance, pick device, create VkDevice Object
     createInstance();
+    setupDebugMessenger();
+    findDevices();
 }
 
 void BVKDeviceManager::createInstance()
@@ -79,7 +106,7 @@ void BVKDeviceManager::createInstance()
 
     if (const VkResult result = vkCreateInstance(&createInfo, nullptr, &instance); result != VK_SUCCESS)
     {
-        std::string reason = "";
+        std::string reason;
 
         switch (result)
         {
@@ -93,6 +120,41 @@ void BVKDeviceManager::createInstance()
 
         PLOGF << "Failed to create Vulkan instance: " << reason;
         throw std::runtime_error("Failed to create Vulkan instance: " + reason);
+    }
+
+    PLOGI << "Vulkan instance created.";
+}
+
+void BVKDeviceManager::setupDebugMessenger()
+{
+    if (!enableValidationLayers) return;
+
+    VkDebugUtilsMessengerCreateInfoEXT createInfo;
+    populateDebugMessengerCreateInfo(createInfo);
+
+    if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create debug messenger!");
+    }
+
+    PLOGI << "Created debug messenger.";
+}
+
+void BVKDeviceManager::findDevices()
+{
+    uint32_t deviceCount = 0;
+    vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+
+    if (deviceCount == 0)
+    {
+        throw std::runtime_error("Failed to find Vulkan compatible GPUs! Check your GPU manufacture's website to get the latest drivers.");
+    }
+
+    PLOGI << "Found " << deviceCount << " compatible GPU(s).";
+
+    if (logDevice)
+    {
+        std::cout << "Device count: " << deviceCount << '\n';
     }
 }
 
@@ -165,6 +227,8 @@ BVKDeviceManager::~BVKDeviceManager()
     {
         device.reset();
     }
+
+    PLOGI << "BVK device manager released.";
 }
 
 std::shared_ptr<BVKDeviceManager> BVKDeviceManager::getInstance()
