@@ -55,7 +55,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
   message(STATUS "Using Clang extensions")
   set(CMAKE_CXX_FLAGS_ALL "-Wall -Wextra -pedantic -Wextra-tokens -fcolor-diagnostics")
 
-  set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
+  set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG -DAPPLE")
 else()
   message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
 
@@ -93,10 +93,6 @@ if (DIRECTX_AVAILABLE)
   target_link_libraries(BasedEngine PRIVATE user32 gdi32 kernel32 d3d12 dxgi dxguid d3dcompiler)
 endif (DIRECTX_AVAILABLE)
 add_dependencies(BasedEngine CompileShaders CopyModels)
-
-#if(WIN32)
-#  target_compile_definitions(BasedEngine PRIVATE USE_WINDOWS=1)
-#endif(WIN32)
 
 if(DOXYGEN_FOUND)
   set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md")

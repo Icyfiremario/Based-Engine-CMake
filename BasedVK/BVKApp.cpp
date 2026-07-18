@@ -5,8 +5,6 @@ BVKApp::BVKApp()
     appWindow = std::make_unique<BVKWindow>(600, 400, "Based Vulkan");
 
     const auto deviceManager = BVKDeviceManager::getInstance();
-
-    VkInstance instance = deviceManager->getVkInstance();
 }
 
 BVKApp::BVKApp(int width, int height, const char* title)
@@ -14,8 +12,6 @@ BVKApp::BVKApp(int width, int height, const char* title)
     appWindow = std::make_unique<BVKWindow>(width, height, title);
 
     const auto deviceManager = BVKDeviceManager::getInstance();
-
-    VkInstance instance = deviceManager->getVkInstance();
 }
 
 BVKApp::~BVKApp()

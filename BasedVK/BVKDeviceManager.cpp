@@ -1,9 +1,28 @@
 #include "BVKDeviceManager.h"
 
-static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
+static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(const VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 {
 #ifdef DEBUG
-    std::cerr << "Validation layer: " << pCallbackData->pMessage << std::endl;
+    std::cerr << "Validation layer: " << pCallbackData->pMessage << '\n';
+
+    switch (messageSeverity)
+    {
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+            std::cerr << "Validation layer (info): " << pCallbackData->pMessage << '\n';
+            PLOGI << "Validation layer: " << pCallbackData->pMessage;
+            break;
+
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+            std::cerr << "Validation layer (error): " << pCallbackData->pMessage << '\n';
+            PLOGE << "Validation layer: " << pCallbackData->pMessage;
+            break;
+
+        default:
+            std::cerr << "Validation layer: " << pCallbackData->pMessage << '\n';
+            PLOGD << "Validation layer: " << pCallbackData->pMessage;
+            break;
+    }
+
 #endif // DEBUG
 
     return VK_FALSE;
@@ -21,7 +40,10 @@ void BVKDeviceManager::createInstance()
 {
     if (enableValidationLayers && !checkValidationLayerSupport())
     {
-        throw std::runtime_error("Validation Layers are not supported!");
+        //throw std::runtime_error("Validation Layers are not supported!");
+        std::cerr << "WARNING: Validation layer support was not found.\n";
+        PLOGW << "Validation layer support was not found.";
+        enableValidationLayers = false;
     }
 
     VkApplicationInfo appInfo = {};
@@ -35,9 +57,7 @@ void BVKDeviceManager::createInstance()
     VkInstanceCreateInfo createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
-#ifdef APPLE
-    createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR
-#endif
+    createInfo.flags |= FLAGS;
 
     const auto extensions = getRequiredExtensions();
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
@@ -57,9 +77,22 @@ void BVKDeviceManager::createInstance()
         createInfo.pNext = nullptr;
     }
 
-    if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS)
+    if (const VkResult result = vkCreateInstance(&createInfo, nullptr, &instance); result != VK_SUCCESS)
     {
-        throw std::runtime_error("Failed to create Vulkan instance!");
+        std::string reason = "";
+
+        switch (result)
+        {
+        case -9:
+            reason = "incompatible driver";
+            break;
+        default:
+            reason = "unknown";
+            break;
+        }
+
+        PLOGF << "Failed to create Vulkan instance: " << reason;
+        throw std::runtime_error("Failed to create Vulkan instance: " + reason);
     }
 }
 
@@ -73,6 +106,12 @@ std::vector<const char*> BVKDeviceManager::getRequiredExtensions() const
     if (enableValidationLayers)
     {
         extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    }
+
+    if constexpr (FLAGS != 0)
+    {
+        extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+        extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
     }
 
     return extensions;
@@ -136,5 +175,12 @@ std::shared_ptr<BVKDeviceManager> BVKDeviceManager::getInstance()
 
 std::unique_ptr<BVKDevice> BVKDeviceManager::getDevicePtr()
 {
-    return std::move(devices[currentDeviceIndex]);
+    auto ptr = std::move(devices[currentDeviceIndex]);
+
+    if (!ptr)
+    {
+        return nullptr;
+    }
+
+    return ptr;
 }

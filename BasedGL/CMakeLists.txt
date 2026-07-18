@@ -10,5 +10,5 @@ add_library(BasedGL
         BGLWindow.h
 )
 
-target_include_directories(BasedGL PRIVATE ${OPENGL_INCLUDE_DIR})
+target_include_directories(BasedGL PRIVATE ${OPENGL_INCLUDE_DIR} ../include)
 target_link_libraries(BasedGL OpenGL::GL Vulkan::Vulkan glfw GLEW::GLEW BasedCore)

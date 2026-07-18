@@ -14,8 +14,19 @@
 // GLFW
 #include <GLFW/glfw3.h>
 
+// Plog
+#include <plog/Log.h>
+
 // BasedVK
 #include "BVKDevice.h"
+
+#ifndef FLAGS
+#ifdef APPLE
+#define FLAGS VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR
+#else
+#define FLAGS 0
+#endif // APPLE
+#endif // FLAGS
 
 /// @brief Manages a list of all available vulkan ready devices suitable for the application.
 class BVKDeviceManager
@@ -43,9 +54,9 @@ private:
 public:
 
 #ifdef DEBUG
-    const bool enableValidationLayers = true;
+    bool enableValidationLayers = true;
 #else
-    const bool enableValidationLayers = false;
+    bool enableValidationLayers = false;
 #endif
 
     explicit BVKDeviceManager(Token);

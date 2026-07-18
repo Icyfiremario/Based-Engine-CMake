@@ -14,4 +14,5 @@ add_library(BasedVK
         BVKDevice.h
 )
 
+target_include_directories(BasedVK PRIVATE ../include)
 target_link_libraries(BasedVK PRIVATE glfw Vulkan::Vulkan BasedCore)
