@@ -19,6 +19,7 @@
 
 // BasedVK
 #include "BVKDevice.h"
+#include "BVKWindow.h"
 
 #ifndef FLAGS
 #ifdef APPLE
@@ -42,6 +43,8 @@ private:
 
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;
+
+    //BVKWindow &_window;
 
     const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
 

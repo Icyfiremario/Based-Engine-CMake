@@ -97,6 +97,7 @@ void BVKDeviceManager::createInstance()
         createInfo.ppEnabledLayerNames = validationLayers.data();
 
         populateDebugMessengerCreateInfo(debugCreateInfo);
+        createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
     }
     else
     {
@@ -156,6 +157,10 @@ void BVKDeviceManager::findDevices()
     {
         std::cout << "Device count: " << deviceCount << '\n';
     }
+
+    std::vector<VkPhysicalDevice> physicalDevices(deviceCount);
+    devices.reserve(deviceCount);
+    vkEnumeratePhysicalDevices(instance, &deviceCount, physicalDevices.data());
 }
 
 std::vector<const char*> BVKDeviceManager::getRequiredExtensions() const
@@ -219,7 +224,7 @@ void BVKDeviceManager::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCre
     createInfo.pUserData = nullptr;
 }
 
-BVKDeviceManager::BVKDeviceManager(Token) : BVKDeviceManager() {}
+BVKDeviceManager::BVKDeviceManager(Token) : BVKDeviceManager() { }
 
 BVKDeviceManager::~BVKDeviceManager()
 {
@@ -239,10 +244,18 @@ std::shared_ptr<BVKDeviceManager> BVKDeviceManager::getInstance()
 
 std::unique_ptr<BVKDevice> BVKDeviceManager::getDevicePtr()
 {
-    auto ptr = std::move(devices[currentDeviceIndex]);
-
-    if (!ptr)
+    std::unique_ptr<BVKDevice> ptr = nullptr;
+    try
     {
+        ptr = std::move(devices[currentDeviceIndex]);
+    } catch (std::exception& e)
+    {
+        PLOGE << "Failed to get device pointer: " << e.what();
+        if (logDevice)
+        {
+            std::cerr << "Failed to get device pointer: " << e.what();
+        }
+
         return nullptr;
     }
 

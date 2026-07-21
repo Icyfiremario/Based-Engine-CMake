@@ -14,6 +14,9 @@
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 
+// Plog
+#include <plog/Log.h>
+
 namespace BasedEngine::Common
 {
     class BEWindow

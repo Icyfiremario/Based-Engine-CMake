@@ -13,4 +13,6 @@ BasedEngine::Common::BEWindow::~BEWindow()
 {
     glfwDestroyWindow(m_window);
     glfwTerminate();
+
+    PLOGI << "Window destroyed.";
 }

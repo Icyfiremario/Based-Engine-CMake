@@ -4,6 +4,9 @@
 // Vulkan
 #include <vulkan/vulkan.hpp>
 
+// Plog
+#include <plog/Log.h>
+
 // BasedCore
 #include "../BasedCore/Common/BEWindow.h"
 
@@ -20,7 +23,7 @@ public:
 
     [[nodiscard]] GLFWwindow* getWindow() const override { return m_window; }
 
-    void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
+    void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface) const;
 
 private:
 

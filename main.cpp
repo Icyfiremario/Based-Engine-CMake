@@ -25,7 +25,7 @@
 // BasedCore
 #include "BasedCore/Managers/BEAppManager.h"
 
-int main()
+int main(int argc, char** argv)
 {
     int exitCode = EXIT_SUCCESS;
 

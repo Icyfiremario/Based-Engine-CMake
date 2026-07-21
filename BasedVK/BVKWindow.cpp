@@ -10,8 +10,15 @@ BVKWindow::BVKWindow(const int w, const int h, const char* title) : BEWindow(w, 
     initWindow();
 }
 
-void BVKWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
+void BVKWindow::createWindowSurface(const VkInstance instance, VkSurfaceKHR* surface) const
 {
+    if (const VkResult result = glfwCreateWindowSurface(instance, m_window, nullptr, surface); result != VK_SUCCESS)
+    {
+        PLOGF << "Failed to create window surface: " << result;
+        throw std::runtime_error("Failed to create window surface!");
+    }
+
+    PLOGI << "Window surface created.";
 }
 
 void BVKWindow::initWindow()
@@ -23,6 +30,8 @@ void BVKWindow::initWindow()
     m_window = glfwCreateWindow(width, height, m_title.c_str(), nullptr, nullptr);
     glfwSetWindowUserPointer(m_window, this);
     glfwSetFramebufferSizeCallback(m_window, frameBufferResizedCallback);
+
+    PLOGI << "Window created.";
 }
 
 void BVKWindow::frameBufferResizedCallback(GLFWwindow* window, const int w, const int h)
@@ -32,4 +41,6 @@ void BVKWindow::frameBufferResizedCallback(GLFWwindow* window, const int w, cons
     appWindow->frameBufferResized = true;
     appWindow->width = w;
     appWindow->height = h;
+
+    PLOGV << "Window resized.";
 }

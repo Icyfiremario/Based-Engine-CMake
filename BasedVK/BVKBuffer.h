@@ -10,6 +10,8 @@
 
 class BVKBuffer
 {
+public:
+private:
 };
 
 
