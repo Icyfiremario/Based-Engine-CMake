@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 
     try
     {
-        BEAppManager* appManager = BEAppManager::getInstance();
+        BasedEngine::Managers::BEAppManager* appManager = BasedEngine::Managers::BEAppManager::getInstance();
         PLOGI << "Creating app object.";
         appManager->createApp(600, 400, "Based Vulkan");
         PLOGI << "Running app.";
@@ -44,6 +44,7 @@ int main(int argc, char** argv)
     catch(const std::exception& e)
     {
         std::cerr << e.what() << std::endl;
+        PLOGF << e.what();
         exitCode = EXIT_FAILURE;
     }
 

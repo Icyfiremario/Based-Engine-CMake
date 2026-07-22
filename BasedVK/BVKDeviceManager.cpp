@@ -224,7 +224,7 @@ void BVKDeviceManager::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCre
     createInfo.pUserData = nullptr;
 }
 
-BVKDeviceManager::BVKDeviceManager(Token) : BVKDeviceManager() { }
+BVKDeviceManager::BVKDeviceManager(Token) : BVKDeviceManager() {}
 
 BVKDeviceManager::~BVKDeviceManager()
 {
@@ -242,22 +242,29 @@ std::shared_ptr<BVKDeviceManager> BVKDeviceManager::getInstance()
     return instance;
 }
 
-std::unique_ptr<BVKDevice> BVKDeviceManager::getDevicePtr()
+std::shared_ptr<BVKDevice> BVKDeviceManager::getDevicePtr()
 {
-    std::unique_ptr<BVKDevice> ptr = nullptr;
-    try
+    if (static_cast<size_t>(currentDeviceIndex) >= devices.size() || !devices[currentDeviceIndex])
     {
-        ptr = std::move(devices[currentDeviceIndex]);
-    } catch (std::exception& e)
-    {
-        PLOGE << "Failed to get device pointer: " << e.what();
-        if (logDevice)
-        {
-            std::cerr << "Failed to get device pointer: " << e.what();
-        }
-
+        PLOGE << "Failed to get device pointer!";
         return nullptr;
     }
 
-    return ptr;
+    return devices[currentDeviceIndex];
+}
+
+std::vector<std::shared_ptr<BVKDevice>>* BVKDeviceManager::getDeviceList()
+{
+    return &devices;
+}
+
+void BVKDeviceManager::setDeviceIndex(const int index)
+{
+    if (index < 0 || static_cast<size_t>(index) >= devices.size())
+    {
+        PLOGE << "Index " << index << " is outside of the device list bounds. Keeping current value.";
+        return;
+    }
+
+    currentDeviceIndex = index;
 }

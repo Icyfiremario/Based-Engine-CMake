@@ -32,7 +32,6 @@
 /// @brief Manages a list of all available vulkan ready devices suitable for the application.
 class BVKDeviceManager
 {
-private:
 #ifdef DEBUG
     const bool logDevice = true;
 #else
@@ -44,11 +43,9 @@ private:
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;
 
-    //BVKWindow &_window;
-
     const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
 
-    std::vector<std::unique_ptr<BVKDevice>> devices;
+    std::vector<std::shared_ptr<BVKDevice>> devices;
     int currentDeviceIndex = 0; /// @brief Index of current device in device list.
 
     BVKDeviceManager();
@@ -79,10 +76,17 @@ public:
 
     ~BVKDeviceManager();
 
+    /// @brief Returns a pointer to the class instance.
     static std::shared_ptr<BVKDeviceManager> getInstance();
 
+    /// @brief Returns the Vulkan instance.
     [[nodiscard]] VkInstance getVkInstance() const { return instance; };
-    std::unique_ptr<BVKDevice> getDevicePtr();
+    /// @brief Returns a pointer to the current selected device. Default: 0
+    std::shared_ptr<BVKDevice> getDevicePtr();
+    /// @brief  Returns a pointer to the list of BVKDevice objects created by the manager for each found GPU.
+    std::vector<std::shared_ptr<BVKDevice>>* getDeviceList();
+    /// @brief Sets the current device index. Does not set the index if the index is out of range.
+    void setDeviceIndex(int index);
 };
 
 

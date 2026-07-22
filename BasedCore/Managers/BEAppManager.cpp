@@ -2,10 +2,10 @@
 
 #include "../../BasedVK/BVKApp.h"
 
-BEAppManager* BEAppManager::instance = nullptr;
-std::mutex BEAppManager::mtx;
+BasedEngine::Managers::BEAppManager* BasedEngine::Managers::BEAppManager::instance = nullptr;
+std::mutex BasedEngine::Managers::BEAppManager::mtx;
 
-BEAppManager* BEAppManager::getInstance()
+BasedEngine::Managers::BEAppManager* BasedEngine::Managers::BEAppManager::getInstance()
 {
     if (instance == nullptr)
     {
@@ -19,18 +19,18 @@ BEAppManager* BEAppManager::getInstance()
     return instance;
 }
 
-BEApp* BEAppManager::createApp(const int API)
+BEApp* BasedEngine::Managers::BEAppManager::createApp(const int API)
 {
     switch (API)
     {
-    case BasedEngine::VULKAN:
+    case VULKAN:
         {
             app = std::make_unique<BVKApp>();
             PLOGI << "Created vulkan app";
             break;
         }
-    case BasedEngine::OPENGL:
-    case BasedEngine::DIRECTX:
+    case OPENGL:
+    case DIRECTX:
     default:
         PLOGF << "Invalid API!";
         throw std::invalid_argument("Invalid API!");
@@ -39,25 +39,25 @@ BEApp* BEAppManager::createApp(const int API)
     return app.get();
 }
 
-BEApp* BEAppManager::createApp(int w, int h, const std::string& title)
+BEApp* BasedEngine::Managers::BEAppManager::createApp(int w, int h, const std::string& title)
 {
     app = std::make_unique<BVKApp>(w, h, title.c_str());
     PLOGI << "Created vulkan app";
     return app.get();
 }
 
-BEApp* BEAppManager::createApp(int w, int h, std::string title, const int api)
+BEApp* BasedEngine::Managers::BEAppManager::createApp(int w, int h, std::string title, const int api)
 {
     switch (api)
     {
-    case BasedEngine::VULKAN:
+    case VULKAN:
         {
             app = std::make_unique<BVKApp>(w, h, title.c_str());
             PLOGI << "Created vulkan app";
             break;
         }
-    case BasedEngine::OPENGL:
-    case BasedEngine::DIRECTX:
+    case OPENGL:
+    case DIRECTX:
     default:
         PLOGF << "Invalid API!";
         throw std::invalid_argument("Invalid API!");
