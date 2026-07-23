@@ -60,6 +60,17 @@ BVKDeviceManager::BVKDeviceManager()
     // Create vulkan instance, pick device, create VkDevice Object
     createInstance();
     setupDebugMessenger();
+    createSurface();
+    findDevices();
+}
+
+BVKDeviceManager::BVKDeviceManager(BVKWindow* window) : m_window(window)
+{
+    PLOGI << "Vulkan device managerinitialized.";
+
+    createInstance();
+    setupDebugMessenger();
+    createSurface();
     findDevices();
 }
 
@@ -141,6 +152,8 @@ void BVKDeviceManager::setupDebugMessenger()
     PLOGI << "Created debug messenger.";
 }
 
+void BVKDeviceManager::createSurface(){ m_window->createWindowSurface(instance, &surface_); }
+
 void BVKDeviceManager::findDevices()
 {
     uint32_t deviceCount = 0;
@@ -161,6 +174,16 @@ void BVKDeviceManager::findDevices()
     std::vector<VkPhysicalDevice> physicalDevices(deviceCount);
     devices.reserve(deviceCount);
     vkEnumeratePhysicalDevices(instance, &deviceCount, physicalDevices.data());
+
+    for (const auto& physicalDevice : physicalDevices)
+    {
+        auto currentDevice = std::make_shared<BVKDevice>(physicalDevice, m_window, &surface_);
+
+    }
+}
+
+bool BVKDeviceManager::isDeviceSuitable(VkPhysicalDevice device)
+{
 }
 
 std::vector<const char*> BVKDeviceManager::getRequiredExtensions() const
@@ -226,6 +249,8 @@ void BVKDeviceManager::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCre
 
 BVKDeviceManager::BVKDeviceManager(Token) : BVKDeviceManager() {}
 
+BVKDeviceManager::BVKDeviceManager(Token, BVKWindow* window) : BVKDeviceManager(window) {}
+
 BVKDeviceManager::~BVKDeviceManager()
 {
     for (auto & device : devices)
@@ -233,12 +258,25 @@ BVKDeviceManager::~BVKDeviceManager()
         device.reset();
     }
 
+    if (enableValidationLayers)
+    {
+        DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+    }
+
+    vkDestroyInstance(instance, nullptr);
+
     PLOGI << "BVK device manager released.";
 }
 
 std::shared_ptr<BVKDeviceManager> BVKDeviceManager::getInstance()
 {
     static auto instance = std::make_shared<BVKDeviceManager>(Token{});
+    return instance;
+}
+
+std::shared_ptr<BVKDeviceManager> BVKDeviceManager::getInstance(BVKWindow* window)
+{
+    static auto instance = std::make_shared<BVKDeviceManager>(Token{}, window);
     return instance;
 }
 

@@ -40,8 +40,12 @@ class BVKDeviceManager
 
     struct Token {};
 
-    VkInstance instance;
-    VkDebugUtilsMessengerEXT debugMessenger;
+    VkInstance instance{};
+    VkDebugUtilsMessengerEXT debugMessenger{};
+
+    BVKWindow* m_window = nullptr;
+
+    VkSurfaceKHR surface_;
 
     const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
 
@@ -49,11 +53,14 @@ class BVKDeviceManager
     int currentDeviceIndex = 0; /// @brief Index of current device in device list.
 
     BVKDeviceManager();
+    explicit BVKDeviceManager(BVKWindow* window);
 
     void createInstance();
     void setupDebugMessenger();
+    void createSurface();
     void findDevices();
 
+    bool isDeviceSuitable(VkPhysicalDevice device);
     [[nodiscard]] std::vector<const char*> getRequiredExtensions() const;
     [[nodiscard]] bool checkValidationLayerSupport() const;
 
@@ -68,6 +75,7 @@ public:
 #endif
 
     explicit BVKDeviceManager(Token);
+    explicit BVKDeviceManager(Token, BVKWindow* window);
 
     BVKDeviceManager(const BVKDeviceManager&) = delete;
     BVKDeviceManager& operator=(const BVKDeviceManager&) = delete;
@@ -78,6 +86,7 @@ public:
 
     /// @brief Returns a pointer to the class instance.
     static std::shared_ptr<BVKDeviceManager> getInstance();
+    static std::shared_ptr<BVKDeviceManager> getInstance(BVKWindow* window);
 
     /// @brief Returns the Vulkan instance.
     [[nodiscard]] VkInstance getVkInstance() const { return instance; };
