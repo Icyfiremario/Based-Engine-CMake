@@ -60,7 +60,6 @@ class BVKDeviceManager
     void createSurface();
     void findDevices();
 
-    bool isDeviceSuitable(VkPhysicalDevice device);
     [[nodiscard]] std::vector<const char*> getRequiredExtensions() const;
     [[nodiscard]] bool checkValidationLayerSupport() const;
 

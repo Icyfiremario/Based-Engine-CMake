@@ -66,7 +66,7 @@ BVKDeviceManager::BVKDeviceManager()
 
 BVKDeviceManager::BVKDeviceManager(BVKWindow* window) : m_window(window)
 {
-    PLOGI << "Vulkan device managerinitialized.";
+    PLOGI << "Vulkan device manager initialized.";
 
     createInstance();
     setupDebugMessenger();
@@ -179,11 +179,11 @@ void BVKDeviceManager::findDevices()
     {
         auto currentDevice = std::make_shared<BVKDevice>(physicalDevice, m_window, &surface_);
 
+        if (currentDevice->isSuitable() && currentDevice != nullptr)
+        {
+            devices.push_back(currentDevice);
+        }
     }
-}
-
-bool BVKDeviceManager::isDeviceSuitable(VkPhysicalDevice device)
-{
 }
 
 std::vector<const char*> BVKDeviceManager::getRequiredExtensions() const
@@ -263,6 +263,7 @@ BVKDeviceManager::~BVKDeviceManager()
         DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
     }
 
+    vkDestroySurfaceKHR(instance, surface_, nullptr);
     vkDestroyInstance(instance, nullptr);
 
     PLOGI << "BVK device manager released.";

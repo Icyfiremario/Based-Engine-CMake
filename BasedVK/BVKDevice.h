@@ -4,7 +4,6 @@
 // STD
 #include <vector>
 #include <set>
-#include <set>
 
 // Vulkan
 #include <vulkan/vulkan.h>
@@ -36,18 +35,27 @@ struct QueueFamilyIndices
 class BVKDevice
 {
 public:
+
+#ifdef DEBUG
+    bool enableValidationLayers = true;
+#else
+    bool enableValidationLayers = false;
+#endif
+
     explicit BVKDevice(VkPhysicalDevice physicalDevice, BVKWindow* window, VkSurfaceKHR* surface);
     ~BVKDevice();
 
     [[nodiscard]] VkSurfaceKHR* getSurface() const { return surface_; }
 
-    bool isSuitable();
+    [[nodiscard]] bool isSuitable() const;
 
 private:
 
+    VkInstance* instance;
     VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
+    VkCommandPool commandPool;
 
-    BVKWindow* m_window = nullptr;
+    //BVKWindow* m_window = nullptr;
 
     VkDevice device_;
     VkSurfaceKHR* surface_ = nullptr;
