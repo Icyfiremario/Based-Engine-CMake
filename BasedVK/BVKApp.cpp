@@ -3,15 +3,13 @@
 BVKApp::BVKApp()
 {
     appWindow = std::make_unique<BVKWindow>(600, 400, "Based Vulkan");
-
-    const auto deviceManager = BVKDeviceManager::getInstance(appWindow.get());
+    deviceManager = std::make_unique<BVKDeviceManager>(*appWindow);
 }
 
 BVKApp::BVKApp(int width, int height, const char* title)
 {
     appWindow = std::make_unique<BVKWindow>(width, height, title);
-
-    const auto deviceManager = BVKDeviceManager::getInstance(appWindow.get());
+    deviceManager = std::make_unique<BVKDeviceManager>(*appWindow);
 }
 
 BVKApp::~BVKApp()
@@ -28,14 +26,6 @@ void BVKApp::run()
         {
             PLOGI << "Escape key pressed. Closing app...";
             glfwSetWindowShouldClose(appWindow->getWindow(), true);
-        }
-
-        if (glfwGetKey(appWindow->getWindow(), GLFW_KEY_PAGE_UP) == GLFW_PRESS)
-        {
-            PLOGI << "Page up key pressed. Increasing GPU index.";
-            deviceIndex++;
-            const auto deviceManager = BVKDeviceManager::getInstance();
-            deviceManager->setDeviceIndex(deviceIndex);
         }
 
         glfwPollEvents();

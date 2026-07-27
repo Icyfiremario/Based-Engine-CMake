@@ -42,7 +42,7 @@ public:
     bool enableValidationLayers = false;
 #endif
 
-    explicit BVKDevice(VkPhysicalDevice physicalDevice, BVKWindow* window, VkSurfaceKHR* surface);
+    explicit BVKDevice(VkPhysicalDevice physicalDevice, VkSurfaceKHR* surface);
     ~BVKDevice();
 
     [[nodiscard]] VkSurfaceKHR* getSurface() const { return surface_; }

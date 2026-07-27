@@ -1,6 +1,6 @@
 #include "BVKDevice.h"
 
-BVKDevice::BVKDevice(const VkPhysicalDevice physicalDevice, BVKWindow* window, VkSurfaceKHR* surface) : m_physicalDevice(physicalDevice), m_window(window), surface_(surface)
+BVKDevice::BVKDevice(const VkPhysicalDevice physicalDevice, VkSurfaceKHR* surface) : m_physicalDevice(physicalDevice), surface_(surface)
 {
     PLOGI << "Vulkan device created";
 
