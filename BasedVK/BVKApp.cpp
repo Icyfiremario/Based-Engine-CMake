@@ -29,5 +29,7 @@ void BVKApp::run()
         }
 
         glfwPollEvents();
+
+        vkDeviceWaitIdle(deviceManager->getDevicePtr()->getDevice());
     }
 }

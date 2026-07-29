@@ -11,9 +11,6 @@
 // PLog
 #include <plog/Log.h>
 
-// BasedVK
-#include "BVKWindow.h"
-
 struct SwapChainSupportDetails
 {
     VkSurfaceCapabilitiesKHR capabilities;
@@ -42,10 +39,33 @@ public:
     bool enableValidationLayers = false;
 #endif
 
-    explicit BVKDevice(VkPhysicalDevice physicalDevice, VkSurfaceKHR* surface);
+    explicit BVKDevice(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
     ~BVKDevice();
 
-    [[nodiscard]] VkSurfaceKHR* getSurface() const { return surface_; }
+    [[nodiscard]] VkCommandPool getCommandPool() const { return commandPool; }
+
+    [[nodiscard]] VkDevice getDevice() const { return device_; }
+    [[nodiscard]] VkSurfaceKHR getSurface() const { return surface_; }
+    [[nodiscard]] VkQueue getGraphicsQueue() const { return graphicsQueue_; }
+    [[nodiscard]] VkQueue getPresentQueue() const { return presentQueue_; }
+
+    [[nodiscard]] SwapChainSupportDetails getSwapChainSupport() const { return querySwapChainSupport(m_physicalDevice); }
+
+    [[nodiscard]] uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
+
+    [[nodiscard]] QueueFamilyIndices findPhysicalQueueFamilies() const { return findQueueFamilies(m_physicalDevice); }
+
+    [[nodiscard]] VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
+
+    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory) const;
+
+    VkCommandBuffer beginSingleTimeCommands() const;
+    void endSingleTimeCommands(VkCommandBuffer commandBuffer) const;
+
+    void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+    void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount);
+
+    void createImageWidthInfo(const VkImageCreateInfo &imageInfo, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
 
     [[nodiscard]] bool isSuitable() const;
 
@@ -55,14 +75,19 @@ private:
     VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
     VkCommandPool commandPool;
 
-    //BVKWindow* m_window = nullptr;
-
     VkDevice device_;
-    VkSurfaceKHR* surface_ = nullptr;
+    VkSurfaceKHR surface_ = VK_NULL_HANDLE;
     VkQueue graphicsQueue_;
     VkQueue presentQueue_;
 
-    const std::vector <const char *> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+    const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
+
+    const std::vector <const char *> deviceExtensions = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+#ifdef APPLE
+        , "VK_KHR_portability_subset"
+#endif
+    };
 
     void createLogicalDevice();
     void createCommandPool();

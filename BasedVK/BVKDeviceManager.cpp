@@ -167,7 +167,7 @@ void BVKDeviceManager::findDevices()
 
     for (const auto& physicalDevice : physicalDevices)
     {
-        auto currentDevice = std::make_shared<BVKDevice>(physicalDevice, &surface_);
+        auto currentDevice = std::make_shared<BVKDevice>(physicalDevice, surface_);
 
         if (currentDevice->isSuitable() && currentDevice != nullptr)
         {

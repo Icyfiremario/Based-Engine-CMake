@@ -1,6 +1,6 @@
 #include "BVKDevice.h"
 
-BVKDevice::BVKDevice(const VkPhysicalDevice physicalDevice, VkSurfaceKHR* surface) : m_physicalDevice(physicalDevice), surface_(surface)
+BVKDevice::BVKDevice(const VkPhysicalDevice physicalDevice, VkSurfaceKHR surface) : m_physicalDevice(physicalDevice), surface_(surface)
 {
     PLOGI << "Vulkan device created";
 
@@ -16,16 +16,122 @@ BVKDevice::~BVKDevice()
     PLOGI << "Vulkan device released";
 }
 
+uint32_t BVKDevice::findMemoryType(const uint32_t typeFilter, const VkMemoryPropertyFlags properties) const
+{
+    VkPhysicalDeviceMemoryProperties memProperties;
+    vkGetPhysicalDeviceMemoryProperties(m_physicalDevice, &memProperties);
+
+    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
+    {
+        if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
+        {
+            return i;
+        }
+    }
+
+    PLOGF << "Failed to find a suitable memory type.";
+    throw std::runtime_error("Failed to find a suitable memory type.");
+}
+
+VkFormat BVKDevice::findSupportedFormat(const std::vector<VkFormat>& candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const
+{
+    for (const VkFormat format : candidates)
+    {
+        VkFormatProperties props;
+        vkGetPhysicalDeviceFormatProperties(m_physicalDevice, format, &props);
+
+        if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
+        {
+            return format;
+        } else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
+        {
+            return format;
+        }
+    }
+
+    PLOGF << "Failed to find a suitable format.";
+    throw std::runtime_error("Failed to find a suitable format.");
+}
+
+void BVKDevice::createBuffer(const VkDeviceSize size, const VkBufferUsageFlags usage, const VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) const
+{
+    VkBufferCreateInfo bufferInfo{};
+    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferInfo.size = size;
+    bufferInfo.usage = usage;
+    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+    if (vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
+    {
+        PLOGF << "Failed to create buffer.";
+        throw std::runtime_error("Failed to create VkBuffer.");
+    }
+
+    PLOGI << "VkBuffer created.";
+
+    VkMemoryRequirements memRequirements;
+    vkGetBufferMemoryRequirements(device_, buffer, &memRequirements);
+
+    VkMemoryAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize = memRequirements.size;
+    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+
+    if (vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
+    {
+        PLOGF << "Failed to allocate buffer memory.";
+        throw std::runtime_error("Failed to allocate buffer memory.");
+    }
+
+    vkBindBufferMemory(device_, buffer, bufferMemory, 0);
+
+    PLOGI << "VkBuffer allocated";
+}
+
+VkCommandBuffer BVKDevice::beginSingleTimeCommands() const
+{
+    VkCommandBufferAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandPool = commandPool;
+    allocInfo.commandBufferCount = 1;
+
+    VkCommandBuffer commandBuffer;
+    vkAllocateCommandBuffers(device_, &allocInfo, &commandBuffer);
+
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+    return commandBuffer;
+}
+
+void BVKDevice::endSingleTimeCommands(const VkCommandBuffer commandBuffer) const
+{
+    vkEndCommandBuffer(commandBuffer);
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    vkQueueSubmit(graphicsQueue_, 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(graphicsQueue_);
+
+    vkFreeCommandBuffers(device_, commandPool, 1, &commandBuffer);
+}
+
 bool BVKDevice::isSuitable() const
 {
-    QueueFamilyIndices indices = findQueueFamilies(m_physicalDevice);
-    bool extensionsSupported = checkDeviceExtensionSupport(m_physicalDevice);
+    const QueueFamilyIndices indices = findQueueFamilies(m_physicalDevice);
+    const bool extensionsSupported = checkDeviceExtensionSupport(m_physicalDevice);
 
     bool swapChainAdequate = false;
 
     if (extensionsSupported)
     {
-        SwapChainSupportDetails swapChainSupport = querySwapChainSupport(m_physicalDevice);
+        const SwapChainSupportDetails swapChainSupport = querySwapChainSupport(m_physicalDevice);
         swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
     }
 
@@ -37,13 +143,13 @@ bool BVKDevice::isSuitable() const
 
 void BVKDevice::createLogicalDevice()
 {
-    QueueFamilyIndices indices = findQueueFamilies(m_physicalDevice);
+    const QueueFamilyIndices indices = findQueueFamilies(m_physicalDevice);
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-    std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily, indices.presentFamily };
+    const std::set uniqueQueueFamilies = { indices.graphicsFamily, indices.presentFamily };
 
-    float queuePriority = 1.0f;
-    for (uint32_t queueFamily : uniqueQueueFamilies)
+    constexpr float queuePriority = 1.0f;
+    for (const uint32_t queueFamily : uniqueQueueFamilies)
     {
         VkDeviceQueueCreateInfo queueCreateInfo = {};
         queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -68,12 +174,45 @@ void BVKDevice::createLogicalDevice()
 
     if (enableValidationLayers)
     {
-        //createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+        createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+        createInfo.ppEnabledLayerNames = validationLayers.data();
     }
+    else
+    {
+        createInfo.enabledLayerCount = 0;
+        createInfo.ppEnabledLayerNames = nullptr;
+    }
+
+    if (vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &device_) != VK_SUCCESS)
+    {
+        PLOGF << "Failed to create logical device: ";
+        throw std::runtime_error("Failed to create logical device!");
+    }
+
+    PLOGI << "Logical device created";
+
+    vkGetDeviceQueue(device_, indices.graphicsFamily, 0, &graphicsQueue_);
+    vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
+
+    PLOGI << "Device queues collected";
 }
 
 void BVKDevice::createCommandPool()
 {
+    const QueueFamilyIndices queueFamilyIndices = findPhysicalQueueFamilies();
+
+    VkCommandPoolCreateInfo poolInfo = {};
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+    if (vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool) != VK_SUCCESS)
+    {
+        PLOGF << "Failed to create command pool.";
+        throw std::runtime_error("Failed to create command pool!");
+    }
+
+    PLOGI << "Command pool created.";
 }
 
 QueueFamilyIndices BVKDevice::findQueueFamilies(const VkPhysicalDevice physicalDevice) const
@@ -96,7 +235,7 @@ QueueFamilyIndices BVKDevice::findQueueFamilies(const VkPhysicalDevice physicalD
         }
 
         VkBool32 presentSupport = false;
-        vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, *surface_, &presentSupport);
+        vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, surface_, &presentSupport);
 
         if (queueFamily.queueCount > 0 && presentSupport)
         {
@@ -134,24 +273,24 @@ bool BVKDevice::checkDeviceExtensionSupport(const VkPhysicalDevice physicalDevic
 SwapChainSupportDetails BVKDevice::querySwapChainSupport(const VkPhysicalDevice physicalDevice) const
 {
     SwapChainSupportDetails details;
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, *surface_, &details.capabilities);
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface_, &details.capabilities);
 
     uint32_t formatCount = 0;
-    vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, *surface_, &formatCount, nullptr);
+    vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface_, &formatCount, nullptr);
 
     if (formatCount != 0)
     {
         details.formats.resize(formatCount);
-        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, *surface_, &formatCount, details.formats.data());
+        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface_, &formatCount, details.formats.data());
     }
 
     uint32_t presentModeCount;
-    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, *surface_, &presentModeCount, nullptr);
+    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface_, &presentModeCount, nullptr);
 
     if (presentModeCount != 0)
     {
         details.presentModes.resize(presentModeCount);
-        vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, *surface_, &presentModeCount, details.presentModes.data());
+        vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface_, &presentModeCount, details.presentModes.data());
     }
 
     return details;

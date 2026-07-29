@@ -2,7 +2,7 @@
 #define BVKWINDOW_H
 
 // Vulkan
-#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan.h>
 
 // Plog
 #include <plog/Log.h>
