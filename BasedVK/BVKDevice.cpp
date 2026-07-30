@@ -122,6 +122,71 @@ void BVKDevice::endSingleTimeCommands(const VkCommandBuffer commandBuffer) const
     vkFreeCommandBuffers(device_, commandPool, 1, &commandBuffer);
 }
 
+void BVKDevice::copyBuffer(const VkBuffer srcBuffer, const VkBuffer dstBuffer, const VkDeviceSize size) const
+{
+    const VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+
+    VkBufferCopy copyRegion{};
+
+    copyRegion.srcOffset = 0;
+    copyRegion.dstOffset = 0;
+    copyRegion.size = size;
+    vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+
+    endSingleTimeCommands(commandBuffer);
+}
+
+void BVKDevice::copyBufferToImage(const VkBuffer buffer, const VkImage image, const uint32_t width, const uint32_t height, const uint32_t layerCount) const
+{
+    const VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+
+    VkBufferImageCopy region{};
+    region.bufferOffset = 0;
+    region.bufferRowLength = 0;
+    region.bufferImageHeight = 0;
+
+    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    region.imageSubresource.mipLevel = 0;
+    region.imageSubresource.baseArrayLayer = 0;
+    region.imageSubresource.layerCount = layerCount;
+
+    region.imageOffset = {.x = 0,.y = 0, .z = 0};
+    region.imageExtent = {.width = width, .height = height, .depth = 1};
+
+    vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+    endSingleTimeCommands(commandBuffer);
+}
+
+void BVKDevice::createImageWidthInfo(const VkImageCreateInfo& imageInfo, const VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory) const
+{
+    if (vkCreateImage(device_, &imageInfo, nullptr, &image) != VK_SUCCESS)
+    {
+        PLOGF << "Failed to create image.";
+        throw std::runtime_error("Failed to create image!");
+    }
+
+    VkMemoryRequirements memRequirements{};
+    vkGetImageMemoryRequirements(device_, image, &memRequirements);
+
+    VkMemoryAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize = memRequirements.size;
+    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+
+    if (vkAllocateMemory(device_, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
+    {
+        PLOGF << "Failed to allocate image memory.";
+        throw std::runtime_error("Failed to allocate image memory!");
+    }
+
+    if (vkBindImageMemory(device_, image, imageMemory, 0) != VK_SUCCESS)
+    {
+        PLOGF << "Failed to bind image memory.";
+        throw std::runtime_error("Failed to bind image memory!");
+    }
+}
+
 bool BVKDevice::isSuitable() const
 {
     const QueueFamilyIndices indices = findQueueFamilies(m_physicalDevice);
