@@ -27,7 +27,7 @@ namespace BasedEngine::Managers
         /// @brief Creates a Vulkan Based Engine app with the specified width, height, and title.
         BEApp* createApp(int w, int h, const std::string& title);
         ///// @brief Creates a Based Engine app using the specified values.
-        BEApp* createApp(int w, int h, std::string title, int api);
+        BEApp* createApp(int w, int h, const std::string& title, int api);
 
         [[nodiscard]] BEApp* getApp() const { return app.get(); }
 

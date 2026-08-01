@@ -46,7 +46,7 @@ BEApp* BasedEngine::Managers::BEAppManager::createApp(int w, int h, const std::s
     return app.get();
 }
 
-BEApp* BasedEngine::Managers::BEAppManager::createApp(int w, int h, std::string title, const int api)
+BEApp* BasedEngine::Managers::BEAppManager::createApp(int w, int h, const std::string& title, const int api)
 {
     switch (api)
     {

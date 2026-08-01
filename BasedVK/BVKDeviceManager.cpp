@@ -165,13 +165,19 @@ void BVKDeviceManager::findDevices()
     devices.reserve(deviceCount);
     vkEnumeratePhysicalDevices(instance, &deviceCount, physicalDevices.data());
 
+    int index = 0;
     for (const auto& physicalDevice : physicalDevices)
     {
+        VkPhysicalDeviceProperties physicalDeviceProperties;
+        vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
+
         auto currentDevice = std::make_shared<BVKDevice>(physicalDevice, surface_);
 
         if (currentDevice->isSuitable() && currentDevice != nullptr)
         {
             devices.push_back(currentDevice);
+            PLOGI << "Added device[" << index << "]: " <<physicalDeviceProperties.deviceName;
+            index++;
         }
     }
 }

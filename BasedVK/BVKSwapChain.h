@@ -19,7 +19,7 @@ public:
     static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
     BVKSwapChain(BVKDevice &deviceRef, VkExtent2D windowExtent);
-    BVKSwapChain(BVKDevice &deviceRef, VkExtent2D windowExtent, std::shared_ptr<BVKSwapChain> previous);
+    BVKSwapChain(BVKDevice &deviceRef, VkExtent2D windowExtent, const std::shared_ptr<BVKSwapChain>& previous);
     ~BVKSwapChain();
 
     BVKSwapChain(const BVKSwapChain &) = delete;
