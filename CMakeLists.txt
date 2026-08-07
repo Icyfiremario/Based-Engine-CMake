@@ -86,7 +86,8 @@ endif (DIRECTX_AVAILABLE)
 find_package(Doxygen)
 
 # Add source to this project's executable.
-add_executable(BasedEngine main.cpp)
+add_executable(BasedEngine main.cpp
+)
 target_include_directories(BasedEngine PRIVATE Include)
 target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm GLEW::GLEW)
 if (DIRECTX_AVAILABLE)

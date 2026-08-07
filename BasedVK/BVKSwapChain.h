@@ -1,5 +1,5 @@
-#ifndef BASEDENGINE_BVKSWAPCHAIN_H
-#define BASEDENGINE_BVKSWAPCHAIN_H
+#ifndef BVKSWAPCHAIN_H
+#define BVKSWAPCHAIN_H
 
 // STD
 #include <memory>
@@ -33,9 +33,9 @@ public:
 
 private:
 #ifdef DEBUG
-    const bool logSwapchain = true;
+    const bool logSwapChain = true;
 #else
-    const bool logSwapchain = false;
+    const bool logSwapChain = false;
 #endif
 
     BVKDevice &device;
@@ -80,4 +80,4 @@ private:
 };
 
 
-#endif //BASEDENGINE_BVKSWAPCHAIN_H
+#endif // BVKSWAPCHAIN_H

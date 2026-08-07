@@ -123,6 +123,22 @@ void BVKSwapChain::createImageViews()
     }
 }
 
+void BVKSwapChain::createDepthResources()
+{
+}
+
+void BVKSwapChain::createRenderPass()
+{
+}
+
+void BVKSwapChain::createFramebuffers()
+{
+}
+
+void BVKSwapChain::createSyncObjects()
+{
+}
+
 void BVKSwapChain::init()
 {
     createSwapChain();
@@ -131,4 +147,16 @@ void BVKSwapChain::init()
     createDepthResources();
     createFramebuffers();
     createSyncObjects();
+}
+
+VkSurfaceFormatKHR BVKSwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
+{
+}
+
+VkPresentModeKHR BVKSwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
+{
+}
+
+VkExtent2D BVKSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
+{
 }

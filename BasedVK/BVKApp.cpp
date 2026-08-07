@@ -4,12 +4,14 @@ BVKApp::BVKApp()
 {
     appWindow = std::make_unique<BVKWindow>(600, 400, "Based Vulkan");
     deviceManager = std::make_unique<BVKDeviceManager>(*appWindow);
+    appSwapChain = std::make_unique<BVKSwapChain>(*deviceManager->getDevicePtr(), appWindow->getExtent());
 }
 
 BVKApp::BVKApp(int width, int height, const char* title)
 {
     appWindow = std::make_unique<BVKWindow>(width, height, title);
     deviceManager = std::make_unique<BVKDeviceManager>(*appWindow);
+    appSwapChain = std::make_unique<BVKSwapChain>(*deviceManager->getDevicePtr(), appWindow->getExtent());
 }
 
 BVKApp::~BVKApp()

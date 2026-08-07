@@ -14,6 +14,8 @@ add_library(BasedVK
         BVKDevice.h
         BVKSwapchain.cpp
         BVKSwapchain.h
+        BVKRenderSystemManager.cpp
+        BVKRenderSystemManager.h
 )
 
 target_include_directories(BasedVK PRIVATE ../include)

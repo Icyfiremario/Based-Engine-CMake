@@ -21,6 +21,8 @@ public:
     [[nodiscard]] bool shouldClose() const override { return glfwWindowShouldClose(m_window); }
     [[nodiscard]] bool wasWindowResized() const override { return frameBufferResized; }
 
+    [[nodiscard]] VkExtent2D getExtent() const { return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)}; }
+
     [[nodiscard]] GLFWwindow* getWindow() const override { return m_window; }
 
     void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface) const;
