@@ -71,7 +71,6 @@ public:
 
 private:
 
-    VkInstance* instance;
     VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
     VkCommandPool commandPool;
 

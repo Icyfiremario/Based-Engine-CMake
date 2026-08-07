@@ -12,8 +12,8 @@ add_library(BasedVK
         BVKDeviceManager.h
         BVKDevice.cpp
         BVKDevice.h
-        BVKSwapchain.cpp
-        BVKSwapchain.h
+        BVKSwapChain.cpp
+        BVKSwapChain.h
         BVKRenderSystemManager.cpp
         BVKRenderSystemManager.h
         BVKRenderer.cpp

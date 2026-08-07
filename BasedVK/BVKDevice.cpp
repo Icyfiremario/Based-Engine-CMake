@@ -194,7 +194,7 @@ bool BVKDevice::isSuitable() const
 
     bool swapChainAdequate = false;
 
-    if (extensionsSupported)
+    if (indices.isComplete() && extensionsSupported)
     {
         const SwapChainSupportDetails swapChainSupport = querySwapChainSupport(m_physicalDevice);
         swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
@@ -209,6 +209,12 @@ bool BVKDevice::isSuitable() const
 void BVKDevice::createLogicalDevice()
 {
     const QueueFamilyIndices indices = findQueueFamilies(m_physicalDevice);
+
+    if (!indices.isComplete())
+    {
+        PLOGF << "Queue families are incomplete. Cannot create logical device.";
+        throw std::runtime_error("Failed to find required queue families!");
+    }
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     const std::set uniqueQueueFamilies = { indices.graphicsFamily, indices.presentFamily };

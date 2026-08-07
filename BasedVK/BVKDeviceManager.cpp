@@ -171,14 +171,27 @@ void BVKDeviceManager::findDevices()
         VkPhysicalDeviceProperties physicalDeviceProperties;
         vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
 
-        auto currentDevice = std::make_shared<BVKDevice>(physicalDevice, surface_);
-
-        if (currentDevice->isSuitable() && currentDevice != nullptr)
+        try
         {
-            devices.push_back(currentDevice);
-            PLOGI << "Added device[" << index << "]: " <<physicalDeviceProperties.deviceName;
-            index++;
+            auto currentDevice = std::make_shared<BVKDevice>(physicalDevice, surface_);
+
+            if (currentDevice->isSuitable() && currentDevice != nullptr)
+            {
+                devices.push_back(currentDevice);
+                PLOGI << "Added device[" << index << "]: " <<physicalDeviceProperties.deviceName;
+                index++;
+            }
         }
+        catch (const std::exception& e)
+        {
+            PLOGD << "Skipping device: " << physicalDeviceProperties.deviceName;
+        }
+    }
+
+    if (devices.empty())
+    {
+        PLOGF << "Failed to find a suitable Vulkan device.";
+        throw std::runtime_error("Failed to find a suitable Vulkan device!");
     }
 }
 
