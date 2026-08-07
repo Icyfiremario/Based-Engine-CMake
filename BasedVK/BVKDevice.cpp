@@ -1,8 +1,7 @@
 #include "BVKDevice.h"
 
-BVKDevice::BVKDevice(const VkPhysicalDevice physicalDevice, VkSurfaceKHR surface) : m_physicalDevice(physicalDevice), surface_(surface)
+BVKDevice::BVKDevice(const VkPhysicalDevice physicalDevice, const VkSurfaceKHR surface) : m_physicalDevice(physicalDevice), surface_(surface)
 {
-
 }
 
 BVKDevice::~BVKDevice()
@@ -10,7 +9,7 @@ BVKDevice::~BVKDevice()
     vkDestroyCommandPool(device_, commandPool, nullptr);
     vkDestroyDevice(device_, nullptr);
 
-    PLOGI << "Vulkan device released";
+    PLOGI << "Vulkan device released.";
 }
 
 void BVKDevice::init()
@@ -20,7 +19,7 @@ void BVKDevice::init()
 
     initialized = true;
 
-    PLOGI << "Vulkan device created";
+    PLOGI << "Vulkan device created.";
 }
 
 uint32_t BVKDevice::findMemoryType(const uint32_t typeFilter, const VkMemoryPropertyFlags properties) const
@@ -37,7 +36,7 @@ uint32_t BVKDevice::findMemoryType(const uint32_t typeFilter, const VkMemoryProp
     }
 
     PLOGF << "Failed to find a suitable memory type.";
-    throw std::runtime_error("Failed to find a suitable memory type.");
+    throw std::runtime_error("Failed to find a suitable memory type!");
 }
 
 VkFormat BVKDevice::findSupportedFormat(const std::vector<VkFormat>& candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features) const
@@ -57,7 +56,7 @@ VkFormat BVKDevice::findSupportedFormat(const std::vector<VkFormat>& candidates,
     }
 
     PLOGF << "Failed to find a suitable format.";
-    throw std::runtime_error("Failed to find a suitable format.");
+    throw std::runtime_error("Failed to find a suitable format!");
 }
 
 void BVKDevice::createBuffer(const VkDeviceSize size, const VkBufferUsageFlags usage, const VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) const
@@ -71,7 +70,7 @@ void BVKDevice::createBuffer(const VkDeviceSize size, const VkBufferUsageFlags u
     if (vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
     {
         PLOGF << "Failed to create buffer.";
-        throw std::runtime_error("Failed to create VkBuffer.");
+        throw std::runtime_error("Failed to create VkBuffer!");
     }
 
     PLOGI << "VkBuffer created.";
@@ -87,12 +86,12 @@ void BVKDevice::createBuffer(const VkDeviceSize size, const VkBufferUsageFlags u
     if (vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
     {
         PLOGF << "Failed to allocate buffer memory.";
-        throw std::runtime_error("Failed to allocate buffer memory.");
+        throw std::runtime_error("Failed to allocate buffer memory!");
     }
 
     vkBindBufferMemory(device_, buffer, bufferMemory, 0);
 
-    PLOGI << "VkBuffer allocated";
+    PLOGI << "VkBuffer allocated.";
 }
 
 VkCommandBuffer BVKDevice::beginSingleTimeCommands() const
@@ -267,12 +266,12 @@ void BVKDevice::createLogicalDevice()
         throw std::runtime_error("Failed to create logical device!");
     }
 
-    PLOGI << "Logical device created";
+    PLOGI << "Logical device created.";
 
     vkGetDeviceQueue(device_, indices.graphicsFamily, 0, &graphicsQueue_);
     vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
 
-    PLOGI << "Device queues collected";
+    PLOGI << "Device queues collected.";
 }
 
 void BVKDevice::createCommandPool()

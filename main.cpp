@@ -9,7 +9,7 @@
 #define WINDOWS
 #endif
 #elif defined(__APPLE__) || defined(__MACH__)
-#warning "Apple support is limited."
+#warning "Apple support is unproperly tested. Proceed knowing that the engine may not work."
 #ifndef APPLE
 #define APPLE
 #endif
@@ -18,6 +18,7 @@
 // STD
 #include <iostream>
 #include <fstream>
+#include<cstdlib>
 
 // Plog
 #include <plog/Log.h>
@@ -45,7 +46,6 @@ int main(int argc, char** argv)
     catch(const std::exception& e)
     {
         std::cerr << e.what() << std::endl;
-        PLOGF << e.what();
         exitCode = EXIT_FAILURE;
     }
 
