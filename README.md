@@ -18,21 +18,21 @@ Very unstable. Weird bugs with rendering freezing and the camera teleporting for
 - OpenGL
 
 ### Apple
-Apple support is not planned and likely not going to happen.
+- OpenGL
 
 ## To Do
 ### Core
 - [x] Window resizing
 - [ ] Rendering API binding
-- [ ] Add Plog for logging
+- [x] Add Plog for logging
 - [ ] Create game object component system
 
 ### Vulkan
-- [ ] SwapChain
+- [x] SwapChain
 - [ ] Pipeline
 - [ ] Shaders [^2]
 - [ ] Models
-- [ ] Device info
+- [x] Device info
 - [ ] Descriptors
 - [ ] Render systems
 
@@ -50,11 +50,11 @@ Apple support is not planned and likely not going to happen.
 ## Required packages
 - GLM
 - GLEW (OpenGL)
-- Vulkan SDK
+- [Vulkan SDK](https://vulkan.lunarg.com/sdk/home)
 - CMake
 - GLSLC
 - GLFW3
-- Tiny object loader [^3]
+- [Tiny object loader](https://github.com/tinyobjloader/tinyobjloader) [^3]
 
 ## Supported compilers
 ### Windows
