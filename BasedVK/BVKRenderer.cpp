@@ -34,7 +34,7 @@ VkCommandBuffer BVKRenderer::beginFrame()
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
 
-    PLOGI << "Started frame.";
+    PLOGV << "Started frame.";
 
     return commandBuffer;
 }
@@ -65,7 +65,7 @@ void BVKRenderer::endFrame()
     isFrameStarted = false;
     currentFrameIndex = (currentFrameIndex + 1) % BVKSwapChain::MAX_FRAMES_IN_FLIGHT;
 
-    PLOGI << "Ended frame.";
+    PLOGV << "Ended frame.";
 }
 
 void BVKRenderer::beginSwapChainRenderPass(const VkCommandBuffer commandBuffer) const
@@ -167,5 +167,5 @@ void BVKRenderer::recreateSwapChain()
         }
     }
 
-    PLOGI << "Recreated swap chain.";
+    PLOGV << "Recreated swap chain.";
 }

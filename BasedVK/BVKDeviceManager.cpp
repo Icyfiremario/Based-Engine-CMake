@@ -282,6 +282,12 @@ std::shared_ptr<BVKDevice> BVKDeviceManager::getDevicePtr()
         return nullptr;
     }
 
+    if (!devices.at(currentDeviceIndex)->deviceInitialized())
+    {
+        devices.at(currentDeviceIndex)->init();
+        PLOGI << "Initialized device[" << currentDeviceIndex << "]";
+    }
+
     return devices[currentDeviceIndex];
 }
 

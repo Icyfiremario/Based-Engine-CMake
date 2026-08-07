@@ -2,10 +2,7 @@
 
 BVKDevice::BVKDevice(const VkPhysicalDevice physicalDevice, VkSurfaceKHR surface) : m_physicalDevice(physicalDevice), surface_(surface)
 {
-    PLOGI << "Vulkan device created";
 
-    createLogicalDevice();
-    createCommandPool();
 }
 
 BVKDevice::~BVKDevice()
@@ -14,6 +11,16 @@ BVKDevice::~BVKDevice()
     vkDestroyDevice(device_, nullptr);
 
     PLOGI << "Vulkan device released";
+}
+
+void BVKDevice::init()
+{
+    createLogicalDevice();
+    createCommandPool();
+
+    initialized = true;
+
+    PLOGI << "Vulkan device created";
 }
 
 uint32_t BVKDevice::findMemoryType(const uint32_t typeFilter, const VkMemoryPropertyFlags properties) const

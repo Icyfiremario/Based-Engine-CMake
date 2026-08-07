@@ -42,6 +42,8 @@ public:
     explicit BVKDevice(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
     ~BVKDevice();
 
+    void init();
+
     [[nodiscard]] VkCommandPool getCommandPool() const { return commandPool; }
 
     [[nodiscard]] VkDevice getDevice() const { return device_; }
@@ -68,6 +70,7 @@ public:
     void createImageWidthInfo(const VkImageCreateInfo &imageInfo, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory) const;
 
     [[nodiscard]] bool isSuitable() const;
+    [[nodiscard]] bool deviceInitialized() const { return initialized; }
 
 private:
 
@@ -87,6 +90,8 @@ private:
         , "VK_KHR_portability_subset"
 #endif
     };
+
+    bool initialized = false;
 
     void createLogicalDevice();
     void createCommandPool();
