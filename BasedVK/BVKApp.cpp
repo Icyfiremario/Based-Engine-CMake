@@ -4,24 +4,25 @@ BVKApp::BVKApp()
 {
     appWindow = std::make_unique<BVKWindow>(600, 400, "Based Vulkan");
     deviceManager = std::make_unique<BVKDeviceManager>(*appWindow);
-    appSwapChain = std::make_unique<BVKSwapChain>(*deviceManager->getDevicePtr(), appWindow->getExtent());
+    appRenderer = std::make_unique<BVKRenderer>(*appWindow, *deviceManager->getDevicePtr());
 }
 
 BVKApp::BVKApp(int width, int height, const char* title)
 {
     appWindow = std::make_unique<BVKWindow>(width, height, title);
     deviceManager = std::make_unique<BVKDeviceManager>(*appWindow);
-    appSwapChain = std::make_unique<BVKSwapChain>(*deviceManager->getDevicePtr(), appWindow->getExtent());
+    appRenderer = std::make_unique<BVKRenderer>(*appWindow, *deviceManager->getDevicePtr());
 }
 
 BVKApp::~BVKApp()
 {
+    appRenderer.reset();
+    deviceManager.reset();
     appWindow.reset();
 }
 
 void BVKApp::run()
 {
-    static int deviceIndex = 0;
     while (!appWindow->shouldClose())
     {
         if (glfwGetKey(appWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -31,6 +32,14 @@ void BVKApp::run()
         }
 
         glfwPollEvents();
+
+        if (const auto commandBuffer = appRenderer->beginFrame())
+        {
+            appRenderer->beginSwapChainRenderPass(commandBuffer);
+
+            appRenderer->endSwapChainRenderPass(commandBuffer);
+            appRenderer->endFrame();
+        }
 
         vkDeviceWaitIdle(deviceManager->getDevicePtr()->getDevice());
     }

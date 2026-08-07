@@ -16,7 +16,9 @@ add_library(BasedVK
         BVKSwapchain.h
         BVKRenderSystemManager.cpp
         BVKRenderSystemManager.h
+        BVKRenderer.cpp
+        BVKRenderer.h
 )
 
 target_include_directories(BasedVK PRIVATE ../include)
-target_link_libraries(BasedVK PRIVATE glfw Vulkan::Vulkan BasedCore)
+target_link_libraries(BasedVK PRIVATE glfw Vulkan::Vulkan BasedCore plog::plog)

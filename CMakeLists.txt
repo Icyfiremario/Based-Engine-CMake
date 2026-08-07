@@ -1,4 +1,6 @@
-﻿cmake_minimum_required (VERSION 4.0)
+﻿include(FetchContent)
+
+cmake_minimum_required (VERSION 4.0)
 
 if (WIN32)
   message("Windows detected.")
@@ -82,6 +84,15 @@ if(DIRECTX_AVAILABLE)
   find_package(DirectX-Headers REQUIRED)
 endif (DIRECTX_AVAILABLE)
 
+# Fetch external libraries
+FetchContent_Declare(
+        plog
+        GIT_REPOSITORY https://github.com/SergiusTheBest/plog
+        GIT_TAG        1.1.11
+        GIT_SHALLOW    true
+)
+FetchContent_MakeAvailable(plog)
+
 # Extras
 find_package(Doxygen)
 
@@ -89,7 +100,7 @@ find_package(Doxygen)
 add_executable(BasedEngine main.cpp
 )
 target_include_directories(BasedEngine PRIVATE Include)
-target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm GLEW::GLEW)
+target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm GLEW::GLEW plog::plog)
 if (DIRECTX_AVAILABLE)
   target_link_libraries(BasedEngine PRIVATE user32 gdi32 kernel32 d3d12 dxgi dxguid d3dcompiler)
 endif (DIRECTX_AVAILABLE)

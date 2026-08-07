@@ -11,4 +11,4 @@ add_library(BasedGL
 )
 
 target_include_directories(BasedGL PRIVATE ${OPENGL_INCLUDE_DIR} ../include)
-target_link_libraries(BasedGL OpenGL::GL Vulkan::Vulkan glfw GLEW::GLEW BasedCore)
+target_link_libraries(BasedGL OpenGL::GL Vulkan::Vulkan glfw GLEW::GLEW BasedCore plog::plog)

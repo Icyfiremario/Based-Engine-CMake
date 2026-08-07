@@ -26,7 +26,7 @@ BEApp* BasedEngine::Managers::BEAppManager::createApp(const int API)
     case VULKAN:
         {
             app = std::make_unique<BVKApp>();
-            PLOGI << "Created vulkan app";
+            PLOGI << "Created vulkan app.";
             break;
         }
     case OPENGL:
@@ -42,7 +42,7 @@ BEApp* BasedEngine::Managers::BEAppManager::createApp(const int API)
 BEApp* BasedEngine::Managers::BEAppManager::createApp(int w, int h, const std::string& title)
 {
     app = std::make_unique<BVKApp>(w, h, title.c_str());
-    PLOGI << "Created vulkan app";
+    PLOGI << "Created vulkan app.";
     return app.get();
 }
 
@@ -53,7 +53,7 @@ BEApp* BasedEngine::Managers::BEAppManager::createApp(int w, int h, const std::s
     case VULKAN:
         {
             app = std::make_unique<BVKApp>(w, h, title.c_str());
-            PLOGI << "Created vulkan app";
+            PLOGI << "Created vulkan app.";
             break;
         }
     case OPENGL:

@@ -6,6 +6,7 @@
 #include <vector>
 #include <array>
 #include <set>
+#include <limits>
 
 // Vulkan
 #include <vulkan/vulkan.h>
@@ -30,6 +31,18 @@ public:
     [[nodiscard]] VkImageView getImageView(const int index) const { return swapChainImageViews[index]; }
     [[nodiscard]] size_t imageCount() const { return swapChainImages.size(); }
     [[nodiscard]] VkFormat getSwapChainImageFormat() const { return swapChainImageFormat; }
+    [[nodiscard]] VkExtent2D getSwapChainExtent() const { return swapChainExtent; }
+    [[nodiscard]] uint32_t width() const { return swapChainExtent.width; }
+    [[nodiscard]] uint32_t height() const { return swapChainExtent.height; }
+
+    [[nodiscard]] float extentAspectRatio() const { return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height); }
+
+    [[nodiscard]] VkFormat findDepthFormat() const;
+
+    VkResult acquireNextImage(uint32_t* imageIndex) const;
+    VkResult submitCommandBuffers(const VkCommandBuffer* buffers, const uint32_t* imageIndex);
+
+    [[nodiscard]] bool compareSwapFormats(const BVKSwapChain& swapChain) const { return swapChain.swapChainDepthFormat == swapChainDepthFormat && swapChain.swapChainImageFormat == swapChainImageFormat; }
 
 private:
 #ifdef DEBUG
@@ -75,8 +88,8 @@ private:
     void init();
 
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
-    VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
-    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
+    VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes) const;
+    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) const;
 };
 
 

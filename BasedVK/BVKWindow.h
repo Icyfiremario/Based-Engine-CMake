@@ -27,6 +27,8 @@ public:
 
     void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface) const;
 
+    void resetWindowResizedFlag() { frameBufferResized = false; }
+
 private:
 
     GLFWwindow* m_window = nullptr;

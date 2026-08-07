@@ -11,4 +11,4 @@ add_library(BasedDX
 )
 
 target_include_directories(BasedDX PRIVATE ../include)
-target_link_libraries(BasedDX PRIVATE user32 gdi32 kernel32 glfw Vulkan::Vulkan d3d12 dxgi dxguid d3dcompiler BasedCore)
+target_link_libraries(BasedDX PRIVATE user32 gdi32 kernel32 glfw Vulkan::Vulkan d3d12 dxgi dxguid d3dcompiler BasedCore plog::plog)
