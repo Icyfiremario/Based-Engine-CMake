@@ -1,6 +1,6 @@
 ﻿include(FetchContent)
 
-cmake_minimum_required (VERSION 4.0)
+cmake_minimum_required (VERSION 3.20)
 
 if (WIN32)
   message("Windows detected.")
@@ -51,7 +51,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set(CMAKE_CXX_FLAGS_RELEASE "/W4 /O2")
   set(CMAKE_CXX_FLAGS_MINSIZEREL "/W4 /Os")
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/W4 /Zi /O2 /DDEBUG")
-  message(FATAL_ERROR "MSVC compiler is not supported yet.\nI have not written into the build chain the proper methods for finding the required libraries and linking them.")
+  #message(FATAL_ERROR "MSVC compiler is not supported yet.\nI have not written into the build chain the proper methods for finding the required libraries and linking them.")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
   message(STATUS "Using AppleClang")
   message(STATUS "Using Clang extensions")
@@ -75,11 +75,11 @@ add_subdirectory(models)
 
 
 # find libraries
-find_package(glfw3 3.3 REQUIRED)
-find_package(glm REQUIRED)
+find_package(glfw3 3.3 CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Vulkan REQUIRED)
-find_package(GLEW REQUIRED)
+find_package(GLEW CONFIG REQUIRED)
 if(DIRECTX_AVAILABLE)
   find_package(DirectX-Headers REQUIRED)
 endif (DIRECTX_AVAILABLE)

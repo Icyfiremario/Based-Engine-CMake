@@ -2,8 +2,6 @@ find_package(Vulkan REQUIRED)
 find_package(glfw3 REQUIRED)
 
 add_library(BasedVK
-        BVKBuffer.cpp
-        BVKBuffer.h
         BVKWindow.cpp
         BVKWindow.h
         BVKApp.cpp

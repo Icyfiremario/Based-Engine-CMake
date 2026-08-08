@@ -13,4 +13,4 @@ BasedVK is the Vulkan implementation for Based Engine. It is based on the series
 
 
 
-[^1]: [text](https://youtube.com/playlist?list=PL8327DO66nu9qYVKLDmdLW_84-yE4auCR&si=zerBD9tZK9vN6c5s)
+[^1]: [Playlist](https://youtube.com/playlist?list=PL8327DO66nu9qYVKLDmdLW_84-yE4auCR&si=zerBD9tZK9vN6c5s)

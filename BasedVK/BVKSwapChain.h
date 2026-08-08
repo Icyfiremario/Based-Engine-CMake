@@ -7,6 +7,7 @@
 #include <array>
 #include <set>
 #include <limits>
+#include <iostream>
 
 // Vulkan
 #include <vulkan/vulkan.h>

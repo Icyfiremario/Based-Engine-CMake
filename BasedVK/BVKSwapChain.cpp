@@ -1,7 +1,5 @@
 #include "BVKSwapChain.h"
 
-#include <iostream>
-
 BVKSwapChain::BVKSwapChain(BVKDevice& deviceRef, const VkExtent2D windowExtent) : device(deviceRef), windowExtent(windowExtent)
 {
     init();
@@ -215,7 +213,7 @@ void BVKSwapChain::createDepthResources()
 {
     const VkFormat depthFormat = findDepthFormat();
     swapChainDepthFormat = depthFormat;
-    VkExtent2D swapChainExtent = getSwapChainExtent();
+    const VkExtent2D localSwapChainExtent = getSwapChainExtent();
 
     depthImages.resize(imageCount());
     depthImageMemories.resize(imageCount());
@@ -226,8 +224,8 @@ void BVKSwapChain::createDepthResources()
         VkImageCreateInfo imageInfo{};
         imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         imageInfo.imageType = VK_IMAGE_TYPE_2D;
-        imageInfo.extent.width = swapChainExtent.width;
-        imageInfo.extent.height = swapChainExtent.height;
+        imageInfo.extent.width = localSwapChainExtent.width;
+        imageInfo.extent.height = localSwapChainExtent.height;
         imageInfo.extent.depth = 1;
         imageInfo.mipLevels = 1;
         imageInfo.arrayLayers = 1;
@@ -304,7 +302,7 @@ void BVKSwapChain::createRenderPass()
     dependency.srcAccessMask = 0;
     dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 
-    const std::array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
+    const std::array attachments = { colorAttachment, depthAttachment };
 
     VkRenderPassCreateInfo renderPassInfo = {};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
@@ -335,15 +333,15 @@ void BVKSwapChain::createFramebuffers()
             depthImageViews[i]
         };
 
-        VkExtent2D swapChainExtent = getSwapChainExtent();
+        const VkExtent2D localSwapChainExtent = getSwapChainExtent();
 
         VkFramebufferCreateInfo framebufferInfo = {};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         framebufferInfo.renderPass = renderPass;
         framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
         framebufferInfo.pAttachments = attachments.data();
-        framebufferInfo.width = swapChainExtent.width;
-        framebufferInfo.height = swapChainExtent.height;
+        framebufferInfo.width = localSwapChainExtent.width;
+        framebufferInfo.height = localSwapChainExtent.height;
         framebufferInfo.layers = 1;
 
         if (vkCreateFramebuffer(device.getDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS)
