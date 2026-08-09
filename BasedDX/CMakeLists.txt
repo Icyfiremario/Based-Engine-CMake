@@ -8,6 +8,8 @@ add_library(BasedDX
         stdafx.cpp
         BDXDevice.cpp
         BDXDevice.h
+        BDXApp.cpp
+        BDXApp.h
 )
 
 target_include_directories(BasedDX PRIVATE ../include)

@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     {
         BasedEngine::Managers::BEAppManager* appManager = BasedEngine::Managers::BEAppManager::getInstance();
         PLOGI << "Creating app object.";
-        appManager->createApp(600, 400, "Based Vulkan");
+        appManager->createApp(800, 600, "Based Vulkan");
         PLOGI << "Running app.";
         appManager->getApp()->run();
     }

@@ -101,7 +101,7 @@ add_executable(BasedEngine main.cpp)
 target_include_directories(BasedEngine PRIVATE Include)
 target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm GLEW::GLEW plog::plog)
 if (DIRECTX_AVAILABLE)
-  target_link_libraries(BasedEngine PRIVATE user32 gdi32 kernel32 d3d12 dxgi dxguid d3dcompiler)
+  target_link_libraries(BasedEngine PRIVATE BasedDX user32 gdi32 kernel32 d3d12 dxgi dxguid d3dcompiler)
 endif (DIRECTX_AVAILABLE)
 add_dependencies(BasedEngine CompileShaders CopyModels)
 

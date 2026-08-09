@@ -11,8 +11,6 @@ add_library(BasedCore
         BEUtils.h
         Common/BEObject.cpp
         Common/BEObject.h
-        Common/BEDevice.cpp
-        Common/BEDevice.h
         Managers/BEAppManager.cpp
         Managers/BEAppManager.h
         Common/BEApp.cpp

@@ -11,6 +11,13 @@
 #include "../BEUtils.h"
 #include "../Common/BEApp.h"
 
+// BasedVK
+#include "../../BasedVK/BVKApp.h"
+
+// BasedDX
+#include "../../BasedDX/BDXApp.h"
+
+
 namespace BasedEngine::Managers
 {
     class BEAppManager
@@ -23,11 +30,11 @@ namespace BasedEngine::Managers
         static BEAppManager* getInstance();
 
         /// @brief Creates a Based Engine app with the specified API using the default window width, height, and title.
-        BEApp* createApp(int API);
+        BEApp* createApp(API api);
         /// @brief Creates a Vulkan Based Engine app with the specified width, height, and title.
         BEApp* createApp(int w, int h, const std::string& title);
         ///// @brief Creates a Based Engine app using the specified values.
-        BEApp* createApp(int w, int h, const std::string& title, int api);
+        BEApp* createApp(int w, int h, const std::string& title, API api);
 
         [[nodiscard]] BEApp* getApp() const { return app.get(); }
 

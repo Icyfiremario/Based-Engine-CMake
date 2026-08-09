@@ -5,8 +5,6 @@
 #include <memory>
 #include <string>
 
-#include "../../BasedVK/BVKWindow.h"
-
 class BEApp
 {
 public:

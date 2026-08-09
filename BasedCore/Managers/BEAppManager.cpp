@@ -1,7 +1,5 @@
 #include "BEAppManager.h"
 
-#include "../../BasedVK/BVKApp.h"
-
 BasedEngine::Managers::BEAppManager* BasedEngine::Managers::BEAppManager::instance = nullptr;
 std::mutex BasedEngine::Managers::BEAppManager::mtx;
 
@@ -19,18 +17,23 @@ BasedEngine::Managers::BEAppManager* BasedEngine::Managers::BEAppManager::getIns
     return instance;
 }
 
-BEApp* BasedEngine::Managers::BEAppManager::createApp(const int API)
+BEApp* BasedEngine::Managers::BEAppManager::createApp(const API api)
 {
-    switch (API)
+    switch (api)
     {
     case VULKAN:
         {
             app = std::make_unique<BVKApp>();
-            PLOGI << "Created vulkan app.";
+            PLOGI << "Created Vulkan app.";
             break;
         }
     case OPENGL:
     case DIRECTX:
+        {
+            app = std::make_unique<BDXApp>();
+            PLOGI << "Created DirectX app.";
+            break;
+        }
     default:
         PLOGF << "Invalid API!";
         throw std::invalid_argument("Invalid API!");
@@ -46,7 +49,7 @@ BEApp* BasedEngine::Managers::BEAppManager::createApp(int w, int h, const std::s
     return app.get();
 }
 
-BEApp* BasedEngine::Managers::BEAppManager::createApp(int w, int h, const std::string& title, const int api)
+BEApp* BasedEngine::Managers::BEAppManager::createApp(int w, int h, const std::string& title, const API api)
 {
     switch (api)
     {
@@ -58,6 +61,11 @@ BEApp* BasedEngine::Managers::BEAppManager::createApp(int w, int h, const std::s
         }
     case OPENGL:
     case DIRECTX:
+        {
+            app = std::make_unique<BDXApp>(w, h, title.c_str());
+            PLOGI << "Created DirectX app.";
+            break;
+        }
     default:
         PLOGF << "Invalid API!";
         throw std::invalid_argument("Invalid API!");

@@ -1,16 +1,13 @@
 #ifndef BDXDEVICE_H
 #define BDXDEVICE_H
 
-// BasedCore
-#include "../BasedCore/Common/BEDevice.h"
-
 // BasedDX
 #include "stdafx.h"
 
-class BDXDevice : BasedEngine::Common::BEDevice
+class BDXDevice
 {
 public:
-
+    BDXDevice();
 
 private:
 
