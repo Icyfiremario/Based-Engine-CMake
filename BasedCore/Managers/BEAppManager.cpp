@@ -28,12 +28,14 @@ BEApp* BasedEngine::Managers::BEAppManager::createApp(const API api)
             break;
         }
     case OPENGL:
+#ifdef DIRECTX_AVAILABLE
     case DIRECTX:
         {
             app = std::make_unique<BDXApp>();
             PLOGI << "Created DirectX app.";
             break;
         }
+#endif
     default:
         PLOGF << "Invalid API!";
         throw std::invalid_argument("Invalid API!");
@@ -60,12 +62,14 @@ BEApp* BasedEngine::Managers::BEAppManager::createApp(int w, int h, const std::s
             break;
         }
     case OPENGL:
+#ifdef DIRECTX_AVAILABLE
     case DIRECTX:
         {
             app = std::make_unique<BDXApp>(w, h, title.c_str());
             PLOGI << "Created DirectX app.";
             break;
         }
+#endif
     default:
         PLOGF << "Invalid API!";
         throw std::invalid_argument("Invalid API!");
