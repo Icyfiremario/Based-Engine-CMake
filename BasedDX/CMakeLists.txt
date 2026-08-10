@@ -10,6 +10,8 @@ add_library(BasedDX
         BDXApp.h
         BDXPipeline.cpp
         BDXPipeline.h
+        BDXHelper.h
+        BDXMinGWFix.h
 )
 
 target_include_directories(BasedDX PRIVATE ../include)

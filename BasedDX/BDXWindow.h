@@ -6,6 +6,7 @@
 
 // BasedDX
 #include "stdafx.h"
+#include "BDXPipeline.h"
 
 class BDXWindow final : BasedEngine::Common::BEWindow
 {
@@ -16,6 +17,8 @@ public:
 private:
 
     HWND m_hWnd;
+
+    std::unique_ptr<BDXPipeline> m_pipeline;
 
     void initWindow() override;
 };

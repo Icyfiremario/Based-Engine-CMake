@@ -70,7 +70,7 @@ void BVKRenderer::endFrame()
 
 void BVKRenderer::beginSwapChainRenderPass(const VkCommandBuffer commandBuffer) const
 {
-    assert(isFrameStarted && "Can't begin a renderpass if no frames are started!");
+    assert(isFrameStarted && "Can't begin a render pass if no frames are started!");
     assert(commandBuffer == getCurrentCommandBuffer() && "Cannot perform a render pass on a different frame!");
 
     VkRenderPassBeginInfo renderPassInfo{};

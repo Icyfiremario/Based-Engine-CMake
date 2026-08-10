@@ -22,7 +22,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GN
     set(CMAKE_CXX_FLAGS_ALL "-Wall -Wextra -pedantic -Wextra-tokens -fcolor-diagnostics")
 
     if (DIRECTX_AVAILABLE)
-      set(CMAKE_CXX_FLAGS_ALL "${CMAKE_CXX_FLAGS_ALL} -DDIRECTX_AVAILABLE")
+      #set(CMAKE_CXX_FLAGS_ALL "${CMAKE_CXX_FLAGS_ALL} -fms-extensions -DDIRECTX_AVAILABLE")
+      add_compile_definitions(DIRECTX_AVAILABLE)
     endif (DIRECTX_AVAILABLE)
 
     if (${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64|arm64|AARCH64|ARM64")
@@ -47,11 +48,15 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   message(STATUS "Using MSVC style compiler flags")
   set(CMAKE_CXX_FLAGS_ALL "/Wall /MP")
 
+  if (DIRECTX_AVAILABLE)
+    #set(CMAKE_CXX_FLAGS_ALL "${CMAKE_CXX_FLAGS_ALL} -fms-extensions -DDIRECTX_AVAILABLE")
+    add_compile_definitions(DIRECTX_AVAILABLE)
+  endif (DIRECTX_AVAILABLE)
+
   set(CMAKE_CXX_FLAGS_DEBUG "/W4 /Zi /Od /DDEBUG")
   set(CMAKE_CXX_FLAGS_RELEASE "/W4 /O2")
   set(CMAKE_CXX_FLAGS_MINSIZEREL "/W4 /Os")
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/W4 /Zi /O2 /DDEBUG")
-  #message(FATAL_ERROR "MSVC compiler is not supported yet.\nI have not written into the build chain the proper methods for finding the required libraries and linking them.")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
   message(STATUS "Using AppleClang")
   message(STATUS "Using Clang extensions")
