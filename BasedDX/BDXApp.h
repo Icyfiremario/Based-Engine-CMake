@@ -8,7 +8,7 @@
 #include "../BasedCore/Common/BEApp.h"
 
 // BasedDX
-#include "BDXDevice.h"
+#include "BDXWindow.h"
 
 
 class BDXApp : public BEApp
@@ -22,7 +22,7 @@ public:
 
 private:
 
-    std::unique_ptr<BDXDevice> appDevice = nullptr;
+    std::unique_ptr<BDXWindow> appWindow = nullptr;
 };
 
 

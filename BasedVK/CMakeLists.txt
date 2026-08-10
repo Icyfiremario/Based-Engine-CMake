@@ -16,6 +16,14 @@ add_library(BasedVK
         BVKRenderSystemManager.h
         BVKRenderer.cpp
         BVKRenderer.h
+        BVKRenderSystem.cpp
+        BVKRenderSystem.h
+        BVKPipeline.cpp
+        BVKPipeline.h
+        BVKModel.cpp
+        BVKModel.h
+        BVKBuffer.cpp
+        BVKBuffer.h
 )
 
 target_include_directories(BasedVK PRIVATE ../include)

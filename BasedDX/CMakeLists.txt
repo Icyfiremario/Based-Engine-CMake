@@ -6,10 +6,10 @@ add_library(BasedDX
         BDXWindow.h
         stdafx.h
         stdafx.cpp
-        BDXDevice.cpp
-        BDXDevice.h
         BDXApp.cpp
         BDXApp.h
+        BDXPipeline.cpp
+        BDXPipeline.h
 )
 
 target_include_directories(BasedDX PRIVATE ../include)
