@@ -18,11 +18,17 @@
 // STD
 #include <iostream>
 #include <fstream>
-#include<cstdlib>
+#include <cstdlib>
+#include <chrono>
+#include <sstream>
+#include <format>
 
 // Plog
 #include <plog/Log.h>
 #include <plog/Initializers/RollingFileInitializer.h>
+
+// libzip
+#include <zip.h>
 
 // BasedCore
 #include "BasedCore/Managers/BEAppManager.h"
@@ -39,8 +45,8 @@ int main(int argc, char** argv)
     {
         BasedEngine::Managers::BEAppManager* appManager = BasedEngine::Managers::BEAppManager::getInstance();
         PLOGI << "Creating app object.";
-        //appManager->createApp(800, 600, "Based Vulkan");
-        appManager->createApp(800, 600, "Based DirectX", BasedEngine::DIRECTX);
+        appManager->createApp(800, 600, "Based Vulkan");
+        //appManager->createApp(800, 600, "Based DirectX", BasedEngine::DIRECTX);
         PLOGI << "Running app.";
         appManager->getApp()->run();
     }
@@ -49,6 +55,21 @@ int main(int argc, char** argv)
         std::cerr << e.what() << std::endl;
         exitCode = EXIT_FAILURE;
     }
+
+    // Generate log name for archiving
+    std::stringstream filename;
+
+    const auto now = std::chrono::system_clock::now();
+    const auto now_sec = std::chrono::system_clock::to_time_t(now);
+
+    std::tm* local_tm = std::localtime(&now_sec);
+
+    std::string date = std::format("{:%F}", now);
+    std::string time = std::format("{:02}-{:02}-{:02}", local_tm->tm_hour, local_tm->tm_min, local_tm->tm_sec);
+
+    filename << "./logs/" << date << '-' << time << ".log";
+
+    std::filesystem::copy("./logs/latest.log", filename.str());
 
     return exitCode;
 }
