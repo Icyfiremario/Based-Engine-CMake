@@ -296,13 +296,14 @@ std::vector<std::shared_ptr<BVKDevice>>* BVKDeviceManager::getDeviceList()
     return &devices;
 }
 
-void BVKDeviceManager::setDeviceIndex(const int index)
+bool BVKDeviceManager::switchDevice(int index)
 {
-    if (index < 0 || static_cast<size_t>(index) >= devices.size())
+    if (const size_t maxDeviceIndex = devices.size(); index > maxDeviceIndex || index < 0)
     {
-        PLOGE << "Index " << index << " is outside of the device list bounds. Keeping current value.";
-        return;
+        return false;
     }
 
     currentDeviceIndex = index;
+    return true;
 }
+

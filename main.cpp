@@ -1,5 +1,4 @@
 ﻿// Check OS
-#include <filesystem>
 #ifdef __unix__
 #ifndef UNIX
 #define UNIX
@@ -22,13 +21,11 @@
 #include <chrono>
 #include <sstream>
 #include <format>
+#include <filesystem>
 
 // Plog
 #include <plog/Log.h>
 #include <plog/Initializers/RollingFileInitializer.h>
-
-// libzip
-#include <zip.h>
 
 // BasedCore
 #include "BasedCore/Managers/BEAppManager.h"

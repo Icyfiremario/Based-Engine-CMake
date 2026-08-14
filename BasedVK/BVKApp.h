@@ -7,7 +7,6 @@
 // BasedVK
 #include "BVKDeviceManager.h"
 #include "BVKRenderer.h"
-#include "BVKSwapChain.h"
 
 class BVKApp : public BEApp
 {
@@ -24,6 +23,8 @@ private:
     std::unique_ptr<BVKWindow> appWindow = nullptr;
     std::unique_ptr<BVKDeviceManager> deviceManager = nullptr;
     std::unique_ptr<BVKRenderer> appRenderer = nullptr;
+
+    void resetDeviceRenderer();
 };
 
 

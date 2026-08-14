@@ -24,6 +24,9 @@ add_library(BasedVK
         BVKModel.h
         BVKBuffer.cpp
         BVKBuffer.h
+        BVKFrameInfo.h
+        BVKObject.cpp
+        BVKObject.h
 )
 
 target_include_directories(BasedVK PRIVATE ../include)

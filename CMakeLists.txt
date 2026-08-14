@@ -1,6 +1,6 @@
 ﻿include(FetchContent)
 
-cmake_minimum_required (VERSION 3.20)
+cmake_minimum_required (VERSION 4.0)
 
 if (WIN32)
   message("Windows detected.")
@@ -13,59 +13,10 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_compile_definitions(CMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}")
-
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  message(STATUS "Using GNU style compiler flags")
-
-  if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    message(STATUS "Using Clang extensions")
-    set(CMAKE_CXX_FLAGS_ALL "-Wall -Wextra -pedantic -Wextra-tokens -fcolor-diagnostics")
-
-    if (DIRECTX_AVAILABLE)
-      #set(CMAKE_CXX_FLAGS_ALL "${CMAKE_CXX_FLAGS_ALL} -fms-extensions -DDIRECTX_AVAILABLE")
-      add_compile_definitions(DIRECTX_AVAILABLE)
-    endif (DIRECTX_AVAILABLE)
-
-    if (${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64|arm64|AARCH64|ARM64")
-      set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
-    else ()
-      message(STATUS "Using sanitizers")
-      set(CMAKE_CXX_FLAGS_DEBUG "-g -fsanitize=undefined -fsanitize=address ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
-    endif ()
-
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_ALL} -O2")
-    set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os ${CMAKE_CXX_FLAGS_ALL}")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
-  else()
-    set(CMAKE_CXX_FLAGS_ALL "-Wall -Wextra -Wpedantic")
-
-    set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_ALL} -O2")
-    set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os ${CMAKE_CXX_FLAGS_ALL}")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
-  endif()
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-  message(STATUS "Using MSVC style compiler flags")
-  set(CMAKE_CXX_FLAGS_ALL "/Wall /MP")
-
-  if (DIRECTX_AVAILABLE)
-    #set(CMAKE_CXX_FLAGS_ALL "${CMAKE_CXX_FLAGS_ALL} -fms-extensions -DDIRECTX_AVAILABLE")
+add_compile_definitions($<$<CONFIG:Debug>:DEBUG> $<$<CONFIG:RelWithDebInfo>:DEBUG>)
+if (DIRECTX_AVAILABLE)
     add_compile_definitions(DIRECTX_AVAILABLE)
-  endif (DIRECTX_AVAILABLE)
-
-  set(CMAKE_CXX_FLAGS_DEBUG "/W4 /Zi /Od /DDEBUG")
-  set(CMAKE_CXX_FLAGS_RELEASE "/W4 /O2")
-  set(CMAKE_CXX_FLAGS_MINSIZEREL "/W4 /Os")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/W4 /Zi /O2 /DDEBUG")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-  message(STATUS "Using AppleClang")
-  message(STATUS "Using Clang extensions")
-  set(CMAKE_CXX_FLAGS_ALL "-Wall -Wextra -pedantic -Wextra-tokens -fcolor-diagnostics")
-
-  set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG -DAPPLE")
-else()
-  message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
-endif()
+endif (DIRECTX_AVAILABLE)
 
 # Include sub-projects.
 add_subdirectory(BasedCore)
@@ -102,12 +53,26 @@ find_package(Doxygen)
 
 # Add source to this project's executable.
 add_executable(BasedEngine main.cpp)
-target_include_directories(BasedEngine PRIVATE Include)
-target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm GLEW::GLEW plog::plog zip)
+
+target_compile_options(BasedEngine PRIVATE -Wall $<$<CONFIG:Debug>: -g -O0> $<$<CONFIG:Release>: -O2> $<$<CONFIG:RelWithDebInfo>: -O2 -g> $<$<CONFIG:MinSizeRel>: -Os>)
+
+target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm GLEW::GLEW plog::plog)
 
 if (DIRECTX_AVAILABLE)
   target_link_libraries(BasedEngine PRIVATE BasedDX user32 gdi32 kernel32 d3d12 dxgi dxguid d3dcompiler)
 endif (DIRECTX_AVAILABLE)
+
+if (MSVC)
+    add_compile_options(BasedEngine PRIVATE /MP /W4 $<$<CONFIG:Debug>: /Od>)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    add_compile_options(BasedEngine PRIVATE -Wextra -Wpedantic)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(BasedEngine PRIVATE -Wall -Wextra -pedantic -Wextra_tokens -fcolor_diagnostics $<$<CONFIG:Debug>: -fsanitize=undefined -fsanitize=address>)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    add_compile_options(BasedEngine PRIVATE -Wall -Wextra -pedantic -Wextra_tokens -fcolor-diagnostics $<$<CONFIG:Debug>: -fsanitize=undefined -fsanitize=address>)
+else()
+    message(FATAL "Unsupported compiler!")
+endif()
 
 add_dependencies(BasedEngine CompileShaders CopyModels)
 

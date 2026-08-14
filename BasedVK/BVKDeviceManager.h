@@ -55,8 +55,8 @@ public:
     std::shared_ptr<BVKDevice> getDevicePtr();
     /// @brief  Returns a pointer to the list of BVKDevice objects created by the manager for each found GPU.
     std::vector<std::shared_ptr<BVKDevice>>* getDeviceList();
-    /// @brief Sets the current device index. Does not set the index if the index is out of range.
-    void setDeviceIndex(int index);
+
+    bool switchDevice(int index);
 
 private:
 
