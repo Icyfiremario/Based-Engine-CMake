@@ -1,6 +1,6 @@
 ﻿include(FetchContent)
 
-cmake_minimum_required (VERSION 4.0)
+cmake_minimum_required (VERSION 3.20)
 
 if (WIN32)
   message("Windows detected.")
@@ -30,14 +30,16 @@ add_subdirectory(models)
 
 
 # find libraries
-find_package(glfw3 3.3 CONFIG REQUIRED)
-find_package(glm CONFIG REQUIRED)
+find_package(glfw3 3.3 REQUIRED)
+find_package(glm REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Vulkan REQUIRED)
-find_package(GLEW CONFIG REQUIRED)
+find_package(GLEW REQUIRED)
 if(DIRECTX_AVAILABLE)
   find_package(DirectX-Headers REQUIRED)
 endif (DIRECTX_AVAILABLE)
+
+find_package(libzip REQUIRED)
 
 # Fetch external libraries
 FetchContent_Declare(
@@ -56,14 +58,15 @@ add_executable(BasedEngine main.cpp)
 
 target_compile_options(BasedEngine PRIVATE -Wall $<$<CONFIG:Debug>: -g -O0> $<$<CONFIG:Release>: -O2> $<$<CONFIG:RelWithDebInfo>: -O2 -g> $<$<CONFIG:MinSizeRel>: -Os>)
 
-target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm GLEW::GLEW plog::plog)
+target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm GLEW::GLEW plog::plog libzip::zip)
 
 if (DIRECTX_AVAILABLE)
   target_link_libraries(BasedEngine PRIVATE BasedDX user32 gdi32 kernel32 d3d12 dxgi dxguid d3dcompiler)
 endif (DIRECTX_AVAILABLE)
 
 if (MSVC)
-    add_compile_options(BasedEngine PRIVATE /MP /W4 $<$<CONFIG:Debug>: /Od>)
+    add_compile_options(BasedEngine PRIVATE /MP /W4 $<$<CONFIG:Debug>: /Od /ZI>)
+    add_link_options(BasedEngine PRIVATE $<$<CONFIG:Debug>: /INCREMENTAL>)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     add_compile_options(BasedEngine PRIVATE -Wextra -Wpedantic)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")

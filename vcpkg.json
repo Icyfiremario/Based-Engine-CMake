@@ -6,6 +6,7 @@
     "glfw3",
     "glm",
     "glew",
+    "libzip",
     { "name": "directxtk12", "default-features": false },
     { "name": "directxtex", "features": ["dx12"] },
     { "name": "directxmesh", "features": ["dx12"] }

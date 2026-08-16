@@ -3,6 +3,7 @@
 
 // STD
 #include <vector>
+#include <string>
 
 class BVKRenderSystemManager
 {

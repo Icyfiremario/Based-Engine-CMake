@@ -278,8 +278,8 @@ std::shared_ptr<BVKDevice> BVKDeviceManager::getDevicePtr()
 {
     if (static_cast<size_t>(currentDeviceIndex) >= devices.size() || !devices[currentDeviceIndex])
     {
-        PLOGE << "Failed to get device pointer!";
-        return nullptr;
+        PLOGF << "Failed to get device pointer.";
+		throw std::runtime_error("Failed to get device pointer!");
     }
 
     if (!devices.at(currentDeviceIndex)->deviceInitialized())

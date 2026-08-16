@@ -22,6 +22,10 @@
 #include <sstream>
 #include <format>
 #include <filesystem>
+#include <string>
+
+// libzip
+#include <zip.h>
 
 // Plog
 #include <plog/Log.h>
@@ -29,6 +33,50 @@
 
 // BasedCore
 #include "BasedCore/Managers/BEAppManager.h"
+
+static int archiveLogs(std::string path)
+{
+    int error = 0;
+
+    zip_t* archive = zip_open(("./logs/" + path + ".zip").c_str(), ZIP_CREATE | ZIP_TRUNCATE, &error);
+
+    if (!archive)
+    {
+        std::cerr << "Failed to open output ZIP archive! Error code: " << error << '\n';
+        PLOGE << "Failed to open output ZIP archive! Error code: " << error;
+        return error;
+    }
+
+    zip_source_t* source = zip_source_file(archive, ("./logs/" + path + ".log").c_str(), 0, ZIP_LENGTH_TO_END);
+    if (!source)
+    {
+        std::cerr << "Failed to create source from file: " << zip_strerror(archive) << '\n';
+        PLOGE << "Failed to create source from file: " << zip_strerror(archive);
+        zip_close(archive);
+        return -1;
+    }
+
+    zip_int64_t index = zip_file_add(archive, (path + ".log").c_str(), source, ZIP_FL_ENC_UTF_8);
+    if (index < 0)
+    {
+        std::cerr << "Failed to add file to archive: " << zip_strerror(archive) << '\n';
+        PLOGE << "Failed to add file to archive: " << zip_strerror(archive);
+        zip_source_free(source);
+        zip_close(archive);
+        return -1;
+    }
+
+    if (zip_close(archive) < 0)
+    {
+        std::cerr << "Failed to write and close ZIP archive: " << zip_strerror(archive) << '\n';
+        PLOGE << "Failed to write and close ZIP archive: " << zip_strerror(archive);
+        return -1;
+    }
+
+    PLOGI << "Archived " << (path + ".log");
+
+    return error;
+}
 
 int main(int argc, char** argv)
 {
@@ -64,9 +112,17 @@ int main(int argc, char** argv)
     std::string date = std::format("{:%F}", now);
     std::string time = std::format("{:02}-{:02}-{:02}", local_tm->tm_hour, local_tm->tm_min, local_tm->tm_sec);
 
-    filename << "./logs/" << date << '-' << time << ".log";
+    filename << date << '-' << time;
 
-    std::filesystem::copy("./logs/latest.log", filename.str());
+    std::filesystem::copy("./logs/latest.log", "./logs/" + filename.str() + ".log");
+
+    if (int error = archiveLogs(filename.str()); error != 0)
+    {
+        exitCode = error;
+        return exitCode;
+    }
+
+    std::filesystem::remove(filename.str() + ".log");
 
     return exitCode;
 }
