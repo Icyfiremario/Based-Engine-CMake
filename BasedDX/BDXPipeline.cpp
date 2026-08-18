@@ -67,7 +67,7 @@ void BDXPipeline::getHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** pp
                 continue;
             }
 
-            if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_ID3D12Device, nullptr)))
+            if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), nullptr)))
             {
                 break;
             }
@@ -86,7 +86,7 @@ void BDXPipeline::getHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** pp
                 continue;
             }
 
-            if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_ID3D12Device, nullptr)))
+            if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), nullptr)))
             {
                 break;
             }
