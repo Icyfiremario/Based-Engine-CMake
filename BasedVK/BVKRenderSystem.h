@@ -15,6 +15,7 @@
 // BasedVK
 #include "BVKDevice.h"
 #include "BVKPipeline.h"
+#include "BVKFrameInfo.h"
 
 class BVKRenderSystem
 {
@@ -26,7 +27,7 @@ public:
     BVKRenderSystem(const BVKRenderSystem &) = delete;
     BVKRenderSystem &operator=(const BVKRenderSystem &) = delete;
 
-    void renderGameObjects(void);
+    void renderGameObjects(const FrameInfo& frameInfo) const;
 
 private:
 

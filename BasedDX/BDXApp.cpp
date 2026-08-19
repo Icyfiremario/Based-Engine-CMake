@@ -17,4 +17,14 @@ BDXApp::~BDXApp()
 
 void BDXApp::run()
 {
+    while (!appWindow->shouldClose())
+    {
+        if (glfwGetKey(appWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        {
+            PLOGI << "Escape key pressed. Closing app...";
+            glfwSetWindowShouldClose(appWindow->getWindow(), true);
+        }
+
+        glfwPollEvents();
+    }
 }

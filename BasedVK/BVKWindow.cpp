@@ -1,6 +1,6 @@
 #include "BVKWindow.h"
 
-BVKWindow::BVKWindow() : BEWindow()
+BVKWindow::BVKWindow()
 {
     initWindow();
 }

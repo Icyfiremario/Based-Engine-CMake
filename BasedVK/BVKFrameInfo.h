@@ -18,7 +18,7 @@ struct FrameInfo
     // TODO: Add camera object
 
     VkDescriptorSet globalDescriptorSet;
-    // TODO: Add map objects
+    BVKObject::Map &appObjects;
 };
 
 #define MAX_LIGHTS 10

@@ -3,7 +3,6 @@
 cmake_minimum_required (VERSION 3.20)
 
 if (WIN32)
-  message("Windows detected.")
   set(DIRECTX_AVAILABLE True)
 endif()
 
@@ -15,7 +14,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_compile_definitions(CMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}")
 add_compile_definitions($<$<CONFIG:Debug>:DEBUG> $<$<CONFIG:RelWithDebInfo>:DEBUG>)
 if (DIRECTX_AVAILABLE)
-    add_compile_definitions(DIRECTX_AVAILABLE)
+    add_compile_definitions(DIRECTX_AVAILABLE WINDOWS)
 endif (DIRECTX_AVAILABLE)
 
 # Include sub-projects.
@@ -56,7 +55,7 @@ find_package(Doxygen)
 # Add source to this project's executable.
 add_executable(BasedEngine main.cpp)
 
-target_compile_options(BasedEngine PRIVATE -Wall $<$<CONFIG:Debug>: -g -O0> $<$<CONFIG:Release>: -O2> $<$<CONFIG:RelWithDebInfo>: -O2 -g> $<$<CONFIG:MinSizeRel>: -Os>)
+target_compile_options(BasedEngine PRIVATE -Wall $<$<CONFIG:Debug>: -g -O0> $<$<CONFIG:Release>: -O3> $<$<CONFIG:RelWithDebInfo>: -O2 -g> $<$<CONFIG:MinSizeRel>: -Os>)
 
 target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm GLEW::GLEW plog::plog libzip::zip)
 

@@ -30,10 +30,10 @@ namespace BasedEngine::Common
         BEWindow(const BEWindow&) = delete;
         BEWindow& operator=(const BEWindow&) = delete;
 
-        virtual bool shouldClose() const { return glfwWindowShouldClose(m_window); }
-        virtual bool wasWindowResized() const { return frameBufferResized; }
+        [[nodiscard]] virtual bool shouldClose() const { return glfwWindowShouldClose(m_window); }
+        [[nodiscard]] virtual bool wasWindowResized() const { return frameBufferResized; }
 
-        virtual GLFWwindow* getWindow() const { return m_window; }
+        [[nodiscard]] virtual GLFWwindow* getWindow() const { return m_window; }
 
     private:
 
