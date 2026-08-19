@@ -27,6 +27,8 @@ add_library(BasedVK
         BVKFrameInfo.h
         BVKObject.cpp
         BVKObject.h
+        BVKDescriptors.cpp
+        BVKDescriptors.h
 )
 
 target_include_directories(BasedVK PRIVATE ../include)
