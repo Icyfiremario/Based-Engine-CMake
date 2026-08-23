@@ -20,6 +20,7 @@ endif (DIRECTX_AVAILABLE)
 # Include sub-projects.
 add_subdirectory(BasedCore)
 add_subdirectory(BasedGL)
+add_subdirectory(third_party/glad)
 add_subdirectory(BasedVK)
 if (DIRECTX_AVAILABLE)
   add_subdirectory(BasedDX)
@@ -28,12 +29,12 @@ add_subdirectory(shaders)
 add_subdirectory(models)
 
 
-# find libraries
+# Find libraries
 find_package(glfw3 3.3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Vulkan REQUIRED)
-find_package(GLEW REQUIRED)
+#find_package(GLEW REQUIRED)
 if(DIRECTX_AVAILABLE)
   find_package(DirectX-Headers REQUIRED)
 endif (DIRECTX_AVAILABLE)
@@ -57,7 +58,7 @@ add_executable(BasedEngine main.cpp)
 
 target_compile_options(BasedEngine PRIVATE -Wall $<$<CONFIG:Debug>: -g -O0> $<$<CONFIG:Release>: -O3> $<$<CONFIG:RelWithDebInfo>: -O2 -g> $<$<CONFIG:MinSizeRel>: -Os>)
 
-target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm GLEW::GLEW plog::plog libzip::zip)
+target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm glad plog::plog libzip::zip)
 
 if (DIRECTX_AVAILABLE)
   target_link_libraries(BasedEngine PRIVATE BasedDX user32 gdi32 kernel32 d3d12 dxgi dxguid d3dcompiler)

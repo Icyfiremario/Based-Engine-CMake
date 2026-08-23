@@ -14,6 +14,9 @@
 // BasedVK
 #include "../../BasedVK/BVKApp.h"
 
+// BasedGL
+#include "../../BasedGL/BGLApp.h"
+
 #ifdef DIRECTX_AVAILABLE
 // BasedDX
 #include "../../BasedDX/BDXApp.h"

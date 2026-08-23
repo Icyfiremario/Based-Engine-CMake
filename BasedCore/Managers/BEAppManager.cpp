@@ -28,6 +28,11 @@ BEApp* BasedEngine::Managers::BEAppManager::createApp(const API api)
             break;
         }
     case OPENGL:
+        {
+            app = std::make_unique<BGLApp>();
+            PLOGI << "Created OpenGL app.";
+            break;
+        }
 #ifdef DIRECTX_AVAILABLE
     case DIRECTX:
         {
@@ -62,6 +67,11 @@ BEApp* BasedEngine::Managers::BEAppManager::createApp(int w, int h, const std::s
             break;
         }
     case OPENGL:
+        {
+            app = std::make_unique<BGLApp>(w, h, title.c_str());
+            PLOGI << "Created OpenGL app.";
+            break;
+        }
 #ifdef DIRECTX_AVAILABLE
     case DIRECTX:
         {
