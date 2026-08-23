@@ -17,6 +17,13 @@ BasedEngine::Managers::BEAppManager* BasedEngine::Managers::BEAppManager::getIns
     return instance;
 }
 
+BEApp* BasedEngine::Managers::BEAppManager::createApp()
+{
+    app = std::make_unique<BVKApp>(800, 600, "Vulkan App");
+    PLOGI << "Created Vulkan app.";
+    return app.get();
+}
+
 BEApp* BasedEngine::Managers::BEAppManager::createApp(const API api)
 {
     switch (api)
@@ -52,7 +59,7 @@ BEApp* BasedEngine::Managers::BEAppManager::createApp(const API api)
 BEApp* BasedEngine::Managers::BEAppManager::createApp(int w, int h, const std::string& title)
 {
     app = std::make_unique<BVKApp>(w, h, title.c_str());
-    PLOGI << "Created vulkan app.";
+    PLOGI << "Created Vulkan app.";
     return app.get();
 }
 

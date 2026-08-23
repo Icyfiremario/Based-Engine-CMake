@@ -2,10 +2,12 @@
 
 BVKApp::BVKApp()
 {
-    appWindow = std::make_unique<BVKWindow>(600, 400, "Based Vulkan");
+    appWindow = std::make_unique<BVKWindow>(800, 600, "Based Vulkan");
     deviceManager = std::make_unique<BVKDeviceManager>(*appWindow);
 
     resetDeviceRenderer();
+
+    globalPool = BVKDescriptorPool::Builder(*deviceManager->getDevicePtr()).setMaxSets(BVKSwapChain::MAX_FRAMES_IN_FLIGHT).addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, BVKSwapChain::MAX_FRAMES_IN_FLIGHT).build();
 }
 
 BVKApp::BVKApp(int width, int height, const char* title)
@@ -14,6 +16,8 @@ BVKApp::BVKApp(int width, int height, const char* title)
     deviceManager = std::make_unique<BVKDeviceManager>(*appWindow);
 
     resetDeviceRenderer();
+
+    globalPool = BVKDescriptorPool::Builder(*deviceManager->getDevicePtr()).setMaxSets(BVKSwapChain::MAX_FRAMES_IN_FLIGHT).addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, BVKSwapChain::MAX_FRAMES_IN_FLIGHT).build();
 }
 
 BVKApp::~BVKApp()

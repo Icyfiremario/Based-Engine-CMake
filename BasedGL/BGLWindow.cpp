@@ -2,12 +2,12 @@
 
 BGLWindow::BGLWindow()
 {
-    initWindow();
+    BGLWindow::initWindow();
 }
 
 BGLWindow::BGLWindow(const int w, const int h, const char* title) : BEWindow(w, h, title), width(w), height(h), title(title)
 {
-    initWindow();
+    BGLWindow::initWindow();
 }
 
 void BGLWindow::initWindow()

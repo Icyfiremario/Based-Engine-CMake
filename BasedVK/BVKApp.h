@@ -7,6 +7,9 @@
 // BasedVK
 #include "BVKDeviceManager.h"
 #include "BVKRenderer.h"
+#include "BVKDescriptors.h"
+#include "BVKBuffer.h"
+#include "BVKFrameInfo.h"
 
 class BVKApp : public BEApp
 {
@@ -23,6 +26,8 @@ private:
     std::unique_ptr<BVKWindow> appWindow = nullptr;
     std::unique_ptr<BVKDeviceManager> deviceManager = nullptr;
     std::unique_ptr<BVKRenderer> appRenderer = nullptr;
+
+    std::unique_ptr<BVKDescriptorPool> globalPool;
 
     void resetDeviceRenderer();
 };

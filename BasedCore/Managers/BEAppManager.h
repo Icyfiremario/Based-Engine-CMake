@@ -34,6 +34,8 @@ namespace BasedEngine::Managers
 
         static BEAppManager* getInstance();
 
+
+        BEApp* createApp();
         /// @brief Creates a Based Engine app with the specified API using the default window width, height, and title.
         BEApp* createApp(API api);
         /// @brief Creates a Vulkan Based Engine app with the specified width, height, and title.

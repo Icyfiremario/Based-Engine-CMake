@@ -11,6 +11,9 @@ public:
     BGLWindow();
     explicit BGLWindow(int w, int h, const char* title);
 
+    [[nodiscard]] bool shouldClose() const override { return glfwWindowShouldClose(m_window); }
+    [[nodiscard]] GLFWwindow* getWindow() const override { return m_window; }
+
 
 private:
 

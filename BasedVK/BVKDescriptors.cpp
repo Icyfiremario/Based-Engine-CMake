@@ -20,6 +20,32 @@ std::unique_ptr<BVKDescriptorSetLayout> BVKDescriptorSetLayout::Builder::build()
     return std::make_unique<BVKDescriptorSetLayout>(builderDevice, bindings);
 }
 
+BVKDescriptorSetLayout::BVKDescriptorSetLayout(BVKDevice& device, std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings) : desSetDevice(device), bindings(bindings)
+{
+    std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings{};
+
+    for (auto kv : bindings)
+    {
+        setLayoutBindings.push_back(kv.second);
+    }
+
+    VkDescriptorSetLayoutCreateInfo descriptorSetLayoutInfo{};
+    descriptorSetLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    descriptorSetLayoutInfo.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
+    descriptorSetLayoutInfo.pBindings = setLayoutBindings.data();
+
+    if (vkCreateDescriptorSetLayout(desSetDevice.getDevice(), &descriptorSetLayoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS)
+    {
+        PLOGF << "Failed to create descriptor set layout.";
+        throw std::runtime_error("Failed to create descriptor set layout!");
+    }
+}
+
+BVKDescriptorSetLayout::~BVKDescriptorSetLayout()
+{
+    vkDestroyDescriptorSetLayout(desSetDevice.getDevice(), descriptorSetLayout, nullptr);
+}
+
 BVKDescriptorPool::Builder& BVKDescriptorPool::Builder::addPoolSize(const VkDescriptorType descriptorType, const uint32_t count)
 {
     poolSizes.push_back({.type = descriptorType, .descriptorCount = count});

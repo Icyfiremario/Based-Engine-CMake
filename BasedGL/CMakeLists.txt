@@ -4,8 +4,6 @@ find_package(glfw3 REQUIRED)
 find_package(Vulkan REQUIRED) # Included because the BEWindow class includes the GLFW Vulkan headers for the BVKWindow class
 
 add_library(BasedGL
-        BGLModel.h
-        BGLModel.cpp
         BGLWindow.cpp
         BGLWindow.h
         BGLApp.cpp
