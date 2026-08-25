@@ -3,6 +3,7 @@
 
 // BasedCore
 #include "../BasedCore/Common/BEApp.h"
+#include "../BasedCore/Common/BECamera.h"
 
 // BasedVK
 #include "BVKDeviceManager.h"
@@ -33,6 +34,8 @@ private:
     BVKObject::Map appObjects;
 
     void resetDeviceRenderer();
+
+    void createAppResources();
 };
 
 

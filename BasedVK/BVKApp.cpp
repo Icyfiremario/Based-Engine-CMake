@@ -22,6 +22,8 @@ BVKApp::BVKApp(int width, int height, const char* title)
 
 BVKApp::~BVKApp()
 {
+    globalPool.reset();
+
     appRenderer.reset();
     deviceManager.reset();
     appWindow.reset();
@@ -33,8 +35,6 @@ void BVKApp::run()
     const int maxDeviceIndex = static_cast<int>(deviceManager->getDeviceList()->size());
 
 	static bool keyFPressed = false;
-
-    static float count = 0.f;
 
     std::shared_ptr<BVKModel> cubeModel = BVKModel::createModelFromFile(*deviceManager->getDevicePtr(), "3D_Models/smooth_cone.wobj");
     auto cube = BVKObject::createGameObject();
@@ -62,6 +62,12 @@ void BVKApp::run()
 
     const BVKRenderSystem renderSystem{ *deviceManager->getDevicePtr(), appRenderer->getRenderPass(), globalSetLayout->getDescriptorSetLayout() };
 
+    BECamera camera{};
+    camera.setViewTarget(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(1.f, 1.f, 2.5f));
+
+    auto viewerObject = BVKObject::createGameObject();
+    viewerObject.transform.translation.z = -2.5f;
+
     auto currentTime = std::chrono::high_resolution_clock::now();
 
     while (!appWindow->shouldClose())
@@ -75,6 +81,21 @@ void BVKApp::run()
         if (glfwGetKey(appWindow->getWindow(), GLFW_KEY_F) == GLFW_PRESS && !keyFPressed)
         {
             PLOGI << "Attempting to switch GPUs.";
+
+            vkDeviceWaitIdle(deviceManager->getDevicePtr()->getDevice());
+
+            for (auto& buffer : uboBuffers)
+            {
+                buffer->flush();
+            }
+
+            uboBuffers.clear();
+            globalSetLayout.reset();
+            viewerObject.~BVKObject();
+            renderSystem.~BVKRenderSystem();
+
+            appObjects.clear();
+            globalPool.reset();
 
             deviceIndex++;
 
@@ -106,15 +127,22 @@ void BVKApp::run()
         float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
         currentTime = newTime;
 
+        frameTime = fmin(frameTime, 10);
+
+        camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
+
+        float aspect = appRenderer->getAspectRatio();
+        camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
+
         if (const auto commandBuffer = appRenderer->beginFrame())
         {
             const int frameIndex = appRenderer->getFrameIndex();
             FrameInfo frameInfo{ .frameIndex = frameIndex, .frameTime = frameTime, .commandBuffer = commandBuffer, .globalDescriptorSet = globalDescriptorSets[frameIndex], .appObjects = appObjects};
 
             GlobalUBO ubo{};
-            ubo.projection = glm::mat4{1.f} * count;
-            ubo.view = glm::mat4{1.f};
-            ubo.inverseView = glm::mat4{1.f};
+            ubo.projection = camera.getProjection();
+            ubo.view = camera.getView();
+            ubo.inverseView = camera.getInverseView();
 
             uboBuffers[frameIndex]->writeToBuffer(&ubo);
             uboBuffers[frameIndex]->flush();
@@ -128,8 +156,6 @@ void BVKApp::run()
         }
 
         vkDeviceWaitIdle(deviceManager->getDevicePtr()->getDevice());
-
-        count++;
     }
 }
 

@@ -15,6 +15,8 @@ add_library(BasedCore
         Managers/BEAppManager.h
         Common/BEApp.cpp
         Common/BEApp.h
+        Common/BECamera.cpp
+        Common/BECamera.h
 )
 
 target_include_directories(BasedCore PRIVATE ../include)
