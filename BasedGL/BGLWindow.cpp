@@ -25,6 +25,12 @@ void BGLWindow::initWindow()
     m_window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
     glfwMakeContextCurrent(m_window);
 
+    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
+    {
+        PLOGI << "Failed to initialize GLAD.";
+        throw std::runtime_error("Failed to initialize GLAD!");
+    }
+
     glViewport(0, 0, width, height);
     glfwSetFramebufferSizeCallback(m_window, frameBufferResizedCallBack);
 

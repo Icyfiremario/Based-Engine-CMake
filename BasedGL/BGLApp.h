@@ -9,6 +9,7 @@
 
 // BasedGL
 #include "BGLWindow.h"
+#include "BGLShader.h"
 
 class BGLApp : public BEApp
 {

@@ -1,6 +1,9 @@
 #ifndef BGLWINDOW_H
 #define BGLWINDOW_H
 
+// OpenGL
+#include <glad/glad.h>
+
 // BasedCore
 #include "../BasedCore/Common/BEWindow.h"
 

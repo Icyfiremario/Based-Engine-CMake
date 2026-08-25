@@ -8,6 +8,8 @@ add_library(BasedGL
         BGLWindow.h
         BGLApp.cpp
         BGLApp.h
+        BGLShader.cpp
+        BGLShader.h
 )
 
 target_include_directories(BasedGL PRIVATE ${OPENGL_INCLUDE_DIR} ../include)

@@ -17,6 +17,8 @@ BGLApp::~BGLApp()
 
 void BGLApp::run()
 {
+    const BGLShader shader("./shaders/OpenGL/gl_shader.vs", "./shaders/OpenGL/gl_shader.fs");
+
     while (!appWindow->shouldClose())
     {
         if (glfwGetKey(appWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -25,6 +27,12 @@ void BGLApp::run()
             glfwSetWindowShouldClose(appWindow->getWindow(), GLFW_TRUE);
         }
 
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        shader.use();
+
         glfwPollEvents();
+        glfwSwapBuffers(appWindow->getWindow());
     }
 }
