@@ -48,8 +48,8 @@ int main(int argc, char** argv)
     {
         BasedEngine::Managers::BEAppManager* appManager = BasedEngine::Managers::BEAppManager::getInstance();
         PLOGI << "Creating app object.";
-        //appManager->createApp();
-        appManager->createApp(BasedEngine::OPENGL);
+        appManager->createApp();
+        //appManager->createApp(BasedEngine::OPENGL);
         //appManager->createApp(BasedEngine::DIRECTX);
         PLOGI << "Running app.";
         appManager->getApp()->run();
