@@ -34,6 +34,36 @@ void BVKApp::run()
 
 	static bool keyFPressed = false;
 
+    static float count = 0.f;
+
+    std::shared_ptr<BVKModel> cubeModel = BVKModel::createModelFromFile(*deviceManager->getDevicePtr(), "3D_Models/smooth_cone.wobj");
+    auto cube = BVKObject::createGameObject();
+    cube.model = cubeModel;
+    cube.transform.translation = { 0.f, -0.1f, 0.f };
+    cube.transform.scale = { .5f, .5f, .5f };
+    appObjects.emplace(cube.getId(), std::move(cube));
+
+    std::vector<std::unique_ptr<BVKBuffer>> uboBuffers(BVKSwapChain::MAX_FRAMES_IN_FLIGHT);
+
+    for (size_t i = 0; i < uboBuffers.size(); i++)
+    {
+        uboBuffers[i] = std::make_unique<BVKBuffer>(*deviceManager->getDevicePtr(), sizeof(GlobalUBO), 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+        uboBuffers[i]->map();
+    }
+
+    auto globalSetLayout = BVKDescriptorSetLayout::Builder(*deviceManager->getDevicePtr()).addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS).build();
+
+    std::vector<VkDescriptorSet> globalDescriptorSets(BVKSwapChain::MAX_FRAMES_IN_FLIGHT);
+    for (size_t i = 0; i < globalDescriptorSets.size(); i++)
+    {
+        auto bufferInfo = uboBuffers[i]->descriptorInfo();
+        BVKDescriptorWriter(*globalSetLayout, *globalPool).writeBuffer(0, &bufferInfo).build(globalDescriptorSets[i]);
+    }
+
+    const BVKRenderSystem renderSystem{ *deviceManager->getDevicePtr(), appRenderer->getRenderPass(), globalSetLayout->getDescriptorSetLayout() };
+
+    auto currentTime = std::chrono::high_resolution_clock::now();
+
     while (!appWindow->shouldClose())
     {
         if (glfwGetKey(appWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -72,15 +102,34 @@ void BVKApp::run()
 
         glfwPollEvents();
 
+        auto newTime = std::chrono::high_resolution_clock::now();
+        float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+        currentTime = newTime;
+
         if (const auto commandBuffer = appRenderer->beginFrame())
         {
+            const int frameIndex = appRenderer->getFrameIndex();
+            FrameInfo frameInfo{ .frameIndex = frameIndex, .frameTime = frameTime, .commandBuffer = commandBuffer, .globalDescriptorSet = globalDescriptorSets[frameIndex], .appObjects = appObjects};
+
+            GlobalUBO ubo{};
+            ubo.projection = glm::mat4{1.f} * count;
+            ubo.view = glm::mat4{1.f};
+            ubo.inverseView = glm::mat4{1.f};
+
+            uboBuffers[frameIndex]->writeToBuffer(&ubo);
+            uboBuffers[frameIndex]->flush();
+
             appRenderer->beginSwapChainRenderPass(commandBuffer);
+
+            renderSystem.renderGameObjects(frameInfo);
 
             appRenderer->endSwapChainRenderPass(commandBuffer);
             appRenderer->endFrame();
         }
 
         vkDeviceWaitIdle(deviceManager->getDevicePtr()->getDevice());
+
+        count++;
     }
 }
 

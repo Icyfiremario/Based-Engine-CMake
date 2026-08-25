@@ -10,6 +10,7 @@
 #include "BVKDescriptors.h"
 #include "BVKBuffer.h"
 #include "BVKFrameInfo.h"
+#include "BVKRenderSystem.h"
 
 class BVKApp : public BEApp
 {
@@ -28,6 +29,8 @@ private:
     std::unique_ptr<BVKRenderer> appRenderer = nullptr;
 
     std::unique_ptr<BVKDescriptorPool> globalPool;
+
+    BVKObject::Map appObjects;
 
     void resetDeviceRenderer();
 };

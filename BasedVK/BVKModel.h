@@ -20,6 +20,7 @@
 
 // BasedVK
 #include "BVKDevice.h"
+#include "BVKBuffer.h"
 
 class BVKModel
 {
@@ -54,13 +55,23 @@ public:
 
     static std::unique_ptr<BVKModel> createModelFromFile(BVKDevice &device, const std::string& filePath);
 
-    void bind(VkCommandBuffer commandBuffer);
+    void bind(VkCommandBuffer commandBuffer) const;
 
-    void draw(VkCommandBuffer commandBuffer);
+    void draw(VkCommandBuffer commandBuffer) const;
 
 private:
 
     BVKDevice &modelDevice;
+
+    std::unique_ptr<BVKBuffer> vertexBuffer;
+    uint32_t vertexCount;
+
+    std::unique_ptr<BVKBuffer> indexBuffer;
+    uint32_t indexCount;
+    bool hasIndexBuffer = false;
+
+    void createVertexBuffers(const std::vector<Vertex>& vertices);
+    void createIndexBuffers(const std::vector<uint32_t>& indices);
 
 };
 

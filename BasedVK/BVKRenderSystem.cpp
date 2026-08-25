@@ -72,5 +72,5 @@ void BVKRenderSystem::createPipeline(const VkRenderPass renderPass)
     pipelineConfig.renderPass = renderPass;
     pipelineConfig.pipelineLayout = rSysPipelineLayout;
 
-    rSysPipeline = std::make_unique<BVKPipeline>(rSysDevice, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv", pipelineConfig);
+    rSysPipeline = std::make_unique<BVKPipeline>(rSysDevice, "shaders/vulkan/simple_shader.vert.spv", "shaders/vulkan/simple_shader.frag.spv", pipelineConfig);
 }
