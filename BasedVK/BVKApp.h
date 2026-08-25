@@ -1,6 +1,9 @@
 #ifndef BVKAPP_H
 #define BVKAPP_H
 
+// STD
+#include <chrono>
+
 // BasedCore
 #include "../BasedCore/Common/BEApp.h"
 #include "../BasedCore/Common/BECamera.h"

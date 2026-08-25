@@ -4,7 +4,7 @@ set(COMPILED_SHADERS)
 foreach(SHADER ${SHADERS})
     get_filename_component(FILE_NAME ${SHADER} NAME)
     get_filename_component(DIR ${SHADER} DIRECTORY)
-    set(OUTPUT_SHADER "${CMAKE_BINARY_DIR}/Shaders/Vulkan/${FILE_NAME}.spv")
+    set(OUTPUT_SHADER "${CMAKE_BINARY_DIR}/shaders/vulkan/${FILE_NAME}.spv")
 
     add_custom_command(
             OUTPUT ${OUTPUT_SHADER}

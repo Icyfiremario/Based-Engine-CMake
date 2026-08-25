@@ -53,7 +53,7 @@ namespace BasedEngine::Managers
         std::unique_ptr<BEApp> app;
 
         BEAppManager() = default;
-        ~BEAppManager() = default;
+        ~BEAppManager();
     };
 }
 

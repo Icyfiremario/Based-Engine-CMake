@@ -3,7 +3,7 @@ file(GLOB SHADERS CONFIGURE_DEPENDS "*.vs" "*.fs")
 set(COPIED_SHADERS)
 foreach (SHADER ${SHADERS})
     get_filename_component(FILE_NAME ${SHADER} NAME)
-    set(COPY_OUTPUT "${CMAKE_BINARY_DIR}/Shaders/OpenGL/${FILE_NAME}")
+    set(COPY_OUTPUT "${CMAKE_BINARY_DIR}/shaders/opengl/${FILE_NAME}")
 
     add_custom_command(
             OUTPUT ${COPY_OUTPUT}

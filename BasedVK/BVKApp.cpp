@@ -36,7 +36,7 @@ void BVKApp::run()
 
 	static bool keyFPressed = false;
 
-    std::shared_ptr<BVKModel> cubeModel = BVKModel::createModelFromFile(*deviceManager->getDevicePtr(), "3D_Models/smooth_cone.wobj");
+    std::shared_ptr<BVKModel> cubeModel = BVKModel::createModelFromFile(*deviceManager->getDevicePtr(), "3D_Models/cube.wobj");
     auto cube = BVKObject::createGameObject();
     cube.model = cubeModel;
     cube.transform.translation = { 0.f, -0.1f, 0.f };
@@ -66,7 +66,9 @@ void BVKApp::run()
     camera.setViewTarget(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(1.f, 1.f, 2.5f));
 
     auto viewerObject = BVKObject::createGameObject();
-    viewerObject.transform.translation.z = -2.5f;
+    viewerObject.transform.translation.z = -3.f;
+    viewerObject.transform.translation.y = -1.5f;
+    viewerObject.transform.rotation.x = -.5f;
 
     auto currentTime = std::chrono::high_resolution_clock::now();
 
@@ -133,6 +135,13 @@ void BVKApp::run()
 
         float aspect = appRenderer->getAspectRatio();
         camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
+
+        for (auto& kv : appObjects)
+        {
+            auto& object = kv.second;
+
+            object.transform.rotation.y += 0.01f;
+        }
 
         if (const auto commandBuffer = appRenderer->beginFrame())
         {

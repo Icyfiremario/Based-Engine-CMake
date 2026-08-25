@@ -94,3 +94,8 @@ BEApp* BasedEngine::Managers::BEAppManager::createApp(int w, int h, const std::s
 
     return app.get();
 }
+
+BasedEngine::Managers::BEAppManager::~BEAppManager()
+{
+    app.reset();
+}
