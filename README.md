@@ -4,8 +4,17 @@
 Based Engine is an open source game engine written in C++. It uses glfw for window management to allow support for several rendering APIs. The current plan is to create an open source C++ based game building application similar to unity.
 
 ## Status
+### Vulkan
+- Stable, Unfinished
+- Missing buffer implementation 
 
-Very unstable. Weird bugs with rendering freezing and the camera teleporting for unknown reasons.
+### OpenGL
+- Stable, Unfinished
+- Missing buffer binding
+
+### DirectX
+- Unfinished
+- Missing basic pipeline implementation
 
 ## Support
 ### Windows
@@ -29,18 +38,19 @@ Very unstable. Weird bugs with rendering freezing and the camera teleporting for
 
 ### Vulkan
 - [x] SwapChain
-- [ ] Pipeline
+- [x] Pipeline
 - [ ] Shaders [^2]
 - [ ] Models
 - [x] Device info
 - [ ] Descriptors
-- [ ] Render systems
+- [x] Render systems
 
 ### OpenGL
-- [ ] General implementation
+- [x] Shaders
 
 ### DirectX
-- [ ] HWND binding
+- [x] HWND binding
+- [ ] Pipeline creation
 
 ### Editor
 - [ ] 3D editor
@@ -49,7 +59,7 @@ Very unstable. Weird bugs with rendering freezing and the camera teleporting for
 
 ## Required packages
 - GLM
-- GLEW (OpenGL)
+- GLAD (included in third_party)
 - [Vulkan SDK](https://vulkan.lunarg.com/sdk/home)
 - CMake
 - GLSLC
@@ -65,6 +75,9 @@ Very unstable. Weird bugs with rendering freezing and the camera teleporting for
 ### Linux
 - GCC
 - Clang
+
+### Apple
+- AppleClang
 
 [^1]: This will be done by grabbing the HWND from GLFW. IDK the drawbacks to doing this, but it makes my life simpler.
 
