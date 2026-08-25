@@ -1,8 +1,8 @@
 #include "BVKRenderer.h"
 
-BVKRenderer::BVKRenderer(BEwindow &window, BVKDevice &device) : window(window), renderDevice(device)
+BVKRenderer::BVKRenderer(BVKWindow& window, BVKDevice& device) : window(window), renderDevice(device)
 {
-    recreateSwapchain();
+    recreateSwapChain();
     createCommandBuffers();
 }
 
@@ -13,79 +13,77 @@ BVKRenderer::~BVKRenderer()
 
 VkCommandBuffer BVKRenderer::beginFrame()
 {
-    assert(!isFrameStarted && "Can't being frame while one is in progress!");
+    assert(!isFrameStarted && "Can't begin frame while one is in progress!");
 
-    auto result = rendererSwapchain->acquireNextImage(&currentImageIndex);
-
-    if (result == VK_ERROR_OUT_OF_DATE_KHR)
+    if (const auto result = rendererSwapChain->acquireNextImage(&currentImageIndex); result == VK_ERROR_OUT_OF_DATE_KHR)
     {
-        recreateSwapchain();
+        recreateSwapChain();
         return nullptr;
-    }
-
-    if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-    {
-        throw std::runtime_error("Failed to acquire next swapchain image!");
     }
 
     isFrameStarted = true;
 
-    auto commandBuffer = getCurrentCommandBuffer();
+    const auto commandBuffer = getCurrentCommandBuffer();
 
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
     if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
     {
+        PLOGF << "Failed to begin recording command buffer.";
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
+
+    PLOGV << "Started frame.";
 
     return commandBuffer;
 }
 
 void BVKRenderer::endFrame()
 {
-    assert(isFrameStarted && "Can't end a frame if none are started!");
+    assert(isFrameStarted && "Can't end frame if none are started!");
 
-    auto commandBuffer = getCurrentCommandBuffer();
+    const auto commandBuffer = getCurrentCommandBuffer();
 
     if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
     {
+        PLOGF << "Failed to end command buffer recording.";
         throw std::runtime_error("Failed to end command buffer recording!");
     }
 
-    auto result = rendererSwapchain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
-
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.wasWindowResized())
+    if (const auto result = rendererSwapChain->submitCommandBuffers(&commandBuffer, &currentImageIndex); result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.wasWindowResized())
     {
         window.resetWindowResizedFlag();
-        recreateSwapchain();
+        recreateSwapChain();
     }
     else if (result != VK_SUCCESS)
     {
-        throw std::runtime_error("Failed to present swapchain image!");
+        PLOGF << "Failed to present swap chain image.";
+        throw std::runtime_error("Failed to present swap chain image!");
     }
 
     isFrameStarted = false;
-    currentFrameIndex = (currentFrameIndex + 1) % BVKSwapchain::MAX_FRAMES_IN_FLIGHT;
+    currentFrameIndex = (currentFrameIndex + 1) % BVKSwapChain::MAX_FRAMES_IN_FLIGHT;
+
+    PLOGV << "Ended frame.";
 }
 
-void BVKRenderer::beginSwapchainRenderPass(VkCommandBuffer commandBuffer)
+void BVKRenderer::beginSwapChainRenderPass(const VkCommandBuffer commandBuffer) const
 {
     assert(isFrameStarted && "Can't begin a render pass if no frames are started!");
     assert(commandBuffer == getCurrentCommandBuffer() && "Cannot perform a render pass on a different frame!");
 
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = rendererSwapchain->getRenderPass();
-    renderPassInfo.framebuffer = rendererSwapchain->getFrameBuffer(currentImageIndex);
+    renderPassInfo.renderPass = rendererSwapChain->getRenderPass();
+    renderPassInfo.framebuffer = rendererSwapChain->getFramebuffer(currentImageIndex);
 
-    renderPassInfo.renderArea.offset = {0, 0};
-    renderPassInfo.renderArea.extent = rendererSwapchain->getSwapChainExtent();
+    renderPassInfo.renderArea.offset = { .x = 0, .y = 0 };
+    renderPassInfo.renderArea.extent = rendererSwapChain->getSwapChainExtent();
 
     std::array<VkClearValue, 2> clearValues{};
-    clearValues[0].color = {{0.01f, 0.01f, 0.01f, 1.0f}};
-    clearValues[1].depthStencil = {1.0f, 0};
+    clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
+    clearValues[1].depthStencil = {.depth = 1.0f, .stencil = 0};
 
     renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
     renderPassInfo.pClearValues = clearValues.data();
@@ -95,18 +93,18 @@ void BVKRenderer::beginSwapchainRenderPass(VkCommandBuffer commandBuffer)
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = static_cast<float>(rendererSwapchain->getSwapChainExtent().width);
-    viewport.height = static_cast<float>(rendererSwapchain->getSwapChainExtent().height);
+    viewport.width = static_cast<float>(rendererSwapChain->getSwapChainExtent().width);
+    viewport.height = static_cast<float>(rendererSwapChain->getSwapChainExtent().height);
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
-    VkRect2D scissor{ {0, 0}, rendererSwapchain->getSwapChainExtent() };
+    const VkRect2D scissor{.offset = {.x = 0, .y = 0}, .extent = rendererSwapChain->getSwapChainExtent() };
 
     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 }
 
-void BVKRenderer::endSwapchainRenderPass(VkCommandBuffer commandBuffer)
+void BVKRenderer::endSwapChainRenderPass(const VkCommandBuffer commandBuffer) const
 {
     assert(isFrameStarted && "Can't end a render pass if no frames are started!");
     assert(commandBuffer == getCurrentCommandBuffer() && "Cannot end a render pass on a different frame!");
@@ -116,7 +114,7 @@ void BVKRenderer::endSwapchainRenderPass(VkCommandBuffer commandBuffer)
 
 void BVKRenderer::createCommandBuffers()
 {
-    commandBuffers.resize(BVKSwapchain::MAX_FRAMES_IN_FLIGHT);
+    commandBuffers.resize(BVKSwapChain::MAX_FRAMES_IN_FLIGHT);
 
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -126,17 +124,22 @@ void BVKRenderer::createCommandBuffers()
 
     if (vkAllocateCommandBuffers(renderDevice.getDevice(), &allocInfo, commandBuffers.data()) != VK_SUCCESS)
     {
+        PLOGF << "Failed to allocate command buffers.";
         throw std::runtime_error("Failed to allocate command buffers!");
     }
+
+    PLOGI << "Command buffers allocated.";
 }
 
 void BVKRenderer::freeCommandBuffers()
 {
     vkFreeCommandBuffers(renderDevice.getDevice(), renderDevice.getCommandPool(), static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
     commandBuffers.clear();
+
+    PLOGI << "Freed command buffers.";
 }
 
-void BVKRenderer::recreateSwapchain()
+void BVKRenderer::recreateSwapChain()
 {
     auto extent = window.getExtent();
 
@@ -148,18 +151,21 @@ void BVKRenderer::recreateSwapchain()
 
     vkDeviceWaitIdle(renderDevice.getDevice());
 
-    if (rendererSwapchain == nullptr)
+    if (rendererSwapChain == nullptr)
     {
-        rendererSwapchain = std::make_unique<BVKSwapchain>(renderDevice, extent);
+        rendererSwapChain = std::make_unique<BVKSwapChain>(renderDevice, extent);
     }
     else
     {
-        std::shared_ptr<BVKSwapchain> oldSwapchain = std::move(rendererSwapchain);
-        rendererSwapchain = std::make_unique<BVKSwapchain>(renderDevice, extent, oldSwapchain);
+        std::shared_ptr<BVKSwapChain> oldSwapChain = std::move(rendererSwapChain);
+        rendererSwapChain = std::make_unique<BVKSwapChain>(renderDevice, extent, oldSwapChain);
 
-        if (!oldSwapchain->compareSwapFormats(*rendererSwapchain.get()))
+        if (!oldSwapChain->compareSwapFormats(*rendererSwapChain))
         {
-            throw std::runtime_error("Swapchain image or depth format has changed!");
+            PLOGF << "Swap chain image or depth format has changed.";
+            throw std::runtime_error("Failed to recreate swap chain image!");
         }
     }
+
+    PLOGV << "Recreated swap chain.";
 }

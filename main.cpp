@@ -1,107 +1,131 @@
 ﻿// Check OS
 #ifdef __unix__
-	#define UNIX
+#ifndef UNIX
+#define UNIX
+#endif
 #elif defined(_WIN32) || defined(WIN32)
-	#define WINDOWS
+#ifndef WINDOWS
+#define WINDOWS
+#endif
 #elif defined(__APPLE__) || defined(__MACH__)
-	#error "Mac OS X is not supported!"
+#warning "Apple support is unproperly tested. Proceed knowing that the engine may not work."
+#ifndef APPLE
+#define APPLE
+#endif
 #endif
 
 // STD
 #include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <chrono>
+#include <sstream>
+#include <format>
+#include <filesystem>
+#include <string>
+
+// libzip
+#include <zip.h>
 
 // Plog
-//#include <plog/Log.h>
+#include <plog/Log.h>
+#include <plog/Initializers/RollingFileInitializer.h>
 
 // BasedCore
-#include "BasedCore/BEapp.h"
+#include "BasedCore/Managers/BEAppManager.h"
 
-// Windows.h
-#if defined(WINDOWS) && defined(USE_WINDOWS)
-#pragma message "Using windows.h"
-// WinMain
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#define MAX_LOADSTRING 100
-HINSTANCE hInst;
-WCHAR szTitle[MAX_LOADSTRING];
-WCHAR szWindowClass[MAX_LOADSTRING];
+static int archiveLogs(const std::string& path);
 
-ATOM MyRegisterClass(HINSTANCE hInstance);
-BOOL InitInstance(HINSTANCE, int);
-LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK About(HWND, UINT, WPARAM, LPARAM);
-
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-	_In_opt_ HINSTANCE hPrevInstance,
-	_In_ LPWSTR lpCmdLine,
-	_In_ int nCmdShow)
+int main(int argc, char** argv)
 {
-	UNREFERENCED_PARAMETER(hPrevInstance);
-	UNREFERENCED_PARAMETER(lpCmdLine);
+    int exitCode = EXIT_SUCCESS;
 
-	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-	LoadStringW(hInstance, IDC_WINAPITEST, szWindowClass, MAX_LOADSTRING);
-	MyRegisterClass(hInstance);
+    std::filesystem::create_directory("logs");
+    std::filesystem::remove("logs/latest.log");
+    plog::init(plog::debug, "logs/latest.log");
 
-	if (!InitInstance(hInstance, nCmdShow))
-	{
-		return FALSE;
-	}
+    try
+    {
+        BasedEngine::Managers::BEAppManager* appManager = BasedEngine::Managers::BEAppManager::getInstance();
+        PLOGI << "Creating app object.";
+        appManager->createApp();
+        //appManager->createApp(BasedEngine::OPENGL);
+        //appManager->createApp(BasedEngine::DIRECTX);
+        PLOGI << "Running app.";
+        appManager->getApp()->run();
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+        exitCode = EXIT_FAILURE;
+    }
 
-	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WINAPITEST));
+    // Generate log name for archiving
+    std::stringstream filename;
 
-	MSG msg;
+    const auto now = std::chrono::system_clock::now();
+    const auto now_sec = std::chrono::system_clock::to_time_t(now);
 
-	while (GetMessage(&msg, nullptr, 0, 0))
-	{
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-	}
+    std::tm* local_tm = std::localtime(&now_sec);
 
-	return (int)msg.wParam;
+    std::string date = std::format("{:%F}", now);
+    std::string time = std::format("{:02}-{:02}-{:02}", local_tm->tm_hour, local_tm->tm_min, local_tm->tm_sec);
+
+    filename << date << '-' << time;
+
+    std::filesystem::copy("./logs/latest.log", "./logs/" + filename.str() + ".log");
+
+    if (int error = archiveLogs(filename.str()); error != 0)
+    {
+        exitCode = error;
+        return exitCode;
+    }
+
+    std::filesystem::remove("./logs/" + filename.str() + ".log");
+
+    return exitCode;
 }
 
-ATOM MyRegisterClass(HINSTANCE hInstance)
+static int archiveLogs(const std::string& path)
 {
-	WNDCLASSEXW wcex;
+    int error = 0;
 
-	wcex.cbSize = sizeof(WNDCLASSEX);
+    zip_t* archive = zip_open(("./logs/" + path + ".zip").c_str(), ZIP_CREATE | ZIP_TRUNCATE, &error);
 
-	wcex.style = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc = WndProc;
-	wcex.cbClsExtra = 0;
-	wcex.cbWndExtra = 0;
-	wcex.hInstance = hInstance;
-	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_WINAPITEST));
-	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_WINAPITEST);
-	wcex.lpszClassName = szWindowClass;
-	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+    if (!archive)
+    {
+        std::cerr << "Failed to open output ZIP archive! Error code: " << error << '\n';
+        PLOGE << "Failed to open output ZIP archive! Error code: " << error;
+        return error;
+    }
 
-	return RegisterClassExW(&wcex);
+    zip_source_t* source = zip_source_file(archive, ("./logs/" + path + ".log").c_str(), 0, ZIP_LENGTH_TO_END);
+    if (!source)
+    {
+        std::cerr << "Failed to create source from file: " << zip_strerror(archive) << '\n';
+        PLOGE << "Failed to create source from file: " << zip_strerror(archive);
+        zip_close(archive);
+        return -1;
+    }
+
+    zip_int64_t index = zip_file_add(archive, (path + ".log").c_str(), source, ZIP_FL_ENC_UTF_8);
+    if (index < 0)
+    {
+        std::cerr << "Failed to add file to archive: " << zip_strerror(archive) << '\n';
+        PLOGE << "Failed to add file to archive: " << zip_strerror(archive);
+        zip_source_free(source);
+        zip_close(archive);
+        return -1;
+    }
+
+    if (zip_close(archive) < 0)
+    {
+        std::cerr << "Failed to write and close ZIP archive: " << zip_strerror(archive) << '\n';
+        PLOGE << "Failed to write and close ZIP archive: " << zip_strerror(archive);
+        return -1;
+    }
+
+    PLOGI << "Archived " << (path + ".log");
+
+    return error;
 }
-#else
-int main()
-{
-	int exitCode = EXIT_SUCCESS;
-
-	try
-	{
-		BEapp app {800, 600, 10, "BasedEngine", BasedCore::VULKAN};
-
-		app.run();
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << std::endl;
-		exitCode = EXIT_FAILURE;
-	}
-	
-	return exitCode;
-}
-#endif

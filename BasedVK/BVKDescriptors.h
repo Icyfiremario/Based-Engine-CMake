@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BVKDESCRIPTORS_H
+#define BVKDESCRIPTORS_H
 
 // STD
 #include <memory>
@@ -9,105 +10,102 @@
 // BasedVK
 #include "BVKDevice.h"
 
-/// @brief Descriptor layout
 class BVKDescriptorSetLayout
 {
+public:
+
+    class Builder
+    {
     public:
+        explicit Builder(BVKDevice& device) : builderDevice(device) {};
 
-        class Builder
-        {
-            public:
+        Builder& addBinding(uint32_t binding, VkDescriptorType descriptorType, VkShaderStageFlags stageFlags, uint32_t count = 1);
 
-                Builder(BVKDevice& device) : builderDevice{device} {}
-
-                Builder& addBinding(uint32_t binding, VkDescriptorType descriptorType, VkShaderStageFlags stageFlags, uint32_t count = 1);
-
-                std::unique_ptr<BVKDescriptorSetLayout> build() const;
-
-            private:
-
-                BVKDevice& builderDevice;
-                std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
-        };
-
-        BVKDescriptorSetLayout(BVKDevice& device, std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings);
-        ~BVKDescriptorSetLayout();
-
-        BVKDescriptorSetLayout(const BVKDescriptorSetLayout&) = delete;
-        BVKDescriptorSetLayout& operator=(const BVKDescriptorSetLayout&) = delete;
-
-        VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; }
+        [[nodiscard]] std::unique_ptr<BVKDescriptorSetLayout> build() const;
 
     private:
-        
-        BVKDevice& desSetDevice;
-        VkDescriptorSetLayout descriptorSetLayout;
-        std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
 
-        friend class BVKDescriptorWriter;
+        BVKDevice& builderDevice;
+        std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings {};
+    };
+
+    BVKDescriptorSetLayout(BVKDevice& device, std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings);
+    ~BVKDescriptorSetLayout();
+
+    BVKDescriptorSetLayout(const BVKDescriptorSetLayout&) = delete;
+    BVKDescriptorSetLayout& operator=(const BVKDescriptorSetLayout&) = delete;
+
+    [[nodiscard]] VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; };
+
+private:
+
+    BVKDevice& desSetDevice;
+    VkDescriptorSetLayout descriptorSetLayout;
+    std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings {};
+
+    friend class BVKDescriptorWriter;
 };
 
-/// @brief Descriptor pool
 class BVKDescriptorPool
 {
+public:
+
+    class Builder
+    {
     public:
+        explicit Builder(BVKDevice& device) : builderDevice(device) {}
 
-        class Builder
-        {
-            public:
+        Builder& addPoolSize(VkDescriptorType descriptorType, uint32_t count);
+        Builder& setPoolFlags(VkDescriptorPoolCreateFlags flags);
+        Builder& setMaxSets(uint32_t count);
 
-                Builder(BVKDevice& device) : builderDevice{device} {}
-
-                Builder& addPoolSize(VkDescriptorType descriptorType, uint32_t count);
-                Builder& setPoolFlags(VkDescriptorPoolCreateFlags flags);
-                Builder& setMaxSets(uint32_t count);
-
-                std::unique_ptr<BVKDescriptorPool> build() const;
-
-            private:
-
-                BVKDevice& builderDevice;
-                std::vector<VkDescriptorPoolSize> poolSizes{};
-                uint32_t maxSets = 1000;
-                VkDescriptorPoolCreateFlags poolFlags = 0;
-        };
-
-        BVKDescriptorPool(BVKDevice& device, uint32_t maxSets, VkDescriptorPoolCreateFlags poolFlags, const std::vector<VkDescriptorPoolSize>& poolSizes);
-        ~BVKDescriptorPool();
-
-        BVKDescriptorPool(const BVKDescriptorPool&) = delete;
-        BVKDescriptorPool& operator=(const BVKDescriptorPool&) = delete;
-
-        bool allocateDescriptor(const VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet& descriptor) const;
-
-        void freeDescriptors(std::vector<VkDescriptorSet>& descriptors) const;
-
-        void resetPool() const;
+        [[nodiscard]] std::unique_ptr<BVKDescriptorPool> build() const;
 
     private:
 
-        BVKDevice& desPoolDevice;
-        VkDescriptorPool descriptorPool;
+        BVKDevice& builderDevice;
+        std::vector<VkDescriptorPoolSize> poolSizes {};
+        uint32_t maxSets = 1000;
+        VkDescriptorPoolCreateFlags poolFlags = 0;
+    };
 
-        friend class BVKDescriptorWriter;
+    BVKDescriptorPool(BVKDevice& device, uint32_t maxSets, VkDescriptorPoolCreateFlags poolFlags, const std::vector<VkDescriptorPoolSize>& poolSizes);
+    ~BVKDescriptorPool();
+
+    BVKDescriptorPool(const BVKDescriptorPool&) = delete;
+    BVKDescriptorPool& operator=(const BVKDescriptorPool&) = delete;
+
+    bool allocateDescriptor(VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet& descriptor) const;
+
+    void freeDescriptors(const std::vector<VkDescriptorSet>& descriptors) const;
+
+    void resetPool() const;
+
+private:
+
+    BVKDevice& desPoolDevice;
+    VkDescriptorPool descriptorPool;
+
+    friend class BVKDescriptorWriter;
 };
 
-/// @brief Descriptor writer
 class BVKDescriptorWriter
 {
-    public:
+public:
 
-        BVKDescriptorWriter(BVKDescriptorSetLayout& setLayout, BVKDescriptorPool& pool);
+    BVKDescriptorWriter(BVKDescriptorSetLayout& setLayout, BVKDescriptorPool& pool);
 
-        BVKDescriptorWriter& writeBuffer(uint32_t binding, VkDescriptorBufferInfo* bufferInfo);
-        BVKDescriptorWriter& writeImage(uint32_t binding, VkDescriptorImageInfo* imageInfo);
+    BVKDescriptorWriter& writeBuffer(uint32_t binding, const VkDescriptorBufferInfo* bufferInfo);
+    BVKDescriptorWriter& writeImage(uint32_t binding, const VkDescriptorImageInfo* imageInfo);
 
-        bool build(VkDescriptorSet& set);
-        void overwrite(VkDescriptorSet& set);
-    
-    private:
+    bool build(VkDescriptorSet& set);
+    void overwrite(VkDescriptorSet& set);
 
-        BVKDescriptorSetLayout& setLayout;
-        BVKDescriptorPool& pool;
-        std::vector<VkWriteDescriptorSet> writes;
+private:
+
+    BVKDescriptorSetLayout& setLayout;
+    BVKDescriptorPool& pool;
+    std::vector<VkWriteDescriptorSet> writes;
 };
+
+#endif // BVKDESCRIPTORS_H

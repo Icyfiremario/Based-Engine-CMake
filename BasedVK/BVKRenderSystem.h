@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BVKRENDERSYSTEM_H
+#define BVKRENDERSYSTEM_H
 
 // STD
 #include <memory>
@@ -13,40 +14,31 @@
 
 // BasedVK
 #include "BVKDevice.h"
-#include "BVKObject.h"
 #include "BVKPipeline.h"
 #include "BVKFrameInfo.h"
 
-// BasedCore
-#include "../BasedCore/BECamera.h"
-
-/// @brief Simple render system
 class BVKRenderSystem
 {
-    public:
+public:
 
-        /// @brief Creates render system using the Vulkan device, a render pass, and a global descriptor set.
-        /// @param device Vulkan device
-        /// @param renderPass render pass
-        /// @param globalSetLayout descriptor set layout
-        BVKRenderSystem(BVKDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
-        ~BVKRenderSystem();
+    BVKRenderSystem(BVKDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
+    ~BVKRenderSystem();
 
-        BVKRenderSystem(const BVKRenderSystem&) = delete;
-        BVKRenderSystem& operator=(const BVKRenderSystem&) = delete;
+    BVKRenderSystem(const BVKRenderSystem &) = delete;
+    BVKRenderSystem &operator=(const BVKRenderSystem &) = delete;
 
-        /// @brief Renders game objects according to frame info and camera position
-        /// @param frameInfo Frame info
-        /// @param gameObjects List of game objects to render
-        void renderGameObjects(FrameInfo& frameInfo);
+    void renderGameObjects(const FrameInfo& frameInfo) const;
 
-    private:
+private:
 
-        BVKDevice& rSysDevice;
-    
-        std::unique_ptr<BVKPipeline> rSysPipeline;
-        VkPipelineLayout rSysPipelineLayout;
-    
-        void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
-        void createPipeline(VkRenderPass renderPass);
+    BVKDevice &rSysDevice;
+
+    std::unique_ptr<BVKPipeline> rSysPipeline;
+    VkPipelineLayout rSysPipelineLayout;
+
+    void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
+    void createPipeline(VkRenderPass renderPass);
 };
+
+
+#endif // BVKRENDERSYSTEM_H

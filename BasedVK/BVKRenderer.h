@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BVKRENDERER_H
+#define BVKRENDERER_H
 
 // STD
 #include <vector>
@@ -6,59 +7,59 @@
 #include <memory>
 #include <iostream>
 
-// BasedCore
-#include "../BasedCore/BEwindow.h"
-
 // BasedVK
+#include "BVKWindow.h"
 #include "BVKDevice.h"
-#include "BVKSwapchain.h"
+#include "BVKSwapChain.h"
 
 class BVKRenderer
 {
-    public:
+public:
 
-        BVKRenderer(BEwindow &window, BVKDevice &device);
-        ~BVKRenderer();
+    BVKRenderer(BVKWindow &window, BVKDevice &device);
+    ~BVKRenderer();
 
-        BVKRenderer(const BVKRenderer&) = delete;
-        BVKRenderer& operator=(const BVKRenderer&) = delete;
+    BVKRenderer(const BVKRenderer&) = delete;
+    BVKRenderer& operator=(const BVKRenderer&) = delete;
 
-        VkCommandBuffer beginFrame();
-        void endFrame();
+    VkCommandBuffer beginFrame();
+    void endFrame();
 
-        void beginSwapchainRenderPass(VkCommandBuffer commandBuffer);
-        void endSwapchainRenderPass(VkCommandBuffer commandBuffer);
+    void beginSwapChainRenderPass(VkCommandBuffer commandBuffer) const;
+    void endSwapChainRenderPass(VkCommandBuffer commandBuffer) const;
 
-        bool isFrameInProgress() const { return isFrameStarted; };
+    [[nodiscard]] bool isFrameInProgress() const { return isFrameStarted; }
 
-        int getFrameIndex() const 
-        { 
-            assert(isFrameStarted && "Cannot get frame index when frame is not in progress.");
-            return currentFrameIndex; 
-        };
+    [[nodiscard]] int getFrameIndex() const
+    {
+        assert(isFrameStarted && "Cannot get frame index when frame is not in progress.");
+        return currentFrameIndex;
+    }
 
-        VkRenderPass getRenderPass() const { return rendererSwapchain->getRenderPass(); };
-        float getAspectRatio() const { return rendererSwapchain->extentAspectRatio(); };
+    [[nodiscard]] VkRenderPass getRenderPass() const { return rendererSwapChain->getRenderPass(); }
+    [[nodiscard]] float getAspectRatio() const { return rendererSwapChain->extentAspectRatio(); }
 
-        VkCommandBuffer getCurrentCommandBuffer() const
-        {
-            assert(isFrameStarted && "Cannot get command buffer when frame is not in progress.");
-            return commandBuffers[currentFrameIndex];
-        };
+    [[nodiscard]] VkCommandBuffer getCurrentCommandBuffer() const
+    {
+        assert(isFrameStarted && "Cannot get command buffer when frame is not in progress.");
+        return commandBuffers[currentFrameIndex];
+    }
 
-    private:
+private:
 
-        BEwindow &window;
-        BVKDevice &renderDevice;
-        std::unique_ptr<BVKSwapchain> rendererSwapchain;
-        std::vector<VkCommandBuffer> commandBuffers;
+    BVKWindow &window;
+    BVKDevice &renderDevice;
+    std::unique_ptr<BVKSwapChain> rendererSwapChain;
+    std::vector<VkCommandBuffer> commandBuffers;
 
-        uint32_t currentImageIndex;
-        int currentFrameIndex = 0;
-        bool isFrameStarted = false;
+    uint32_t currentImageIndex = 0;
+    int currentFrameIndex = 0;
+    bool isFrameStarted = false;
 
-        void createCommandBuffers();
-        void freeCommandBuffers();
-        void recreateSwapchain();
-
+    void createCommandBuffers();
+    void freeCommandBuffers();
+    void recreateSwapChain();
 };
+
+
+#endif // BVKRENDERER_H

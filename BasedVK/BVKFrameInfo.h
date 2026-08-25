@@ -1,26 +1,22 @@
-#pragma once
+#ifndef BVKFRAMEINFO_H
+#define BVKFRAMEINFO_H
 
 // Vulkan
 #include <vulkan/vulkan.h>
 
 // BasedCore
-#include "../BasedCore/BECamera.h"
 
 // BasedVK
 #include "BVKObject.h"
 
-/// @brief Frame info to tell the render system how to render
 struct FrameInfo
 {
-    /// @brief Frame index
     int frameIndex;
-    /// @brief Frame time
     float frameTime;
-    /// @brief Current command buffer
     VkCommandBuffer commandBuffer;
-    /// @brief Camera
-    BECamera& camera;
-    /// @brief Descriptors
+
+    // TODO: Add camera object
+
     VkDescriptorSet globalDescriptorSet;
     BVKObject::Map &appObjects;
 };
@@ -29,17 +25,18 @@ struct FrameInfo
 
 struct PointLight
 {
-    glm::vec4 position{}; // ignore w
-    glm::vec4 color{}; // W is intensity
+    glm::vec4 position{}; // Ignore W
+    glm::vec4 color{}; // W is intesnity
 };
 
-struct GlobalUbo
+struct GlobalUBO
 {
-    /// @brief projection view
     glm::mat4 projection{ 1.f };
     glm::mat4 view{ 1.f };
-    glm::mat4 inverseView{ 1.f};
-    glm::vec4 ambientLightColor{ 1.f, 1.f, 1.f, .02f }; // w is intensity
+    glm::mat4 inverseView{ 1.f };
+    glm::vec4 ambientLightColor{ 1.f, 1.f, 1.f, .02f };
     PointLight pointLights[MAX_LIGHTS];
     int numLights;
 };
+
+#endif // BVKFRAMEINFO_H

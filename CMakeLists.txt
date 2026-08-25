@@ -1,75 +1,83 @@
-﻿cmake_minimum_required (VERSION 3.20)
+﻿include(FetchContent)
+
+cmake_minimum_required (VERSION 3.20)
 
 if (WIN32)
-  message("Windows detected.")
-endif()
-
-# Enable Hot Reload for MSVC compilers if supported.
-if (POLICY CMP0141)
-  cmake_policy(SET CMP0141 NEW)
-  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+  set(DIRECTX_AVAILABLE True)
 endif()
 
 project(BasedEngine VERSION 1.0)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  message(STATUS "Using GNU style compiler flags")
-
-  if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    message(STATUS "Using Clang extensions")
-    set(CMAKE_CXX_FLAGS_ALL "-Wall -Wextra -Wpedantic -Wextra-tokens")
-  else()
-    set(CMAKE_CXX_FLAGS_ALL "-Wall -Wextra -Wpedantic")
-  endif()
-  
-
-  set(CMAKE_CXX_FLAGS_DEBUG "-g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_ALL} -O2")
-  set(CMAKE_CXX_FLAGS_MINSIZEREL " -Os ${CMAKE_CXX_FLAGS_ALL}")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO " -O2 -g ${CMAKE_CXX_FLAGS_ALL} -DDEBUG")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-  message(STATUS "Using MSVC style compiler flags")
-  set(CMAKE_CXX_FLAGS_ALL "/Wall /MP")
-
-  set(CMAKE_CXX_FLAGS_DEBUG "/W4 /Zi /Od /DDEBUG")
-  set(CMAKE_CXX_FLAGS_RELEASE "/W4 /O2")
-  set(CMAKE_CXX_FLAGS_MINSIZEREL "/W4 /Os")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/W4 /Zi /O2 /DDEBUG")
-  message(FATAL_ERROR "MSVC compiler is not supported yet.\nI have not written into the build chain the proper methods for finding the required libraries and linking them.")
-else()
-  message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
-endif()
+add_compile_definitions(CMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}")
+add_compile_definitions($<$<CONFIG:Debug>:DEBUG> $<$<CONFIG:RelWithDebInfo>:DEBUG>)
+if (DIRECTX_AVAILABLE)
+    add_compile_definitions(DIRECTX_AVAILABLE WINDOWS)
+endif (DIRECTX_AVAILABLE)
 
 # Include sub-projects.
 add_subdirectory(BasedCore)
 add_subdirectory(BasedGL)
+add_subdirectory(third_party/glad)
 add_subdirectory(BasedVK)
-if (WIN32)
-  #add_subdirectory(BasedDX)
+if (DIRECTX_AVAILABLE)
+  add_subdirectory(BasedDX)
 endif()
 add_subdirectory(shaders)
 add_subdirectory(models)
 
 
-# find libraries
+# Find libraries
 find_package(glfw3 3.3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Vulkan REQUIRED)
-find_package(GLEW REQUIRED)
+#find_package(GLEW REQUIRED)
+if(DIRECTX_AVAILABLE)
+  find_package(DirectX-Headers REQUIRED)
+endif (DIRECTX_AVAILABLE)
+
+find_package(libzip REQUIRED)
+
+# Fetch external libraries
+FetchContent_Declare(
+        plog
+        GIT_REPOSITORY https://github.com/SergiusTheBest/plog
+        GIT_TAG        1.1.11
+        GIT_SHALLOW    true
+)
+FetchContent_MakeAvailable(plog)
+
+# Extras
 find_package(Doxygen)
 
 # Add source to this project's executable.
 add_executable(BasedEngine main.cpp)
-target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm ${GLEW_LIBRARIES})
-add_dependencies(BasedEngine Shaders CopyModels)
 
-#if(WIN32)
-#  target_compile_definitions(BasedEngine PRIVATE USE_WINDOWS=1)
-#endif(WIN32)
+target_compile_options(BasedEngine PRIVATE -Wall $<$<CONFIG:Debug>: -g -O0> $<$<CONFIG:Release>: -O3> $<$<CONFIG:RelWithDebInfo>: -O2 -g> $<$<CONFIG:MinSizeRel>: -Os>)
+
+target_link_libraries(BasedEngine PRIVATE BasedCore BasedGL BasedVK OpenGL::GL glfw Vulkan::Vulkan glm::glm glad plog::plog libzip::zip)
+
+if (DIRECTX_AVAILABLE)
+  target_link_libraries(BasedEngine PRIVATE BasedDX user32 gdi32 kernel32 d3d12 dxgi dxguid d3dcompiler)
+endif (DIRECTX_AVAILABLE)
+
+if (MSVC)
+    add_compile_options(BasedEngine PRIVATE /MP /W4 $<$<CONFIG:Debug>: /Od /ZI>)
+    add_link_options(BasedEngine PRIVATE $<$<CONFIG:Debug>: /INCREMENTAL>)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    add_compile_options(BasedEngine PRIVATE -Wextra -Wpedantic)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(BasedEngine PRIVATE -Wall -Wextra -pedantic -Wextra_tokens -fcolor_diagnostics $<$<CONFIG:Debug>: -fsanitize=undefined -fsanitize=address>)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    add_compile_options(BasedEngine PRIVATE -Wall -Wextra -pedantic -Wextra_tokens -fcolor-diagnostics $<$<CONFIG:Debug>: -fsanitize=undefined -fsanitize=address>)
+else()
+    message(FATAL "Unsupported compiler!")
+endif()
+
+add_dependencies(BasedEngine CompileShaders CopyModels)
 
 if(DOXYGEN_FOUND)
   set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md")

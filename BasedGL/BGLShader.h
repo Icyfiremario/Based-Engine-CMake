@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BGLSHADER_H
+#define BGLSHADER_H
 
 // STD
 #include <string>
@@ -7,35 +8,25 @@
 #include <iostream>
 
 // OpenGL
-#include <GL/glew.h>
+#include <glad/glad.h>
 
-/// @brief OpenGL shader class
-/// @todo Rewrite to load pre-compiled spv rather than shader source
+// Plog
+#include <plog/Log.h>
+
 class BGLShader
 {
-    public:
+public:
 
-        /// @brief Shader ID
-        unsigned int ID;
+    unsigned int ID;
 
-        /// @brief Loads and compiles the shader from the given file paths.
-        /// @param vertexPath Vertex shader path
-        /// @param fragmentPath Fragment shader path
-        BGLShader(const char* vertexPath, const char* fragmentPath);
+    BGLShader(const char* vertexPath, const char* fragmentPath);
 
-        /// @brief Tells glew to use the shader program
-        void use();
+    void use() const { glUseProgram(ID); }
 
-        /// @brief Sets the shader uniform bool
-        /// @param name Uniform name
-        /// @param value Value to set to
-        void setBool(const std::string &name, bool value) const;
-        /// @brief Sets the shader uniform int
-        /// @param name Uniform name
-        /// @param value Value to set to
-        void setInt(const std::string &name, int value) const;
-        /// @brief Sets the shader uniform float
-        /// @param name Uniform name
-        /// @param value Value to set to
-        void setFloat(const std::string &name, float value) const;
+    void setBool(const std::string& name, const bool value) const { glUniform1i(glGetUniformLocation(ID, name.c_str()), static_cast<int>(value)); }
+    void setInt(const std::string& name, const int value) const { glUniform1i(glGetUniformLocation(ID, name.c_str()), value); }
+    void setFloat(const std::string& name, const float value) const { glUniform1f(glGetUniformLocation(ID, name.c_str()), value); }
 };
+
+
+#endif // BGLSHADER_H

@@ -4,8 +4,17 @@
 Based Engine is an open source game engine written in C++. It uses glfw for window management to allow support for several rendering APIs. The current plan is to create an open source C++ based game building application similar to unity.
 
 ## Status
+### Vulkan
+- Stable, Unfinished
+- Missing buffer implementation 
 
-Very unstable. Weird bugs with rendering freezing and the camera teleporting for unknown reasons.
+### OpenGL
+- Stable, Unfinished
+- Missing buffer binding
+
+### DirectX
+- Unfinished
+- Missing basic pipeline implementation
 
 ## Support
 ### Windows
@@ -18,29 +27,30 @@ Very unstable. Weird bugs with rendering freezing and the camera teleporting for
 - OpenGL
 
 ### Apple
-Apple support will be tested and planned as soon as I get a suitable Apple device.
+- OpenGL
 
 ## To Do
 ### Core
 - [x] Window resizing
-- [x] Rendering API binding
-- [ ] Add Plog for logging
+- [ ] Rendering API binding
+- [x] Add Plog for logging
 - [ ] Create game object component system
 
 ### Vulkan
-- [x] Swapchain
+- [x] SwapChain
 - [x] Pipeline
-- [x] Shaders [^2]
-- [x] Models
+- [ ] Shaders [^2]
+- [ ] Models
 - [x] Device info
-- [x] Descriptors
-- [ ] Render systems
+- [ ] Descriptors
+- [x] Render systems
 
 ### OpenGL
-- [ ] General implementation
+- [x] Shaders
 
 ### DirectX
-- [ ] WinMain entry
+- [x] HWND binding
+- [ ] Pipeline creation
 
 ### Editor
 - [ ] 3D editor
@@ -49,24 +59,28 @@ Apple support will be tested and planned as soon as I get a suitable Apple devic
 
 ## Required packages
 - GLM
-- GLEW (OpenGL)
-- Vulkan SDK
+- GLAD (included in third_party)
+- [Vulkan SDK](https://vulkan.lunarg.com/sdk/home)
 - CMake
 - GLSLC
 - GLFW3
-- Tiny object loader [^3]
+- [Tiny object loader](https://github.com/tinyobjloader/tinyobjloader) [^3]
 
 ## Supported compilers
 ### Windows
 - MSYS2 GCC
 - MSYS2 Clang
+- MSVC 17
 
 ### Linux
 - GCC
 - Clang
 
-[^1]: This requires using windows.h and doing window management that way. I am unfamillar and it would require weird cmake stuff. I do plan to add this but it will be way down the line. I may end up just using DirectX translation layers if I cannot figure out how to bind OpenGL and Vulkan to windows.h windows.
+### Apple
+- AppleClang
+
+[^1]: This will be done by grabbing the HWND from GLFW. IDK the drawbacks to doing this, but it makes my life simpler.
 
 [^2]: Custom shaders will be done using render systems. There will be a parent render system class that you override with your own functions and shaders. An example of this is between the Pointlight render system and the BVKRenderSystem. The Pointlight system is almost exactly the same as BVKRenderSystem but with some changes to the render function and the addition of an update function. In the future, the BVKRenderSystem class will be used as a parent class for all render systems and the current implementation will be the BVKBasicRenderSystem.
 
-[^3]: This package supports loading wavefront object models. I will replace this in the future with a in-house model loader in order to support more model formats. If using you are using MSVC models may need to be renamed to .wobj in order to prevent MSVC from trying to link them into the program. IDK for sure though because I haven't got compiling with MSVC to work yet.
+[^3]: This package supports loading wavefront object models. I will replace this in the future with an in-house model loader in order to support more model formats. If using you are using MSVC, models may need to be renamed to .wobj in order to prevent MSVC from trying to link them into the program.

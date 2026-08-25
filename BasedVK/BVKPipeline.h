@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BVKPIPELINE_H
+#define BVKPIPELINE_H
 
 // STD
 #include <string>
@@ -15,74 +16,65 @@
 struct PipelineConfigInfo
 {
     PipelineConfigInfo() = default;
-    PipelineConfigInfo(const PipelineConfigInfo&) = delete;
-    PipelineConfigInfo& operator=(const PipelineConfigInfo&) = delete;
+    PipelineConfigInfo(const PipelineConfigInfo &) = delete;
+    PipelineConfigInfo& operator=(const PipelineConfigInfo &) = delete;
 
     std::vector<VkVertexInputBindingDescription> bindingDescriptions{};
     std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
+
     VkPipelineViewportStateCreateInfo viewportInfo;
-	VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
-	VkPipelineRasterizationStateCreateInfo rasterizationInfo;
-	VkPipelineMultisampleStateCreateInfo multisampleInfo;
-	VkPipelineColorBlendAttachmentState colorBlendAttachment;
-	VkPipelineColorBlendStateCreateInfo colorBlendInfo;
-	VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
-	std::vector<VkDynamicState> dynamicStateEnables;
-	VkPipelineDynamicStateCreateInfo dynamicStateInfo;
-	VkPipelineLayout pipelineLayout = nullptr;
-	VkRenderPass renderPass = nullptr;
-	uint32_t subpass = 0;
+    VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
+    VkPipelineRasterizationStateCreateInfo rasterizationInfo;
+    VkPipelineMultisampleStateCreateInfo multisampleInfo;
+    VkPipelineColorBlendAttachmentState colorBlendAttachment;
+    VkPipelineColorBlendStateCreateInfo colorBlendInfo;
+    VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+    std::vector<VkDynamicState> dynamicStateEnables;
+    VkPipelineDynamicStateCreateInfo dynamicStateInfo;
+
+    VkPipelineLayout pipelineLayout = nullptr;
+    VkRenderPass renderPass = nullptr;
+
+    uint32_t subpass = 0;
 };
 
 struct ShaderInfo
 {
-    std::string path;
+    std::string name;
     VkStructureType shaderType;
 };
 
 class BVKPipeline
 {
-    public:
+public:
 
-        /// @brief Loads a vertex shader and a fragment shader in that order and creates a graphics pipeline.
-        /// @param device Vulkan device
-        /// @param vertFilepath Vertex shader file path
-        /// @param fragFilepath Fragment shader file path
-        /// @param configInfo Pipeline config
-        BVKPipeline(BVKDevice& device, const std::string& vertFilepath, const std::string& fragFilepath, const PipelineConfigInfo& configInfo);
-        /// @brief Loads a list of shaders and creates a pipeline that uses them in that order.
-        /// @param device Vulkan device
-        /// @param shaderFilePaths Shader list
-        /// @param configInfo Pipeline config
-        BVKPipeline(BVKDevice& device, const std::vector<std::string> shaderFilePaths, const PipelineConfigInfo& configInfo);
-        ~BVKPipeline();
+    BVKPipeline(BVKDevice& device, const std::string& vertFilePath, const std::string& fragFilePath, const PipelineConfigInfo& configInfo);
 
-        BVKPipeline(const BVKPipeline&) = delete;
-        BVKPipeline& operator=(const BVKPipeline&) = delete;
+    BVKPipeline(BVKDevice& device, const std::vector<std::string>& shaderFilePaths, const PipelineConfigInfo& configInfo);
+    ~BVKPipeline();
 
-        /// @brief Binds a pipeline to a frame.
-        /// @param commandBuffer Frame command buffer.
-        void bind(VkCommandBuffer commandBuffer);
+    BVKPipeline(const BVKPipeline &) = delete;
+    BVKPipeline &operator=(const BVKPipeline &) = delete;
 
-        /// @brief Sets default pipeline config info.
-        /// @param configInfo pipeline info object.
-        static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
+    void bind(VkCommandBuffer commandBuffer) const;
 
-        /// @brief 
-        /// @param configInfo 
-        static void enableAlphaBlending(PipelineConfigInfo& configInfo);
+    static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
 
-    private:
+    static void enableAlphaBlending(PipelineConfigInfo& configInfo);
 
-        BVKDevice& pipelineDevice;
-        VkPipeline graphicsPipeline;
-        VkShaderModule vertShaderModule;
-        VkShaderModule fragShaderModule;
+private:
 
-        std::vector<char> readFile(const std::string& filePath);
+    BVKDevice& pipelineDevice;
+    VkPipeline graphicsPipeline;
+    VkShaderModule vertShaderModule;
+    VkShaderModule fragShaderModule;
 
-        void createGraphicsPipeline(const std::string& vertFilepath, const std::string& fragFilepath, const PipelineConfigInfo& configInfo);
-        void createGraphicsPipeline(const std::vector<std::string> shaderFilePaths, const PipelineConfigInfo& configInfo);
-        void createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
+    std::vector<char> readFile(const std::string& filePath);
+
+    void createGraphicsPipeline(const std::string& vertFilePath, const std::string& fragFilePath, const PipelineConfigInfo& configInfo);
+    void createGraphicsPipeline(std::vector<std::string> shaderFilePaths, const PipelineConfigInfo& configInfo);
+    void createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule) const;
+
 };
 
+#endif // BVKPIPELINE_H

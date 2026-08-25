@@ -6,7 +6,7 @@ struct SimplePushConstantData
     glm::mat4 normalMatrix{ 1.f };
 };
 
-BVKRenderSystem::BVKRenderSystem(BVKDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout) : rSysDevice{device}
+BVKRenderSystem::BVKRenderSystem(BVKDevice& device, const VkRenderPass renderPass, const VkDescriptorSetLayout globalSetLayout) : rSysDevice(device)
 {
     createPipelineLayout(globalSetLayout);
     createPipeline(renderPass);
@@ -17,7 +17,7 @@ BVKRenderSystem::~BVKRenderSystem()
     vkDestroyPipelineLayout(rSysDevice.getDevice(), rSysPipelineLayout, nullptr);
 }
 
-void BVKRenderSystem::renderGameObjects(FrameInfo &frameInfo)
+void BVKRenderSystem::renderGameObjects(const FrameInfo& frameInfo) const
 {
     rSysPipeline->bind(frameInfo.commandBuffer);
 
@@ -27,6 +27,7 @@ void BVKRenderSystem::renderGameObjects(FrameInfo &frameInfo)
     {
         auto& obj = kv.second;
         if (obj.model == nullptr) continue;
+
         SimplePushConstantData push{};
         push.modelMatrix = obj.transform.mat4();
         push.normalMatrix = obj.transform.normalMatrix();
@@ -37,14 +38,14 @@ void BVKRenderSystem::renderGameObjects(FrameInfo &frameInfo)
     }
 }
 
-void BVKRenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout)
+void BVKRenderSystem::createPipelineLayout(const VkDescriptorSetLayout globalSetLayout)
 {
     VkPushConstantRange pushConstantRange{};
     pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
     pushConstantRange.offset = 0;
     pushConstantRange.size = sizeof(SimplePushConstantData);
 
-    std::vector<VkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
+    const std::vector<VkDescriptorSetLayout> descriptorSetLayouts { globalSetLayout };
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -55,11 +56,12 @@ void BVKRenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout
 
     if (vkCreatePipelineLayout(rSysDevice.getDevice(), &pipelineLayoutInfo, nullptr, &rSysPipelineLayout) != VK_SUCCESS)
     {
+        PLOGF << "Failed to create pipeline layout.";
         throw std::runtime_error("Failed to create pipeline layout!");
     }
 }
 
-void BVKRenderSystem::createPipeline(VkRenderPass renderPass)
+void BVKRenderSystem::createPipeline(const VkRenderPass renderPass)
 {
     assert(rSysPipelineLayout != nullptr && "Cannot create pipeline before pipeline layout!");
 
