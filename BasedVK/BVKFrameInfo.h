@@ -4,8 +4,6 @@
 // Vulkan
 #include <vulkan/vulkan.h>
 
-// BasedCore
-
 // BasedVK
 #include "BVKObject.h"
 
