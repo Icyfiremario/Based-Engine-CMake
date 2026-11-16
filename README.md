@@ -4,16 +4,20 @@
 Based Engine is an open source game engine written in C++. It uses glfw for window management to allow support for several rendering APIs. The current plan is to create an open source C++ based game building application similar to unity.
 
 ## Status
+### Core
+- Stable, Unfinished
+- Missing API based switching
+
 ### Vulkan
 - Stable, Unfinished
-- Missing buffer implementation 
+- Missing shader manager
 
 ### OpenGL
 - Stable, Unfinished
 - Missing buffer binding
 
 ### DirectX
-- Unfinished
+- Unimplemented, Unfinished
 - Missing basic pipeline implementation
 
 ## Support
