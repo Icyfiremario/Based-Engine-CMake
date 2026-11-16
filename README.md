@@ -92,6 +92,6 @@ Based Engine is an open source game engine written in C++. It uses glfw for wind
 
 [^2]: Custom shaders will be done using render systems. There will be a parent render system class that you override with your own functions and shaders. An example of this is between the Pointlight render system and the BVKRenderSystem. The Pointlight system is almost exactly the same as BVKRenderSystem but with some changes to the render function and the addition of an update function. In the future, the BVKRenderSystem class will be used as a parent class for all render systems and the current implementation will be the BVKBasicRenderSystem.
 
-[^3]: This package supports loading wavefront object models. I will replace this in the future with an in-house model loader in order to support more model formats. If using you are using MSVC, models may need to be renamed to .wobj in order to prevent MSVC from trying to link them into the program.
+[^3]: This package supports loading wavefront object models. I will replace this in the future with an in-house model loader in order to support more model formats and for licensing reasons. If using you are using MSVC, models may need to be renamed to .wobj in order to prevent MSVC from trying to link them into the program.
 
 [^4]: Due to licensing issues I will be moving away from using plog in the future and use my own logging library.
